@@ -20,7 +20,7 @@ import {
 // ============================================================
 // TYPES
 // ============================================================
-type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season';
+type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season' | 'tutorial';
 type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal';
 type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless';
 type Modifier = 'bigObjects' | 'speedDemon' | 'noBombs' | 'mirror' | 'oneLife' | 'tinyObjects' | 'chaos';
@@ -1339,6 +1339,7 @@ async function main() {
   panels.stats         = createWorldPanel('/ui/stats.json', 0.8, 1.2, [0, 1.5, -2.5]);
   panels.modifiers     = createWorldPanel('/ui/modifiers.json', 0.8, 1.2, [0, 1.5, -2.5]);
   panels.season        = createWorldPanel('/ui/season.json', 0.8, 1.4, [0, 1.5, -2.5]);
+  panels.tutorial      = createWorldPanel('/ui/tutorial.json', 0.7, 1.0, [0, 1.5, -2.5]);
   panels.hud           = createFollowerPanel('/ui/hud.json', 0.35, 0.2, [0.3, -0.15, -0.5]);
   panels.combo         = createFollowerPanel('/ui/combo.json', 0.15, 0.08, [-0.25, 0, -0.5]);
   panels.toast         = createFollowerPanel('/ui/toast.json', 0.3, 0.06, [0, 0.15, -0.5]);
@@ -1435,6 +1436,21 @@ async function main() {
       }
     });
     bindClick(seasonDoc, 'btn-back-season', () => { audio.buttonClick(); switchState('modeSelect'); });
+
+    // Tutorial
+    const tutDoc = getDoc('tutorial');
+    bindClick(tutDoc, 'btn-tut-play', () => {
+      audio.buttonClick();
+      tutorialSeen = true;
+      gameMode = 'zen';
+      difficulty = 'easy';
+      startCountdown();
+    });
+    bindClick(tutDoc, 'btn-tut-skip', () => {
+      audio.buttonClick();
+      tutorialSeen = true;
+      switchState('title');
+    });
 
     // Difficulty
     const diffDoc = getDoc('difficulty');
@@ -1895,6 +1911,117 @@ async function main() {
   ];
   let currentBossType: BossType = 'orbiter';
 
+  // Spawn formations — objects launch in patterns
+  type Formation = 'random' | 'line' | 'vShape' | 'circle' | 'cross' | 'shower';
+  const FORMATIONS: Formation[] = ['random', 'line', 'vShape', 'circle', 'cross', 'shower'];
+
+  function spawnFormation(formation: Formation, count: number, rng?: () => number) {
+    const r = rng || Math.random;
+    switch (formation) {
+      case 'line': {
+        const baseX = -1;
+        const step = 2 / Math.max(count - 1, 1);
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            if (gameState !== 'playing') return;
+            const type = getObjTypeForWave(r);
+            const obj = getPoolObj(type);
+            if (!obj) return;
+            obj.active = true; obj.age = 0;
+            const x = baseX + i * step;
+            obj.group.position.set(x, -0.5, -1.8 - r() * 0.3);
+            const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
+            obj.velocity.set(0, (5 + r()) * diffMult, 0);
+            obj.angVel.set((r()-0.5)*4, (r()-0.5)*4, (r()-0.5)*4);
+            obj.group.visible = true;
+            obj.group.scale.setScalar(activeModifiers.has('bigObjects') ? 2 : activeModifiers.has('tinyObjects') ? 0.5 : 1);
+            obj.radius = OBJ_CONFIGS[type].radius * obj.group.scale.x;
+            obj.hitsLeft = type === 'crystal' ? 3 : 1;
+            obj.innerMesh.material = new MeshStandardMaterial({ color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
+            totalSpawned++;
+            audio.launch();
+          }, i * 80);
+        }
+        break;
+      }
+      case 'vShape': {
+        const mid = Math.floor(count / 2);
+        for (let i = 0; i < count; i++) {
+          const delay = Math.abs(i - mid) * 120;
+          setTimeout(() => {
+            if (gameState !== 'playing') return;
+            const type = getObjTypeForWave(r);
+            launchObj(type, r);
+          }, delay);
+        }
+        break;
+      }
+      case 'circle': {
+        for (let i = 0; i < count; i++) {
+          const angle = (i / count) * Math.PI * 2;
+          setTimeout(() => {
+            if (gameState !== 'playing') return;
+            const type = getObjTypeForWave(r);
+            const obj = getPoolObj(type);
+            if (!obj) return;
+            obj.active = true; obj.age = 0;
+            const x = Math.cos(angle) * 1;
+            const z = -1.8 + Math.sin(angle) * 0.3;
+            obj.group.position.set(x, -0.5, z);
+            const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
+            obj.velocity.set(Math.cos(angle) * 0.5, (5 + r()) * diffMult, 0);
+            obj.angVel.set((r()-0.5)*4, (r()-0.5)*4, (r()-0.5)*4);
+            obj.group.visible = true;
+            obj.group.scale.setScalar(activeModifiers.has('bigObjects') ? 2 : activeModifiers.has('tinyObjects') ? 0.5 : 1);
+            obj.radius = OBJ_CONFIGS[type].radius * obj.group.scale.x;
+            obj.hitsLeft = type === 'crystal' ? 3 : 1;
+            obj.innerMesh.material = new MeshStandardMaterial({ color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
+            totalSpawned++;
+            audio.launch();
+          }, i * 100);
+        }
+        break;
+      }
+      case 'cross': {
+        // Two lines: horizontal and vertical offset timing
+        const half = Math.floor(count / 2);
+        for (let i = 0; i < half; i++) {
+          setTimeout(() => { if (gameState === 'playing') launchObj(getObjTypeForWave(r), r); }, i * 100);
+        }
+        setTimeout(() => {
+          for (let i = 0; i < count - half; i++) {
+            setTimeout(() => { if (gameState === 'playing') launchObj(getObjTypeForWave(r), r); }, i * 100);
+          }
+        }, 400);
+        break;
+      }
+      case 'shower': {
+        // All at once from wide spread
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => { if (gameState === 'playing') launchObj(getObjTypeForWave(r), r); }, r() * 200);
+        }
+        break;
+      }
+      default:
+        spawnWave(count, rng);
+    }
+  }
+
+  function getRandomFormation(wave: number): Formation {
+    if (wave <= 2) return 'random'; // First waves are simple
+    if (wave % 5 === 0) return 'circle'; // Every 5th wave is a circle
+    return FORMATIONS[Math.floor(Math.random() * FORMATIONS.length)];
+  }
+
+  // Tutorial state
+  let tutorialStep = 0;
+  let tutorialSeen = false;
+
+  function checkTutorial(): boolean {
+    if (save.career.games > 0 || tutorialSeen) return false;
+    return true;
+  }
+
   function updateSkins() {
     const doc = getDoc('skins');
     if (!doc) return;
@@ -1991,6 +2118,7 @@ async function main() {
       case 'stats': showPanel('stats'); break;
       case 'modifiers': showPanel('modifiers'); break;
       case 'season': showPanel('season'); break;
+      case 'tutorial': showPanel('tutorial'); break;
       case 'countdown': showPanel('countdown'); break;
     }
   }
@@ -2766,6 +2894,29 @@ async function main() {
       updateComboDisplay();
     }
 
+    // Combo visual feedback — blade glow and lighting intensity
+    const comboFactor = combo / MAX_COMBO; // 0 to 1
+    if (comboFactor > 0) {
+      const comboColor = COMBO_COLORS[Math.min(combo, COMBO_COLORS.length - 1)];
+      // Pulse blade glow
+      const pulseRate = 2 + combo * 0.5;
+      const pulseIntensity = 0.3 + comboFactor * 0.7;
+      const pulse = pulseIntensity * (0.7 + Math.sin(gameTime * pulseRate) * 0.3);
+      [bladeRight, bladeLeft, browserBlade].forEach(blade => {
+        blade.children.forEach(c => {
+          if ((c as any).material?.blending === AdditiveBlending) {
+            (c as any).material.opacity = pulse;
+          }
+        });
+      });
+      // Tint accent lights
+      accentLight1.intensity = 2 + comboFactor * 3;
+      accentLight2.intensity = 1.5 + comboFactor * 2;
+    } else {
+      accentLight1.intensity = 2;
+      accentLight2.intensity = 1.5;
+    }
+
     // Timed modes
     if (gameMode === 'timeAttack' || gameMode === 'frenzy') {
       gameTimer -= dt;
@@ -2930,8 +3081,9 @@ async function main() {
             showWaveAnnouncement(`BOSS WAVE ${waveNum}`, 'DEFEAT THE BOSS!');
             setTimeout(() => spawnBoss(), 1500);
           } else {
+            const formation = getRandomFormation(waveNum);
             showWaveAnnouncement(`WAVE ${waveNum}`, getWaveFlavorText(waveNum));
-            setTimeout(() => spawnWave(size, dailyRng || undefined), 1200);
+            setTimeout(() => spawnFormation(formation, size, dailyRng || undefined), 1200);
           }
         }
         if (waveActive) {
@@ -3084,7 +3236,8 @@ async function main() {
             const flavorTexts = ['GET READY', 'INCOMING!', 'HERE THEY COME', 'STAY SHARP',
               'FASTER!', 'RELENTLESS!', 'NO STOPPING!', 'ENDURE!', 'INFINITE!', 'ETERNAL!'];
             showWaveAnnouncement(`WAVE ${waveNum}`, flavorTexts[Math.min(waveNum - 1, flavorTexts.length - 1)]);
-            setTimeout(() => spawnWave(scaledSize), 1200);
+            const endlessFormation = getRandomFormation(waveNum);
+            setTimeout(() => spawnFormation(endlessFormation, scaledSize), 1200);
           }
 
           // Achievements
@@ -3251,7 +3404,11 @@ async function main() {
 
   // ---- Initial State ----
   applyTheme();
-  switchState('title');
+  if (checkTutorial()) {
+    switchState('tutorial' as GameState);
+  } else {
+    switchState('title');
+  }
 }
 
 // ============================================================

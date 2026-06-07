@@ -1,0 +1,64 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-color: #00ff80;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1;
+  }
+  .heading {
+    font-size: 2.5;
+    color: #00ff80;
+    font-weight: bold;
+  }
+  .text {
+    font-size: 1.4;
+    color: #cccccc;
+  }
+  .highlight {
+    font-size: 1.6;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .step {
+    font-size: 1;
+    color: #888888;
+  }
+  .btn {
+    font-size: 2;
+    color: #ffffff;
+    background-color: rgba(0, 255, 128, 0.15);
+    border-color: #00ff80;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 1;
+    padding-left: 3;
+    padding-right: 3;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-skip {
+    background-color: rgba(255, 0, 255, 0.15);
+    border-color: #ff00ff;
+  }
+</style>
+<div class="panel">
+  <span class="heading">WELCOME, SLICER!</span>
+  <span id="tut-text-1" class="highlight">Move your mouse to aim the blade</span>
+  <span id="tut-text-2" class="text">Swing through neon objects to slice them</span>
+  <span id="tut-text-3" class="text">Avoid RED bombs — they cost you lives</span>
+  <span id="tut-text-4" class="text">Build combos by slicing quickly</span>
+  <span id="tut-text-5" class="text">Hold SPACE for a charge attack</span>
+  <span id="tut-step" class="step">First time? Give it a try!</span>
+  <div id="btn-tut-play" class="btn" cursor="pointer">START SLICING!</div>
+  <div id="btn-tut-skip" class="btn btn-skip" cursor="pointer">SKIP TUTORIAL</div>
+</div>
