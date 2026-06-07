@@ -134,6 +134,8 @@ const THEMES = [
   { name: 'FROZEN GRID',   grid: '#88ccff', accent: '#44ddff', bg: '#000812', fog: '#000812', wall: '#002244' },
   { name: 'BLOOD MOON',    grid: '#ff2244', accent: '#ff6644', bg: '#080000', fog: '#080000', wall: '#440000' },
   { name: 'GHOST MATRIX',  grid: '#66ffcc', accent: '#aaffee', bg: '#000a08', fog: '#000a08', wall: '#003322' },
+  { name: 'DEEP OCEAN',   grid: '#0066ff', accent: '#00ccff', bg: '#000208', fog: '#000208', wall: '#001133' },
+  { name: 'NEON SUNSET',  grid: '#ff6644', accent: '#ffaa22', bg: '#0a0200', fog: '#0a0200', wall: '#331100' },
 ];
 
 const BLADE_SKINS = [
@@ -153,6 +155,11 @@ const BLADE_SKINS = [
   { name: 'Aurora',     color: '#44ffaa', emissive: '#22cc88', glow: '#88ffcc', unlock: '100 crystals' },
   { name: 'Crimson',    color: '#cc0022', emissive: '#990011', glow: '#ff2244', unlock: 'Survival 3m' },
   { name: 'Starlight',  color: '#ffffcc', emissive: '#cccc88', glow: '#ffffee', unlock: '50K total' },
+  // Round 10 skins
+  { name: 'Nebula',     color: '#6644ff', emissive: '#4422cc', glow: '#8866ff', unlock: 'Prestige I' },
+  { name: 'Glacier',    color: '#aaddff', emissive: '#88bbcc', glow: '#cceeFF', unlock: 'Endless w25' },
+  { name: 'Berserker',  color: '#ff2200', emissive: '#cc1100', glow: '#ff4422', unlock: 'Season win' },
+  { name: 'Hologram',   color: '#44ffff', emissive: '#22cccc', glow: '#66ffff', unlock: '100% acc (20+)' },
 ];
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -303,6 +310,12 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'replay_5',         name: 'Flashback',           desc: 'Trigger replay with 5+ slices in final 5s' },
   { id: 'all_themes_play',  name: 'World Traveler',      desc: 'Play a game in every arena theme' },
   { id: 'slice_10k',        name: 'Ten Thousand Cuts',   desc: 'Slice 10,000 objects total' },
+  // Round 10
+  { id: 'skin_20',          name: 'Arsenal',             desc: 'Unlock 20 blade skins' },
+  { id: 'theme_10',         name: 'Dimension Hopper',    desc: 'Play in all 10 arena themes' },
+  { id: 'score_200k',       name: 'Score Legend',        desc: 'Score 200,000 in a single game' },
+  { id: 'endless_w100',     name: 'Century',             desc: 'Reach wave 100 in Endless' },
+  { id: 'daily_streak_14',  name: 'Two Weeks',           desc: '14-day Daily Challenge streak' },
 ];
 
 // ============================================================
@@ -644,6 +657,8 @@ class AudioManager {
       { bass: 51.91, arpNotes: [103.83, 130.81, 155.56, 207.65, 155.56, 130.81, 103.83, 77.78, 130.81, 155.56, 207.65, 261.63, 207.65, 155.56, 130.81, 77.78], padNotes: [103.83, 130.81, 155.56, 207.65], bpm: 116, filterQ: 3 }, // Frozen Grid — Ab major (slow, crystalline)
       { bass: 61.74, arpNotes: [123.47, 146.83, 185, 246.94, 185, 146.83, 123.47, 92.5, 155.56, 185, 246.94, 311.13, 246.94, 185, 155.56, 92.5], padNotes: [123.47, 146.83, 185, 246.94], bpm: 144, filterQ: 9 }, // Blood Moon — Eb minor (aggressive)
       { bass: 55, arpNotes: [110, 146.83, 164.81, 220, 164.81, 146.83, 110, 82.41, 146.83, 196, 220, 293.66, 220, 196, 146.83, 82.41], padNotes: [110, 146.83, 196, 261.63], bpm: 124, filterQ: 4 }, // Ghost Matrix — Am (ethereal)
+      { bass: 46.25, arpNotes: [92.5, 116.54, 138.59, 185, 138.59, 116.54, 92.5, 69.3, 116.54, 138.59, 185, 246.94, 185, 138.59, 116.54, 69.3], padNotes: [92.5, 116.54, 138.59, 185], bpm: 112, filterQ: 3 }, // Deep Ocean — Bb minor (deep)
+      { bass: 73.42, arpNotes: [146.83, 185, 220, 293.66, 220, 185, 146.83, 110, 185, 220, 293.66, 369.99, 293.66, 220, 185, 110], padNotes: [146.83, 220, 293.66, 369.99], bpm: 138, filterQ: 7 }, // Neon Sunset — D major (warm)
     ];
     const tm = THEME_MUSIC[themeIndex % THEME_MUSIC.length];
 
@@ -1767,6 +1782,10 @@ async function main() {
       case 13: return (s.crystalsShattered || 0) >= 100;
       case 14: return save.achievements.includes('survival_180');
       case 15: return s.totalScore >= 50000;
+      case 16: return (s.prestige || 0) >= 1; // Nebula — Prestige I
+      case 17: return (s.bestEndlessWave || 0) >= 25; // Glacier — Endless w25
+      case 18: return (s.seasonWins || 0) >= 1; // Berserker — Season win
+      case 19: return save.achievements.includes('accuracy_100'); // Hologram — 100% accuracy
       default: return false;
     }
   }
@@ -2700,8 +2719,15 @@ async function main() {
       save.career.themesUsed.push(currentThemeName);
     }
     if (save.career.themesUsed.length >= THEMES.length) checkAchievementSilent('all_themes_play');
+    if (save.career.themesUsed.length >= 10) checkAchievementSilent('theme_10');
     // Total slices milestone
     if (save.career.totalSlices >= 10000) checkAchievementSilent('slice_10k');
+    // Score milestones
+    if (score >= 200000) checkAchievementSilent('score_200k');
+    // Endless wave milestone
+    if (gameMode === 'endless' && waveNum >= 100) checkAchievementSilent('endless_w100');
+    // Daily streak
+    if (save.career.dailyStreak >= 14) checkAchievementSilent('daily_streak_14');
 
     // Check achievements
     checkAchievements();
@@ -3147,6 +3173,12 @@ async function main() {
 
       // Pulsing glow
       (obj.glowMesh.material as MeshBasicMaterial).opacity = 0.1 + Math.sin(gameTime * 4) * 0.05;
+
+      // Object trail particles — emit particles behind flying objects
+      if (obj.age > 0.15 && Math.random() < 0.15) {
+        const trailColor = OBJ_CONFIGS[obj.type]?.color || '#ffffff';
+        spawnParticles(obj.group.position.clone(), 1, trailColor, 0.5);
+      }
 
       // Check if fallen below threshold
       if (obj.group.position.y < -1.5 && obj.velocity.y < 0) {
