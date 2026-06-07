@@ -319,6 +319,14 @@ const ACHIEVEMENTS: Achievement[] = [
   // Blitz
   { id: 'blitz_5k',         name: 'Blitz Master',        desc: 'Score 5K in Blitz mode' },
   { id: 'blitz_10k',        name: 'Blitz Legend',        desc: 'Score 10K in Blitz mode' },
+  // Multi-kill
+  { id: 'multi_3',          name: 'Triple Kill',         desc: 'Get a triple kill (3 slices in 0.5s)' },
+  { id: 'multi_5',          name: 'Penta Kill',          desc: 'Get a penta kill (5 slices in 0.5s)' },
+  { id: 'multi_6',          name: 'Hexa Kill',           desc: 'Get a hexa kill (6 slices in 0.5s)' },
+  // Mastery
+  { id: 'prestige_5',       name: 'Prestige V',          desc: 'Reach Prestige V' },
+  { id: 'total_games_200',  name: 'Veteran Slicer',      desc: 'Play 200 total games' },
+  { id: 'streak_100',       name: 'Centurion Streak',    desc: 'Reach a 100 slice streak' },
 ];
 
 // ============================================================
@@ -958,6 +966,37 @@ async function main() {
   let inSeasonMode = false;
   let inChallengeMode = false;
   let activeChallenge: ChallengeConfig | null = null;
+  // ============================================================
+  // HAPTIC FEEDBACK (XR Controllers)
+  // ============================================================
+  function pulseHaptic(hand: 'left' | 'right' | 'both', intensity: number, duration: number) {
+    try {
+      const session = (world as any).renderer?.xr?.getSession?.();
+      if (!session) return;
+      for (const source of session.inputSources) {
+        if (!source.gamepad?.hapticActuators?.length) continue;
+        const isRight = source.handedness === 'right';
+        const isLeft = source.handedness === 'left';
+        if (hand === 'both' || (hand === 'right' && isRight) || (hand === 'left' && isLeft)) {
+          source.gamepad.hapticActuators[0].pulse(Math.min(intensity, 1), duration);
+        }
+      }
+    } catch {}
+  }
+
+  // ============================================================
+  // MULTI-KILL TRACKING
+  // ============================================================
+  let multiKillWindow: number[] = [];
+  const MULTI_KILL_WINDOW = 0.5; // seconds
+  let multiKillBest = 0;
+  const MULTI_KILL_LABELS: { count: number; label: string; bonus: number; color: string }[] = [
+    { count: 3, label: 'TRIPLE KILL!', bonus: 300, color: '#00ff80' },
+    { count: 4, label: 'QUAD KILL!', bonus: 500, color: '#00ffff' },
+    { count: 5, label: 'PENTA KILL!', bonus: 800, color: '#ff00ff' },
+    { count: 6, label: 'HEXA KILL!', bonus: 1200, color: '#ffd700' },
+  ];
+
   let challengesPlayed = 0;
   let historyPage = 0;
   let comboAnnounceLast = 0; // last announced combo threshold
@@ -2052,6 +2091,7 @@ async function main() {
 
   // Charge attack AOE
   function executeChargeAttack(pos: Vector3) {
+    pulseHaptic('both', 0.7, 150); // charge release haptic
     chargesThisGame++;
     save.career.chargesUsed = (save.career.chargesUsed || 0) + 1;
     audio.chargeRelease();
@@ -2870,6 +2910,7 @@ async function main() {
     if (obj === bossObj && bossActive) {
       bossHP--;
       audio.bossHit();
+      pulseHaptic('both', 0.4, 80);
       spawnParticles(obj.group.position.clone(), 10, '#ffd700', 3);
       // Flash the boss
       (obj.innerMesh.material as any).emissiveIntensity = 3;
@@ -2885,6 +2926,7 @@ async function main() {
         sliceCount++;
         save.career.bossesDefeated = (save.career.bossesDefeated || 0) + 1;
         audio.bossDefeat();
+        pulseHaptic('both', 1.0, 300); // big boss defeat haptic
         triggerShake(2.0, 0.5);
         spawnParticles(obj.group.position.clone(), 40, '#ffd700', 6);
         createSliceHalves(obj, new Vector3(0, 1, 0));
@@ -2952,6 +2994,7 @@ async function main() {
       score = Math.max(0, score + obj.points);
       if (lives > 0) lives--;
       audio.bombHit();
+      pulseHaptic('both', 0.9, 200); // strong bomb haptic
       triggerShake(1.5, 0.4);
       // Explosion VFX — burst of particles in bomb colors
       spawnParticles(obj.group.position.clone(), 30, '#ff3333', 6);
@@ -3048,13 +3091,39 @@ async function main() {
     // Trim old events
     while (replayBuffer.length > 0 && replayBuffer[0].time < gameTime - REPLAY_WINDOW) replayBuffer.shift();
 
+    // Multi-kill tracking — rapid slices within time window
+    multiKillWindow.push(gameTime);
+    multiKillWindow = multiKillWindow.filter(t => gameTime - t <= MULTI_KILL_WINDOW);
+    const killCount = multiKillWindow.length;
+    for (let mk = MULTI_KILL_LABELS.length - 1; mk >= 0; mk--) {
+      const mkl = MULTI_KILL_LABELS[mk];
+      if (killCount >= mkl.count) {
+        score += mkl.bonus;
+        showToast(mkl.label + ' +' + mkl.bonus, 1.5);
+        audio.comboAnnounce(mkl.count + 5);
+        pulseHaptic('both', 0.6 + mk * 0.1, 100);
+        spawnParticles(obj.group.position.clone(), 20 + mk * 5, mkl.color, 5);
+        if (killCount > multiKillBest) multiKillBest = killCount;
+        break;
+      }
+    }
+
     // Streak achievements
     if (sliceStreak >= 20) checkAchievementSilent('streak_20');
     if (sliceStreak >= 50) checkAchievementSilent('streak_50');
+    if (sliceStreak >= 100) checkAchievementSilent('streak_100');
+
+    // Multi-kill achievements
+    if (killCount >= 3) checkAchievementSilent('multi_3');
+    if (killCount >= 5) checkAchievementSilent('multi_5');
+    if (killCount >= 6) checkAchievementSilent('multi_6');
 
     // Audio
     audio.slice(obj.points);
     if (combo >= 2) audio.sliceCombo(combo);
+
+    // Haptic feedback — light pulse on slice, stronger at high combo
+    pulseHaptic('both', 0.15 + combo * 0.05, 50);
 
     // Visual feedback
     const cfg = OBJ_CONFIGS[obj.type];
@@ -3193,8 +3262,15 @@ async function main() {
       obj.group.rotation.y += obj.angVel.y * effectiveDt;
       obj.group.rotation.z += obj.angVel.z * effectiveDt;
 
-      // Pulsing glow
-      (obj.glowMesh.material as MeshBasicMaterial).opacity = 0.1 + Math.sin(gameTime * 4) * 0.05;
+      // Proximity + pulsing glow — objects brighten as they approach
+      const distToPlayer = obj.group.position.distanceTo(new Vector3(0, 1.5, 0));
+      const proximityFactor = Math.max(0, 1 - distToPlayer / 4); // 0 far, 1 close
+      const baseGlow = 0.1 + Math.sin(gameTime * 4) * 0.05;
+      (obj.glowMesh.material as MeshBasicMaterial).opacity = baseGlow + proximityFactor * 0.25;
+      // Increase emissive intensity as objects approach
+      if (obj.innerMesh.material && obj !== bossObj) {
+        (obj.innerMesh.material as any).emissiveIntensity = 0.6 + proximityFactor * 1.2;
+      }
 
       // Object trail particles — emit particles behind flying objects
       if (obj.age > 0.15 && Math.random() < 0.15) {
