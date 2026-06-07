@@ -56,5 +56,7 @@
   <span class="desc">30s rapid fire, no bombs</span>
   <div id="btn-daily" class="btn" cursor="pointer">DAILY CHALLENGE</div>
   <span class="desc">Same puzzle for everyone today</span>
+  <div id="btn-precision" class="btn" cursor="pointer">PRECISION</div>
+  <span class="desc">Slice only marked targets, 3 lives</span>
   <div id="btn-back-mode" class="btn btn-back" cursor="pointer">BACK</div>
 </div>

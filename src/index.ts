@@ -21,8 +21,8 @@ import {
 // TYPES
 // ============================================================
 type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown';
-type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze';
-type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily';
+type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints';
+type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision';
 type Difficulty = 'easy' | 'medium' | 'hard';
 
 interface FlyingObj {
@@ -94,6 +94,9 @@ const OBJ_CONFIGS: Record<ObjType, { color: string; emissive: string; points: nu
   star:    { color: '#ffd700', emissive: '#ccaa00', points: 300, radius: 0.13 },
   bomb:    { color: '#ff3333', emissive: '#cc0000', points: -500, radius: 0.14 },
   freeze:  { color: '#4488ff', emissive: '#2266cc', points: 50,  radius: 0.10 },
+  shield:  { color: '#00ff80', emissive: '#00cc60', points: 75,  radius: 0.11 },
+  magnet:  { color: '#ffaa00', emissive: '#cc8800', points: 75,  radius: 0.10 },
+  doublePoints: { color: '#ff44ff', emissive: '#cc22cc', points: 50, radius: 0.12 },
 };
 
 const THEMES = [
@@ -102,6 +105,9 @@ const THEMES = [
   { name: 'TOXIC NEON',    grid: '#00ff80', accent: '#80ff00', bg: '#000a05', fog: '#000a05', wall: '#003318' },
   { name: 'ULTRA VIOLET',  grid: '#aa44ff', accent: '#ff44aa', bg: '#050010', fog: '#050010', wall: '#220044' },
   { name: 'SOLAR BLAZE',   grid: '#ff8c00', accent: '#ffdd00', bg: '#0a0500', fog: '#0a0500', wall: '#332200' },
+  { name: 'FROZEN GRID',   grid: '#88ccff', accent: '#44ddff', bg: '#000812', fog: '#000812', wall: '#002244' },
+  { name: 'BLOOD MOON',    grid: '#ff2244', accent: '#ff6644', bg: '#080000', fog: '#080000', wall: '#440000' },
+  { name: 'GHOST MATRIX',  grid: '#66ffcc', accent: '#aaffee', bg: '#000a08', fog: '#000a08', wall: '#003322' },
 ];
 
 const BLADE_SKINS = [
@@ -113,39 +119,89 @@ const BLADE_SKINS = [
   { name: 'Toxic',      color: '#00ff80', emissive: '#00cc60', glow: '#44ff99', unlock: 'Clear board' },
   { name: 'Void',       color: '#8844cc', emissive: '#6622aa', glow: '#aa66ee', unlock: '80% accuracy' },
   { name: 'Rainbow',    color: '#ffffff', emissive: '#aaaaaa', glow: '#ffffff', unlock: 'All modes' },
+  { name: 'Obsidian',   color: '#333344', emissive: '#111122', glow: '#4444aa', unlock: 'Lv 10' },
+  { name: 'Nova',       color: '#ff8844', emissive: '#ff6622', glow: '#ffaa66', unlock: 'Lv 25' },
+  { name: 'Phantom',    color: '#88ffcc', emissive: '#44cc88', glow: '#aaffdd', unlock: 'Lv 40' },
+  { name: 'Celestial',  color: '#ffccff', emissive: '#cc88cc', glow: '#ffeeff', unlock: 'Lv 50' },
 ];
 
 const ACHIEVEMENTS: Achievement[] = [
+  // Slicing milestones
   { id: 'first_slice',    name: 'First Blood',        desc: 'Slice your first object' },
   { id: 'ten_slices',     name: 'Warming Up',          desc: 'Slice 10 objects total' },
   { id: 'fifty_slices',   name: 'Blade Runner',        desc: 'Slice 50 objects total' },
   { id: 'hundred_slices', name: 'Slice Master',        desc: 'Slice 100 objects total' },
   { id: 'five_hundred',   name: 'Blade Legend',         desc: 'Slice 500 objects total' },
+  { id: 'thousand_slices', name: 'Eternal Slicer',     desc: 'Slice 1,000 objects total' },
+  // Combo
   { id: 'combo_x3',       name: 'Combo Starter',       desc: 'Reach x3 combo' },
   { id: 'combo_x5',       name: 'Combo King',          desc: 'Reach x5 combo' },
   { id: 'combo_x8',       name: 'Combo God',           desc: 'Reach x8 combo' },
   { id: 'combo_x10',      name: 'Maximum Combo',       desc: 'Reach x10 combo' },
+  // Score
   { id: 'score_1k',       name: 'Getting Started',     desc: 'Score 1,000 points' },
   { id: 'score_5k',       name: 'Sharp Blade',         desc: 'Score 5,000 points' },
   { id: 'score_10k',      name: 'Neon Master',         desc: 'Score 10,000 points' },
   { id: 'score_25k',      name: 'Legendary Slicer',    desc: 'Score 25,000 points' },
+  { id: 'score_50k',      name: 'Quantum Blade',       desc: 'Score 50,000 points' },
+  { id: 'score_100k',     name: 'Transcendent',        desc: 'Score 100,000 points' },
+  // Accuracy
   { id: 'no_miss_10',     name: 'Perfect Eye',         desc: 'Slice 10 in a row without miss' },
   { id: 'no_miss_25',     name: 'Untouchable',         desc: 'Slice 25 in a row without miss' },
-  { id: 'bomb_dodge',     name: 'Bomb Dodger',         desc: 'Avoid 10 bombs in one game' },
-  { id: 'freeze_5',       name: 'Time Lord',           desc: 'Slice 5 freeze orbs in one game' },
+  { id: 'no_miss_50',     name: 'Flawless',            desc: 'Slice 50 in a row without miss' },
   { id: 'accuracy_80',    name: 'Sharpshooter',        desc: 'Finish with 80%+ accuracy' },
   { id: 'accuracy_95',    name: 'Perfectionist',       desc: 'Finish with 95%+ accuracy' },
+  { id: 'accuracy_100',   name: 'Perfect Game',        desc: 'Finish with 100% accuracy (min 20 objects)' },
+  // Bomb/special
+  { id: 'bomb_dodge',     name: 'Bomb Dodger',         desc: 'Avoid 10 bombs in one game' },
+  { id: 'freeze_5',       name: 'Time Lord',           desc: 'Slice 5 freeze orbs in one game' },
+  { id: 'shield_3',       name: 'Shielded',            desc: 'Collect 3 shields in one game' },
+  { id: 'magnet_3',       name: 'Magnetic',            desc: 'Collect 3 magnets in one game' },
+  { id: 'double_5',       name: 'Double Trouble',      desc: 'Collect 5 double points in one game' },
+  { id: 'powerup_10',     name: 'Power Hungry',        desc: 'Collect 10 power-ups in one game' },
+  { id: 'no_powerups',    name: 'Purist',              desc: 'Score 5K without using power-ups' },
+  // Games played
   { id: 'games_10',       name: 'Dedicated',           desc: 'Play 10 games' },
   { id: 'games_50',       name: 'Veteran',             desc: 'Play 50 games' },
+  { id: 'games_100',      name: 'Centurion',           desc: 'Play 100 games' },
+  // Mode mastery
   { id: 'classic_win',    name: 'Classic Champion',    desc: 'Complete Classic mode' },
   { id: 'survival_60',    name: 'Survivor',            desc: 'Survive 60 seconds in Survival' },
+  { id: 'survival_120',   name: 'Endurance',           desc: 'Survive 120 seconds in Survival' },
+  { id: 'survival_180',   name: 'Immortal',            desc: 'Survive 180 seconds in Survival' },
   { id: 'frenzy_1k',      name: 'Frenzy Master',       desc: 'Score 1,000+ in Frenzy' },
+  { id: 'frenzy_5k',      name: 'Frenzy Legend',       desc: 'Score 5,000+ in Frenzy' },
   { id: 'daily_done',     name: 'Daily Challenger',    desc: 'Complete a Daily Challenge' },
   { id: 'zen_100',        name: 'Zen Master',          desc: 'Slice 100 objects in Zen' },
+  { id: 'precision_win',  name: 'Precision Expert',    desc: 'Complete Precision mode' },
+  { id: 'timeattack_5k',  name: 'Speed Demon',         desc: 'Score 5K+ in Time Attack' },
+  { id: 'all_modes',      name: 'Well Rounded',        desc: 'Play every game mode' },
+  // Skins & customization
   { id: 'skin_unlock',    name: 'Fashionista',         desc: 'Unlock a blade skin' },
+  { id: 'all_skins',      name: 'Collector',           desc: 'Unlock all blade skins' },
   { id: 'theme_explorer', name: 'Theme Explorer',      desc: 'Play with all arena themes' },
+  // Special feats
   { id: 'dual_slice',     name: 'Dual Blade',          desc: 'Slice 2 objects simultaneously' },
   { id: 'speed_slice',    name: 'Lightning Blade',     desc: 'Slice 5 objects in 2 seconds' },
+  { id: 'triple_slice',   name: 'Triple Threat',       desc: 'Slice 3 objects in 1 second' },
+  { id: 'no_bomb_classic', name: 'Clean Run',          desc: 'Complete Classic without hitting a bomb' },
+  { id: 'full_wave',      name: 'Perfect Wave',        desc: 'Slice every object in a wave' },
+  { id: 'comeback',       name: 'Comeback Kid',        desc: 'Win with 1 life remaining' },
+  // XP/Level
+  { id: 'level_5',        name: 'Apprentice',          desc: 'Reach Level 5' },
+  { id: 'level_10',       name: 'Journeyman',          desc: 'Reach Level 10' },
+  { id: 'level_25',       name: 'Expert',              desc: 'Reach Level 25' },
+  { id: 'level_50',       name: 'Grandmaster',         desc: 'Reach Level 50' },
+  // Score totals
+  { id: 'total_50k',      name: 'Score Hoarder',       desc: 'Earn 50,000 total score' },
+  { id: 'total_100k',     name: 'Score Baron',         desc: 'Earn 100,000 total score' },
+  { id: 'total_500k',     name: 'Score Tycoon',        desc: 'Earn 500,000 total score' },
+  // Time played
+  { id: 'play_1h',        name: 'Time Invested',       desc: 'Play for 1 hour total' },
+  { id: 'play_5h',        name: 'Devoted',             desc: 'Play for 5 hours total' },
+  // Boss
+  { id: 'boss_kill',      name: 'Boss Slayer',         desc: 'Defeat a boss object' },
+  { id: 'boss_no_hit',    name: 'Untouched',           desc: 'Beat a boss without losing a life' },
 ];
 
 // ============================================================
@@ -158,6 +214,7 @@ interface SaveData {
     games: number; totalSlices: number; bestScore: number; totalScore: number;
     bestCombo: number; totalBombs: number; totalMisses: number; totalShots: number;
     playTimeMs: number; modesPlayed: string[]; themesUsed: string[];
+    xp: number; level: number;
   };
   achievements: string[];
   leaderboard: LeaderboardEntry[];
@@ -170,7 +227,7 @@ function loadSave(): SaveData {
     if (raw) return JSON.parse(raw);
   } catch {}
   return {
-    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [] },
+    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1 },
     achievements: [],
     leaderboard: [],
     settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0 },
@@ -295,6 +352,63 @@ class AudioManager {
     this.playSfx(1200, 'sine', 0.3, 0.2);
     this.playSfx(1800, 'triangle', 0.2, 0.15);
     this.playSfx(900, 'sine', 0.4, 0.1);
+  }
+
+  shieldPickup() {
+    if (!this.ctx) return;
+    this.playSfx(550, 'sine', 0.2, 0.25);
+    this.playSfx(660, 'triangle', 0.15, 0.2);
+    this.playSfx(880, 'sine', 0.1, 0.15);
+  }
+
+  magnetPickup() {
+    if (!this.ctx) return;
+    this.playSfx(330, 'triangle', 0.3, 0.2);
+    this.playSfx(440, 'sine', 0.25, 0.15);
+  }
+
+  doublePickup() {
+    if (!this.ctx) return;
+    this.playSfx(880, 'sine', 0.15, 0.25);
+    this.playSfx(1100, 'sine', 0.1, 0.2);
+    this.playSfx(1320, 'triangle', 0.08, 0.15);
+  }
+
+  shieldBlock() {
+    if (!this.ctx) return;
+    this.playSfx(400, 'square', 0.15, 0.3, false);
+    this.playSfx(600, 'sine', 0.3, 0.2);
+  }
+
+  levelUp() {
+    if (!this.ctx) return;
+    const notes = [440, 550, 660, 880, 1100];
+    notes.forEach((f, i) => setTimeout(() => this.playSfx(f, 'sine', 0.3, 0.25, false), i * 100));
+  }
+
+  waveStart() {
+    if (!this.ctx) return;
+    this.playSfx(330, 'triangle', 0.15, 0.15, false);
+    this.playSfx(440, 'triangle', 0.1, 0.1, false);
+  }
+
+  bossAppear() {
+    if (!this.ctx) return;
+    this.playSfx(110, 'sawtooth', 0.5, 0.3);
+    this.playSfx(82, 'triangle', 0.6, 0.2);
+    setTimeout(() => this.playSfx(165, 'sawtooth', 0.3, 0.2), 200);
+  }
+
+  bossHit() {
+    if (!this.ctx) return;
+    this.playSfx(200, 'triangle', 0.1, 0.2);
+    this.playSfx(300, 'sine', 0.15, 0.15);
+  }
+
+  bossDefeat() {
+    if (!this.ctx) return;
+    const notes = [220, 330, 440, 550, 660, 880, 1100, 1320];
+    notes.forEach((f, i) => setTimeout(() => this.playSfx(f, 'sine', 0.25, 0.2, false), i * 80));
   }
 
   miss() {
@@ -439,6 +553,44 @@ async function main() {
   let gamePaused = false;
   let achPage = 0;
 
+  // Power-up state
+  let shieldActive = false;
+  let shieldTimer = 0;
+  let magnetActive = false;
+  let magnetTimer = 0;
+  let magnetRadius = 1.5;
+  let doublePointsActive = false;
+  let doublePointsTimer = 0;
+  let shieldsCollected = 0;
+  let magnetsCollected = 0;
+  let doublesCollected = 0;
+  let totalPowerups = 0;
+  let usedPowerups = false; // tracks if any power-up was used this game
+
+  // XP/Level system
+  const XP_PER_LEVEL: number[] = [];
+  for (let i = 0; i < 50; i++) XP_PER_LEVEL.push(Math.floor(100 + i * 50 + i * i * 5));
+  let sessionXP = 0;
+  let levelUpTimer = 0;
+  let levelUpText = '';
+
+  // Wave announcement
+  let waveAnnounceTimer = 0;
+  let waveAnnounceName = '';
+  let wavePerfect = true; // did we slice every object in the current wave?
+  let waveSliced = 0;
+  let waveTotal = 0;
+
+  // Boss system
+  let bossActive = false;
+  let bossHP = 0;
+  let bossMaxHP = 0;
+  let bossObj: FlyingObj | null = null;
+  let bossLivesAtStart = 0;
+
+  // Combo color escalation
+  const COMBO_COLORS = ['#ff00ff', '#ff44aa', '#ff8800', '#ffcc00', '#ffff00', '#00ffff', '#00ff80', '#88ff00', '#ffffff', '#ffd700'];
+
   // ---- Holodeck Environment ----
   const theme = () => THEMES[themeIdx];
 
@@ -576,6 +728,9 @@ async function main() {
       case 'star':    geo = new ConeGeometry(0.1, 0.22, 5); break;
       case 'bomb':    geo = new IcosahedronGeometry(0.13); break;
       case 'freeze':  geo = new TorusKnotGeometry(0.07, 0.03, 30, 6); break;
+      case 'shield':  geo = new TorusGeometry(0.09, 0.04, 8, 12); break;
+      case 'magnet':  geo = new ConeGeometry(0.08, 0.2, 4); break;
+      case 'doublePoints': geo = new OctahedronGeometry(0.1); break;
     }
     const mat = new MeshStandardMaterial({ color: cfg.color, emissive: cfg.emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
     const innerMesh = new Mesh(geo, mat);
@@ -590,7 +745,7 @@ async function main() {
   }
 
   // Pre-create pool
-  const objTypes: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'bomb', 'freeze'];
+  const objTypes: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'bomb', 'freeze', 'shield', 'magnet', 'doublePoints'];
   for (let i = 0; i < OBJ_POOL_SIZE; i++) {
     const type = objTypes[i % objTypes.length];
     const { group, innerMesh, wireMesh, glowMesh } = createObjMesh(type);
@@ -866,9 +1021,9 @@ async function main() {
 
   function createWorldPanel(config: string, maxW: number, maxH: number, pos: [number, number, number]): PanelRef {
     const entity = world.createTransformEntity(undefined, { persistent: true });
-    entity.object3D.position.set(...pos);
+    entity.object3D!.position.set(...pos);
     entity.addComponent(PanelUI, { config, maxWidth: maxW, maxHeight: maxH });
-    entity.object3D.visible = false;
+    entity.object3D!.visible = false;
     return { entity, doc: null };
   }
 
@@ -882,7 +1037,7 @@ async function main() {
       speed: 5,
       tolerance: 0.3,
     });
-    entity.object3D.visible = false;
+    entity.object3D!.visible = false;
     return { entity, doc: null };
   }
 
@@ -902,6 +1057,10 @@ async function main() {
   panels.combo         = createFollowerPanel('/ui/combo.json', 0.15, 0.08, [-0.25, 0, -0.5]);
   panels.toast         = createFollowerPanel('/ui/toast.json', 0.3, 0.06, [0, 0.15, -0.5]);
   panels.countdown     = createFollowerPanel('/ui/countdown.json', 0.2, 0.15, [0, 0, -0.6]);
+  panels.powerup       = createFollowerPanel('/ui/powerup.json', 0.25, 0.06, [-0.25, -0.12, -0.5]);
+  panels.xpbar         = createFollowerPanel('/ui/xpbar.json', 0.2, 0.05, [0.25, 0.12, -0.5]);
+  panels.wave          = createFollowerPanel('/ui/wave.json', 0.3, 0.12, [0, 0.05, -0.6]);
+  panels.levelup       = createFollowerPanel('/ui/levelup.json', 0.25, 0.1, [0, 0.08, -0.55]);
 
   function showPanel(name: string) {
     const p = panels[name];
@@ -960,7 +1119,7 @@ async function main() {
 
     // Mode select
     const modeDoc = getDoc('modeSelect');
-    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily']];
+    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision']];
     modes.forEach(([id, mode]) => {
       bindClick(modeDoc, id, () => { audio.buttonClick(); gameMode = mode; switchState('difficulty'); });
     });
@@ -1012,7 +1171,7 @@ async function main() {
 
     // Skins
     const skinDoc = getDoc('skins');
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 12; i++) {
       const idx = i - 1;
       bindClick(skinDoc, `skin-${i}`, () => {
         if (isSkinUnlocked(idx)) {
@@ -1048,7 +1207,11 @@ async function main() {
       case 4: return s.bestCombo >= 5;
       case 5: return save.achievements.includes('classic_win');
       case 6: return s.totalShots > 0 && (s.totalSlices / s.totalShots) >= 0.8;
-      case 7: return s.modesPlayed.length >= 6;
+      case 7: return s.modesPlayed.length >= 7;
+      case 8: return s.level >= 10;
+      case 9: return s.level >= 25;
+      case 10: return s.level >= 40;
+      case 11: return s.level >= 50;
       default: return false;
     }
   }
@@ -1057,7 +1220,7 @@ async function main() {
   function updateHUD() {
     const doc = getDoc('hud');
     if (!doc) return;
-    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY' };
+    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION' };
     setText(doc, 'hud-mode', modeNames[gameMode]);
     setText(doc, 'hud-score', score.toString());
     setText(doc, 'hud-combo', `x${combo + 1}`);
@@ -1086,6 +1249,78 @@ async function main() {
     const doc = getDoc('toast');
     setText(doc, 'toast-text', text);
     showPanel('toast');
+  }
+
+  // XP/Level helpers
+  function xpForLevel(lv: number): number {
+    return XP_PER_LEVEL[Math.min(lv - 1, XP_PER_LEVEL.length - 1)];
+  }
+
+  function addXP(amount: number) {
+    sessionXP += amount;
+    save.career.xp += amount;
+    // Check for level up
+    while (save.career.level < 50 && save.career.xp >= xpForLevel(save.career.level)) {
+      save.career.xp -= xpForLevel(save.career.level);
+      save.career.level++;
+      levelUpTimer = 2.5;
+      levelUpText = `Level ${save.career.level}`;
+      audio.levelUp();
+      showToast(`LEVEL UP! Level ${save.career.level}`);
+      // Level achievements
+      if (save.career.level >= 5) checkAchievementSilent('level_5');
+      if (save.career.level >= 10) checkAchievementSilent('level_10');
+      if (save.career.level >= 25) checkAchievementSilent('level_25');
+      if (save.career.level >= 50) checkAchievementSilent('level_50');
+    }
+    updateXPBar();
+  }
+
+  function checkAchievementSilent(id: string) {
+    if (!save.achievements.includes(id)) {
+      save.achievements.push(id);
+      const ach = ACHIEVEMENTS.find(a => a.id === id);
+      if (ach) {
+        showToast(`${ach.name}!`);
+        audio.achievement();
+      }
+    }
+  }
+
+  function updateXPBar() {
+    const doc = getDoc('xpbar');
+    if (!doc) return;
+    setText(doc, 'xp-level', `LV ${save.career.level}`);
+    const needed = xpForLevel(save.career.level);
+    setText(doc, 'xp-progress', `${save.career.xp}/${needed} XP`);
+  }
+
+  function updatePowerupHUD() {
+    const doc = getDoc('powerup');
+    if (!doc) return;
+    let active = false;
+    if (shieldActive) {
+      setText(doc, 'powerup-icon', 'O');
+      setText(doc, 'powerup-name', 'SHIELD');
+      setText(doc, 'powerup-timer', `${Math.ceil(shieldTimer)}s`);
+      active = true;
+    } else if (magnetActive) {
+      setText(doc, 'powerup-icon', 'M');
+      setText(doc, 'powerup-name', 'MAGNET');
+      setText(doc, 'powerup-timer', `${Math.ceil(magnetTimer)}s`);
+      active = true;
+    } else if (doublePointsActive) {
+      setText(doc, 'powerup-icon', '2x');
+      setText(doc, 'powerup-name', 'DOUBLE');
+      setText(doc, 'powerup-timer', `${Math.ceil(doublePointsTimer)}s`);
+      active = true;
+    } else if (freezeTimer > 0) {
+      setText(doc, 'powerup-icon', '*');
+      setText(doc, 'powerup-name', 'FREEZE');
+      setText(doc, 'powerup-timer', `${Math.ceil(freezeTimer)}s`);
+      active = true;
+    }
+    panels.powerup.entity.object3D.visible = gameState === 'playing' && active;
   }
 
   function updateLeaderboard() {
@@ -1143,17 +1378,19 @@ async function main() {
     const mins = Math.round(s.playTimeMs / 60000);
     setText(doc, 'stat-time', `${mins}m`);
     setText(doc, 'stat-misses', s.totalMisses.toString());
+    setText(doc, 'stat-level', s.level.toString());
+    setText(doc, 'stat-xp', s.xp.toString());
   }
 
   function updateSkins() {
     const doc = getDoc('skins');
     if (!doc) return;
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 12; i++) {
       const idx = i - 1;
       const unlocked = isSkinUnlocked(idx);
       const equipped = skinIdx === idx;
-      setText(doc, `skin-${i}-name`, BLADE_SKINS[idx].name);
-      setText(doc, `skin-${i}-status`, equipped ? 'EQUIPPED' : unlocked ? 'Available' : `Locked: ${BLADE_SKINS[idx].unlock}`);
+      setText(doc, `skin-${i}-name`, BLADE_SKINS[idx]?.name || '');
+      setText(doc, `skin-${i}-status`, equipped ? 'EQUIPPED' : unlocked ? 'Available' : `Locked: ${BLADE_SKINS[idx]?.unlock || ''}`);
     }
   }
 
@@ -1176,6 +1413,8 @@ async function main() {
     setText(doc, 'go-accuracy', `${acc}%`);
     setText(doc, 'go-misses', missCount.toString());
     setText(doc, 'go-bombs', bombsHit.toString());
+    setText(doc, 'go-xp', `+${sessionXP} XP`);
+    setText(doc, 'go-level', `LV ${save.career.level}`);
   }
 
   // ---- State Management ----
@@ -1189,6 +1428,7 @@ async function main() {
       case 'difficulty': showPanel('difficulty'); break;
       case 'playing':
         showPanel('hud');
+        showPanel('xpbar');
         bladeRight.visible = true;
         bladeLeft.visible = true;
         browserBlade.visible = true;
@@ -1251,9 +1491,24 @@ async function main() {
     slicesInWindow = [];
     survivalSpeedMult = 1;
     sessionStart = Date.now();
+    sessionXP = 0;
+
+    // Reset power-ups
+    shieldActive = false; shieldTimer = 0;
+    magnetActive = false; magnetTimer = 0;
+    doublePointsActive = false; doublePointsTimer = 0;
+    shieldsCollected = 0; magnetsCollected = 0; doublesCollected = 0;
+    totalPowerups = 0; usedPowerups = false;
+
+    // Reset boss
+    bossActive = false; bossHP = 0; bossObj = null;
+
+    // Reset wave tracking
+    wavePerfect = true; waveSliced = 0; waveTotal = 0;
 
     if (gameMode === 'timeAttack') gameTimer = 60;
     else if (gameMode === 'frenzy') gameTimer = 30;
+    else if (gameMode === 'precision') { gameTimer = 0; lives = 3; }
     else gameTimer = 0;
 
     if (gameMode === 'daily') dailyRng = mulberry32(dateSeed());
@@ -1325,8 +1580,7 @@ async function main() {
           audio.achievement();
         }
         // Check skin_unlock
-        if (id !== 'skin_unlock' && save.achievements.length > 0) {
-          // Check if any new skin unlocked
+        if (id !== 'skin_unlock') {
           for (let i = 1; i < BLADE_SKINS.length; i++) {
             if (isSkinUnlocked(i) && !save.achievements.includes('skin_unlock')) {
               tryUnlock('skin_unlock');
@@ -1334,39 +1588,84 @@ async function main() {
             }
           }
         }
+        // Check all skins
+        if (id !== 'all_skins') {
+          let allUnlocked = true;
+          for (let i = 0; i < BLADE_SKINS.length; i++) {
+            if (!isSkinUnlocked(i)) { allUnlocked = false; break; }
+          }
+          if (allUnlocked) tryUnlock('all_skins');
+        }
       }
     };
 
     const s = save.career;
+    // Slice milestones
     if (s.totalSlices >= 1) tryUnlock('first_slice');
     if (s.totalSlices >= 10) tryUnlock('ten_slices');
     if (s.totalSlices >= 50) tryUnlock('fifty_slices');
     if (s.totalSlices >= 100) tryUnlock('hundred_slices');
     if (s.totalSlices >= 500) tryUnlock('five_hundred');
+    if (s.totalSlices >= 1000) tryUnlock('thousand_slices');
+    // Combo
     if (bestCombo >= 2) tryUnlock('combo_x3');
     if (bestCombo >= 4) tryUnlock('combo_x5');
     if (bestCombo >= 7) tryUnlock('combo_x8');
     if (bestCombo >= 9) tryUnlock('combo_x10');
+    // Score
     if (score >= 1000) tryUnlock('score_1k');
     if (score >= 5000) tryUnlock('score_5k');
     if (score >= 10000) tryUnlock('score_10k');
     if (score >= 25000) tryUnlock('score_25k');
+    if (score >= 50000) tryUnlock('score_50k');
+    if (score >= 100000) tryUnlock('score_100k');
+    // Accuracy
     if (sliceStreak >= 10) tryUnlock('no_miss_10');
     if (sliceStreak >= 25) tryUnlock('no_miss_25');
-    if (bombsDodged >= 10) tryUnlock('bomb_dodge');
-    if (freezeCount >= 5) tryUnlock('freeze_5');
+    if (sliceStreak >= 50) tryUnlock('no_miss_50');
     const acc = totalSpawned > 0 ? sliceCount / totalSpawned : 0;
     if (acc >= 0.8 && totalSpawned >= 10) tryUnlock('accuracy_80');
     if (acc >= 0.95 && totalSpawned >= 20) tryUnlock('accuracy_95');
+    if (acc >= 1.0 && totalSpawned >= 20) tryUnlock('accuracy_100');
+    // Bomb/special
+    if (bombsDodged >= 10) tryUnlock('bomb_dodge');
+    if (freezeCount >= 5) tryUnlock('freeze_5');
+    if (shieldsCollected >= 3) tryUnlock('shield_3');
+    if (magnetsCollected >= 3) tryUnlock('magnet_3');
+    if (doublesCollected >= 5) tryUnlock('double_5');
+    if (totalPowerups >= 10) tryUnlock('powerup_10');
+    if (!usedPowerups && score >= 5000 && totalSpawned >= 10) tryUnlock('no_powerups');
+    // Games played
     if (s.games >= 10) tryUnlock('games_10');
     if (s.games >= 50) tryUnlock('games_50');
-    if (gameMode === 'classic' && lives > 0 && waveNum >= 10) tryUnlock('classic_win');
+    if (s.games >= 100) tryUnlock('games_100');
+    // Mode mastery
+    if (gameMode === 'classic' && lives > 0 && waveNum >= (difficulty === 'easy' ? 8 : difficulty === 'hard' ? 15 : 10)) tryUnlock('classic_win');
+    if (gameMode === 'classic' && lives > 0 && waveNum >= 10 && bombsHit === 0) tryUnlock('no_bomb_classic');
+    if (gameMode === 'classic' && lives === 1) tryUnlock('comeback');
     if (gameMode === 'survival' && gameTime >= 60) tryUnlock('survival_60');
+    if (gameMode === 'survival' && gameTime >= 120) tryUnlock('survival_120');
+    if (gameMode === 'survival' && gameTime >= 180) tryUnlock('survival_180');
     if (gameMode === 'frenzy' && score >= 1000) tryUnlock('frenzy_1k');
+    if (gameMode === 'frenzy' && score >= 5000) tryUnlock('frenzy_5k');
     if (gameMode === 'daily') tryUnlock('daily_done');
     if (gameMode === 'zen' && sliceCount >= 100) tryUnlock('zen_100');
+    if (gameMode === 'timeAttack' && score >= 5000) tryUnlock('timeattack_5k');
+    if (s.modesPlayed.length >= 7) tryUnlock('all_modes');
+    // Theme explorer
     if (s.themesUsed.length >= THEMES.length) tryUnlock('theme_explorer');
-    if (s.modesPlayed.length >= 6) tryUnlock('speed_slice'); // reuse - actually let's use proper check
+    // Score totals
+    if (s.totalScore >= 50000) tryUnlock('total_50k');
+    if (s.totalScore >= 100000) tryUnlock('total_100k');
+    if (s.totalScore >= 500000) tryUnlock('total_500k');
+    // Time played
+    if (s.playTimeMs >= 3600000) tryUnlock('play_1h');
+    if (s.playTimeMs >= 18000000) tryUnlock('play_5h');
+    // Level
+    if (s.level >= 5) tryUnlock('level_5');
+    if (s.level >= 10) tryUnlock('level_10');
+    if (s.level >= 25) tryUnlock('level_25');
+    if (s.level >= 50) tryUnlock('level_50');
   }
 
 
@@ -1375,10 +1674,58 @@ async function main() {
 
   function handleSlice(obj: FlyingObj) {
     if (!obj.active) return;
+
+    // Boss object — takes multiple hits
+    if (obj === bossObj && bossActive) {
+      bossHP--;
+      audio.bossHit();
+      spawnParticles(obj.group.position.clone(), 10, '#ffd700', 3);
+      // Flash the boss
+      (obj.innerMesh.material as any).emissiveIntensity = 3;
+      setTimeout(() => { if (obj.innerMesh.material) (obj.innerMesh.material as any).emissiveIntensity = 0.8; }, 100);
+      if (bossHP <= 0) {
+        // Boss defeated!
+        bossActive = false;
+        bossObj = null;
+        obj.active = false;
+        obj.group.visible = false;
+        const bossPoints = 2000 * (combo + 1);
+        score += doublePointsActive ? bossPoints * 2 : bossPoints;
+        sliceCount++;
+        audio.bossDefeat();
+        spawnParticles(obj.group.position.clone(), 40, '#ffd700', 6);
+        createSliceHalves(obj, new Vector3(0, 1, 0));
+        showToast('BOSS DEFEATED! +' + bossPoints);
+        if (!save.achievements.includes('boss_kill')) {
+          save.achievements.push('boss_kill');
+          showToast('Boss Slayer!');
+          audio.achievement();
+        }
+        if (lives === bossLivesAtStart && !save.achievements.includes('boss_no_hit')) {
+          save.achievements.push('boss_no_hit');
+          showToast('Untouched!');
+          audio.achievement();
+        }
+        addXP(200);
+      }
+      return;
+    }
+
     obj.active = false;
     obj.group.visible = false;
 
     if (obj.type === 'bomb') {
+      // Shield absorbs bomb
+      if (shieldActive) {
+        shieldActive = false;
+        shieldTimer = 0;
+        audio.shieldBlock();
+        spawnParticles(obj.group.position.clone(), 15, '#00ff80', 4);
+        showToast('SHIELD BLOCKED!');
+        bombsDodged++;
+        createSliceHalves(obj, new Vector3(0, 1, 0));
+        return;
+      }
       // Bomb hit!
       bombsHit++;
       score = Math.max(0, score + obj.points);
@@ -1387,28 +1734,62 @@ async function main() {
       spawnParticles(obj.group.position.clone(), 20, OBJ_CONFIGS.bomb.color, 5);
       createSliceHalves(obj, new Vector3(0, 1, 0));
       showToast('BOMB!');
-      if (lives === 0 && (gameMode === 'classic' || gameMode === 'survival')) {
+      if (lives === 0 && (gameMode === 'classic' || gameMode === 'survival' || gameMode === 'precision')) {
         endGame();
       }
       sliceStreak = 0;
+      wavePerfect = false;
       return;
     }
 
+    // Power-up handling
     if (obj.type === 'freeze') {
-      freezeTimer = 5; // 5 second slow-mo
+      freezeTimer = 5;
       freezeCount++;
+      totalPowerups++;
+      usedPowerups = true;
       audio.freeze();
+    } else if (obj.type === 'shield') {
+      shieldActive = true;
+      shieldTimer = 15;
+      shieldsCollected++;
+      totalPowerups++;
+      usedPowerups = true;
+      audio.shieldPickup();
+      showToast('SHIELD ACTIVE!');
+    } else if (obj.type === 'magnet') {
+      magnetActive = true;
+      magnetTimer = 8;
+      magnetsCollected++;
+      totalPowerups++;
+      usedPowerups = true;
+      audio.magnetPickup();
+      showToast('MAGNET ACTIVE!');
+    } else if (obj.type === 'doublePoints') {
+      doublePointsActive = true;
+      doublePointsTimer = 8;
+      doublesCollected++;
+      totalPowerups++;
+      usedPowerups = true;
+      audio.doublePickup();
+      showToast('DOUBLE POINTS!');
     }
 
-    const points = obj.points * (combo + 1);
+    let points = obj.points * (combo + 1);
+    if (doublePointsActive && obj.type !== 'doublePoints') points *= 2;
     score += points;
     sliceCount++;
     sliceStreak++;
+    waveSliced++;
 
     // Combo
     lastSliceTime = gameTime;
     combo = Math.min(combo + 1, MAX_COMBO - 1);
     if (combo > bestCombo) bestCombo = combo;
+
+    // XP
+    const xpGain = Math.floor(obj.points / 10) + combo;
+    addXP(xpGain);
 
     // Audio
     audio.slice(obj.points);
@@ -1428,12 +1809,20 @@ async function main() {
       showToast('Lightning Blade!');
       audio.achievement();
     }
+    // Triple slice (3 in 1 second)
+    const recentSlices = slicesInWindow.filter(t => now - t <= 1);
+    if (recentSlices.length >= 3 && !save.achievements.includes('triple_slice')) {
+      save.achievements.push('triple_slice');
+      showToast('Triple Threat!');
+      audio.achievement();
+    }
 
     // Dual slice tracking
     dualSliceFrame++;
 
     updateComboDisplay();
     updateHUD();
+    updatePowerupHUD();
   }
 
   function checkSliceDetection(prevTip: Vector3, currTip: Vector3, valid: boolean) {
@@ -1468,10 +1857,18 @@ async function main() {
     const r = rng();
     const hasBombs = gameMode !== 'zen' && gameMode !== 'frenzy';
     const bombChance = difficulty === 'easy' ? 0.08 : difficulty === 'hard' ? 0.2 : 0.13;
-    const freezeChance = 0.08;
+    const freezeChance = 0.06;
+    const shieldChance = 0.04;
+    const magnetChance = 0.04;
+    const doubleChance = 0.04;
 
-    if (hasBombs && r < bombChance) return 'bomb';
-    if (r < bombChance + freezeChance) return 'freeze';
+    let cumChance = 0;
+    if (hasBombs) { cumChance += bombChance; if (r < cumChance) return 'bomb'; }
+    cumChance += freezeChance; if (r < cumChance) return 'freeze';
+    cumChance += shieldChance; if (r < cumChance) return 'shield';
+    cumChance += magnetChance; if (r < cumChance) return 'magnet';
+    cumChance += doubleChance; if (r < cumChance) return 'doublePoints';
+
     const types: ObjType[] = ['cube', 'sphere', 'diamond', 'star'];
     const weights = [0.35, 0.3, 0.2, 0.15];
     const rr = rng();
@@ -1612,6 +2009,58 @@ async function main() {
       freezeTimer -= dt; // real-time countdown
     }
 
+    // Power-up timers
+    if (shieldActive) {
+      shieldTimer -= dt;
+      if (shieldTimer <= 0) { shieldActive = false; shieldTimer = 0; }
+    }
+    if (magnetActive) {
+      magnetTimer -= dt;
+      if (magnetTimer <= 0) { magnetActive = false; magnetTimer = 0; }
+    }
+    if (doublePointsActive) {
+      doublePointsTimer -= dt;
+      if (doublePointsTimer <= 0) { doublePointsActive = false; doublePointsTimer = 0; }
+    }
+    updatePowerupHUD();
+
+    // Level up display
+    if (levelUpTimer > 0) {
+      levelUpTimer -= dt;
+      const doc = getDoc('levelup');
+      setText(doc, 'levelup-text', levelUpText);
+      panels.levelup.entity.object3D.visible = true;
+      if (levelUpTimer <= 0) hidePanel('levelup');
+    }
+
+    // Wave announcement timer
+    if (waveAnnounceTimer > 0) {
+      waveAnnounceTimer -= dt;
+      if (waveAnnounceTimer <= 0) hidePanel('wave');
+    }
+
+    // Magnet effect — pull nearby objects toward blade
+    if (magnetActive) {
+      const bladePos = tipBrowserValid ? currTipBrowser.clone() :
+                       tipRightValid ? currTipRight.clone() :
+                       new Vector3(0, 1.5, -1.8);
+      for (const obj of objPool) {
+        if (!obj.active || obj.type === 'bomb') continue;
+        const dist = obj.group.position.distanceTo(bladePos);
+        if (dist < magnetRadius && dist > 0.1) {
+          const pullDir = new Vector3().subVectors(bladePos, obj.group.position).normalize();
+          obj.velocity.addScaledVector(pullDir, 8 * dt);
+        }
+      }
+    }
+
+    // Boss hover behavior
+    if (bossActive && bossObj) {
+      bossObj.group.position.y = 1.8 + Math.sin(gameTime * 1.5) * 0.15;
+      bossObj.group.position.x = Math.sin(gameTime * 0.8) * 0.5;
+      bossObj.velocity.set(0, 0, 0); // override gravity for boss
+    }
+
     // Combo decay
     if (combo > 0 && gameTime - lastSliceTime > COMBO_DECAY_TIME) {
       combo = 0;
@@ -1745,8 +2194,8 @@ async function main() {
 
     switch (gameMode) {
       case 'classic': {
-        if (waveNum >= 10) {
-          // All waves done - check if all objects settled
+        const maxWaves = difficulty === 'easy' ? 8 : difficulty === 'hard' ? 15 : 10;
+        if (waveNum >= maxWaves) {
           const activeCount = objPool.filter(o => o.active).length;
           if (activeCount === 0 && slicedHalves.length === 0) endGame();
           return;
@@ -1755,12 +2204,33 @@ async function main() {
           waveActive = true;
           waveTimer = 0;
           waveNum++;
+          wavePerfect = true;
+          waveSliced = 0;
           const size = getWaveSize(waveNum);
-          spawnWave(size, dailyRng || undefined);
+          waveTotal = size;
+
+          // Boss wave every 5 waves
+          if (waveNum % 5 === 0 && waveNum > 0) {
+            showWaveAnnouncement(`BOSS WAVE ${waveNum}`, 'DEFEAT THE BOSS!');
+            setTimeout(() => spawnBoss(), 1500);
+          } else {
+            showWaveAnnouncement(`WAVE ${waveNum}`, getWaveFlavorText(waveNum));
+            setTimeout(() => spawnWave(size, dailyRng || undefined), 1200);
+          }
         }
         if (waveActive) {
-          const activeCount = objPool.filter(o => o.active).length;
-          if (activeCount === 0) {
+          const activeCount = objPool.filter(o => o.active && o !== bossObj).length;
+          if (activeCount === 0 && !bossActive) {
+            // Check perfect wave
+            if (wavePerfect && waveSliced === waveTotal && waveTotal > 0) {
+              if (!save.achievements.includes('full_wave')) {
+                save.achievements.push('full_wave');
+                showToast('Perfect Wave!');
+                audio.achievement();
+              }
+              score += 500; // Perfect wave bonus
+              showToast('PERFECT WAVE! +500');
+            }
             waveActive = false;
             waveTimer = 0;
           }
@@ -1769,12 +2239,11 @@ async function main() {
       }
 
       case 'zen': {
-        // Continuous flow, no waves
         if (waveTimer >= (difficulty === 'easy' ? 1.5 : difficulty === 'hard' ? 0.6 : 1.0)) {
           waveTimer = 0;
           const count = 1 + Math.floor(rng() * 2);
           for (let i = 0; i < count; i++) {
-            const types: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'freeze'];
+            const types: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'freeze', 'shield', 'magnet', 'doublePoints'];
             launchObj(types[Math.floor(rng() * types.length)]);
           }
         }
@@ -1822,7 +2291,40 @@ async function main() {
           waveTimer = 0;
           waveNum++;
           const size = 3 + Math.floor(dailyRng!() * 4);
-          spawnWave(size, dailyRng!);
+          showWaveAnnouncement(`WAVE ${waveNum}`, '');
+          setTimeout(() => spawnWave(size, dailyRng!), 1200);
+        }
+        if (waveActive) {
+          const activeCount = objPool.filter(o => o.active).length;
+          if (activeCount === 0) {
+            waveActive = false;
+            waveTimer = 0;
+          }
+        }
+        break;
+      }
+
+      case 'precision': {
+        // Only score for specific target objects (glowing golden), penalty for wrong slices
+        if (waveNum >= 12) {
+          const activeCount = objPool.filter(o => o.active).length;
+          if (activeCount === 0 && slicedHalves.length === 0) {
+            if (!save.achievements.includes('precision_win')) {
+              save.achievements.push('precision_win');
+              showToast('Precision Expert!');
+              audio.achievement();
+            }
+            endGame();
+          }
+          return;
+        }
+        if (!waveActive && waveTimer >= getWaveDelay()) {
+          waveActive = true;
+          waveTimer = 0;
+          waveNum++;
+          const size = 2 + Math.floor(waveNum / 3);
+          showWaveAnnouncement(`WAVE ${waveNum}`, 'SLICE THE TARGETS!');
+          setTimeout(() => spawnWave(size), 1200);
         }
         if (waveActive) {
           const activeCount = objPool.filter(o => o.active).length;
@@ -1834,6 +2336,49 @@ async function main() {
         break;
       }
     }
+  }
+
+  // Wave announcement helpers
+  function showWaveAnnouncement(title: string, sub: string) {
+    waveAnnounceTimer = 2.0;
+    waveAnnounceName = title;
+    const doc = getDoc('wave');
+    setText(doc, 'wave-text', title);
+    setText(doc, 'wave-sub', sub);
+    showPanel('wave');
+    audio.waveStart();
+  }
+
+  function getWaveFlavorText(wave: number): string {
+    const texts = ['GET READY', 'INCOMING!', 'HERE THEY COME', 'STAY SHARP', 'FASTER!', 'HOLD STEADY', 'ALMOST THERE', 'FINAL PUSH', 'MAXIMUM VELOCITY', 'SHOW NO MERCY'];
+    return texts[Math.min(wave - 1, texts.length - 1)];
+  }
+
+  // Boss spawning
+  function spawnBoss() {
+    const obj = getPoolObj('star');
+    if (!obj) return;
+    obj.active = true;
+    obj.age = 0;
+    // Boss is large and hovers
+    obj.group.position.set(0, 1.8, -2.5);
+    obj.velocity.set(0, 0, 0);
+    obj.angVel.set(0, 0.8, 0.3);
+    obj.group.visible = true;
+    obj.group.scale.setScalar(3);
+    obj.radius = 0.35;
+    // Bright golden material
+    obj.innerMesh.material = new MeshStandardMaterial({ color: '#ffd700', emissive: '#ffaa00', emissiveIntensity: 1.5, metalness: 0.9, roughness: 0.1 });
+    (obj.glowMesh.material as MeshBasicMaterial).color.set('#ffd700');
+    (obj.glowMesh.material as MeshBasicMaterial).opacity = 0.3;
+
+    bossActive = true;
+    bossHP = difficulty === 'easy' ? 5 : difficulty === 'hard' ? 12 : 8;
+    bossMaxHP = bossHP;
+    bossObj = obj;
+    bossLivesAtStart = lives;
+    audio.bossAppear();
+    showToast(`BOSS! ${bossHP} HITS TO DEFEAT`);
   }
 
   function handleXRInput() {

@@ -162,6 +162,30 @@
         "type": "container",
         "sourceTag": "div",
         "children": [
+          "PRECISION"
+        ],
+        "properties": {
+          "id": "btn-precision",
+          "class": "btn",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-15"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Slice only marked targets, 3 lives"
+        ],
+        "properties": {
+          "class": "desc"
+        },
+        "dataUid": "uid-16"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
           "BACK"
         ],
         "properties": {
@@ -169,7 +193,7 @@
           "class": "btn btn-back",
           "cursor": "pointer"
         },
-        "dataUid": "uid-15"
+        "dataUid": "uid-17"
       }
     ],
     "properties": {
@@ -288,7 +312,7 @@
         "column": 0
       },
       "end": {
-        "line": 59,
+        "line": 61,
         "column": 6
       }
     },
@@ -429,6 +453,26 @@
       },
       "end": {
         "line": 58,
+        "column": 70
+      }
+    },
+    "uid-16": {
+      "start": {
+        "line": 59,
+        "column": 2
+      },
+      "end": {
+        "line": 59,
+        "column": 62
+      }
+    },
+    "uid-17": {
+      "start": {
+        "line": 60,
+        "column": 2
+      },
+      "end": {
+        "line": 60,
         "column": 74
       }
     }

@@ -246,6 +246,82 @@
         "type": "container",
         "sourceTag": "div",
         "children": [
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "XP EARNED"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-26"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "+0 XP"
+                ],
+                "properties": {
+                  "id": "go-xp",
+                  "class": "value"
+                },
+                "dataUid": "uid-27"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-25"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "LEVEL"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-29"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "LV 1"
+                ],
+                "properties": {
+                  "id": "go-level",
+                  "class": "value"
+                },
+                "dataUid": "uid-30"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-28"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-24"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
           "REMATCH"
         ],
         "properties": {
@@ -253,7 +329,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-24"
+        "dataUid": "uid-31"
       },
       {
         "type": "container",
@@ -266,7 +342,7 @@
           "class": "btn btn-magenta",
           "cursor": "pointer"
         },
-        "dataUid": "uid-25"
+        "dataUid": "uid-32"
       }
     ],
     "properties": {
@@ -437,7 +513,7 @@
         "column": 0
       },
       "end": {
-        "line": 94,
+        "line": 104,
         "column": 6
       }
     },
@@ -667,17 +743,87 @@
         "column": 2
       },
       "end": {
-        "line": 92,
-        "column": 66
+        "line": 101,
+        "column": 8
       }
     },
     "uid-25": {
       "start": {
         "line": 93,
+        "column": 4
+      },
+      "end": {
+        "line": 96,
+        "column": 10
+      }
+    },
+    "uid-26": {
+      "start": {
+        "line": 94,
+        "column": 6
+      },
+      "end": {
+        "line": 94,
+        "column": 42
+      }
+    },
+    "uid-27": {
+      "start": {
+        "line": 95,
+        "column": 6
+      },
+      "end": {
+        "line": 95,
+        "column": 49
+      }
+    },
+    "uid-28": {
+      "start": {
+        "line": 97,
+        "column": 4
+      },
+      "end": {
+        "line": 100,
+        "column": 10
+      }
+    },
+    "uid-29": {
+      "start": {
+        "line": 98,
+        "column": 6
+      },
+      "end": {
+        "line": 98,
+        "column": 38
+      }
+    },
+    "uid-30": {
+      "start": {
+        "line": 99,
+        "column": 6
+      },
+      "end": {
+        "line": 99,
+        "column": 51
+      }
+    },
+    "uid-31": {
+      "start": {
+        "line": 102,
         "column": 2
       },
       "end": {
-        "line": 93,
+        "line": 102,
+        "column": 66
+      }
+    },
+    "uid-32": {
+      "start": {
+        "line": 103,
+        "column": 2
+      },
+      "end": {
+        "line": 103,
         "column": 73
       }
     }

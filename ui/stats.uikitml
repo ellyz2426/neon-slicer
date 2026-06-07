@@ -75,5 +75,9 @@
     <div class="stat-block"><span class="label">PLAY TIME</span><span id="stat-time" class="value">0m</span></div>
     <div class="stat-block"><span class="label">OBJECTS MISSED</span><span id="stat-misses" class="value">0</span></div>
   </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">LEVEL</span><span id="stat-level" class="value">1</span></div>
+    <div class="stat-block"><span class="label">TOTAL XP</span><span id="stat-xp" class="value">0</span></div>
+  </div>
   <div id="btn-back-stats" class="btn" cursor="pointer">BACK</div>
 </div>

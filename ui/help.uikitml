@@ -65,11 +65,20 @@
   <span class="text">Star: 300 | Freeze: 50</span>
   <span class="text">Combo multiplier: x1 to x10</span>
   <span class="section">MODES</span>
-  <span class="text">Classic: Waves, 3 lives</span>
-  <span class="text">Zen: No bombs, endless</span>
+  <span class="text">Classic: Waves + boss, 3 lives</span>
+  <span class="text">Zen: No bombs, endless, relax</span>
   <span class="text">Time Attack: 60s, max score</span>
   <span class="text">Survival: Rising difficulty, 3 lives</span>
   <span class="text">Frenzy: 30s rapid fire</span>
   <span class="text">Daily: Same puzzle for everyone</span>
+  <span class="text">Precision: Slice only targets, 3 lives</span>
+  <span class="section">POWER-UPS</span>
+  <span class="text">Freeze (blue knot): Slow time 5s</span>
+  <span class="text">Shield (green ring): Blocks 1 bomb</span>
+  <span class="text">Magnet (yellow cone): Pulls objects</span>
+  <span class="text">Double (purple gem): 2x points 8s</span>
+  <span class="section">BOSSES</span>
+  <span class="text">Appear every 5 waves in Classic</span>
+  <span class="text">Large golden objects, multiple hits</span>
   <div id="btn-back-help" class="btn" cursor="pointer">BACK</div>
 </div>

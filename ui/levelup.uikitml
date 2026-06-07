@@ -1,0 +1,27 @@
+<style>
+  .levelup-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1;
+    padding-left: 2;
+    padding-right: 2;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-color: #ffd700;
+    border-width: 0.12;
+    border-radius: 0.8;
+  }
+  .levelup-heading {
+    font-size: 2.5;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .levelup-text {
+    font-size: 1.5;
+    color: #ffffff;
+  }
+</style>
+<div class="levelup-panel">
+  <span id="levelup-heading" class="levelup-heading">LEVEL UP!</span>
+  <span id="levelup-text" class="levelup-text">Level 2</span>
+</div>
