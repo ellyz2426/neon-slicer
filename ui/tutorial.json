@@ -1,0 +1,360 @@
+{
+  "element": {
+    "type": "container",
+    "sourceTag": "div",
+    "children": [
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "WELCOME, SLICER!"
+        ],
+        "properties": {
+          "class": "heading"
+        },
+        "dataUid": "uid-2"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Move your mouse to aim the blade"
+        ],
+        "properties": {
+          "id": "tut-text-1",
+          "class": "highlight"
+        },
+        "dataUid": "uid-3"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Swing through neon objects to slice them"
+        ],
+        "properties": {
+          "id": "tut-text-2",
+          "class": "text"
+        },
+        "dataUid": "uid-4"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Avoid RED bombs — they cost you lives"
+        ],
+        "properties": {
+          "id": "tut-text-3",
+          "class": "text"
+        },
+        "dataUid": "uid-5"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Build combos by slicing quickly"
+        ],
+        "properties": {
+          "id": "tut-text-4",
+          "class": "text"
+        },
+        "dataUid": "uid-6"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Hold SPACE for a charge attack"
+        ],
+        "properties": {
+          "id": "tut-text-5",
+          "class": "text"
+        },
+        "dataUid": "uid-7"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "First time? Give it a try!"
+        ],
+        "properties": {
+          "id": "tut-step",
+          "class": "step"
+        },
+        "dataUid": "uid-8"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          "START SLICING!"
+        ],
+        "properties": {
+          "id": "btn-tut-play",
+          "class": "btn",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-9"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          "SKIP TUTORIAL"
+        ],
+        "properties": {
+          "id": "btn-tut-skip",
+          "class": "btn btn-skip",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-10"
+      }
+    ],
+    "properties": {
+      "class": "panel"
+    },
+    "dataUid": "uid-1"
+  },
+  "classes": {
+    "panel": {
+      "content": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "center",
+        "padding": "3",
+        "paddingLeft": "4",
+        "paddingRight": "4",
+        "backgroundColor": "rgba(0, 0, 0, 0.9)",
+        "borderColor": "#00ff80",
+        "borderWidth": "0.15",
+        "borderRadius": 1.5,
+        "gap": "1"
+      }
+    },
+    "heading": {
+      "content": {
+        "fontSize": "2.5",
+        "color": "#00ff80",
+        "fontWeight": "bold"
+      }
+    },
+    "text": {
+      "content": {
+        "fontSize": "1.4",
+        "color": "#cccccc"
+      }
+    },
+    "highlight": {
+      "content": {
+        "fontSize": "1.6",
+        "color": "#00ffff",
+        "fontWeight": "bold"
+      }
+    },
+    "step": {
+      "content": {
+        "fontSize": "1",
+        "color": "#888888"
+      }
+    },
+    "btn": {
+      "content": {
+        "fontSize": "2",
+        "color": "#ffffff",
+        "backgroundColor": "rgba(0, 255, 128, 0.15)",
+        "borderColor": "#00ff80",
+        "borderWidth": "0.1",
+        "borderRadius": 0.8,
+        "padding": "1",
+        "paddingLeft": "3",
+        "paddingRight": "3",
+        "cursor": "pointer",
+        "width": "100%",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center"
+      }
+    },
+    "btn-skip": {
+      "content": {
+        "backgroundColor": "rgba(255, 0, 255, 0.15)",
+        "borderColor": "#ff00ff"
+      }
+    }
+  },
+  "ranges": {
+    "panel": {
+      "start": {
+        "line": 1,
+        "column": 2
+      },
+      "end": {
+        "line": 1,
+        "column": 8
+      }
+    },
+    "heading": {
+      "start": {
+        "line": 14,
+        "column": 2
+      },
+      "end": {
+        "line": 14,
+        "column": 10
+      }
+    },
+    "text": {
+      "start": {
+        "line": 19,
+        "column": 2
+      },
+      "end": {
+        "line": 19,
+        "column": 7
+      }
+    },
+    "highlight": {
+      "start": {
+        "line": 23,
+        "column": 2
+      },
+      "end": {
+        "line": 23,
+        "column": 12
+      }
+    },
+    "step": {
+      "start": {
+        "line": 28,
+        "column": 2
+      },
+      "end": {
+        "line": 28,
+        "column": 7
+      }
+    },
+    "btn": {
+      "start": {
+        "line": 32,
+        "column": 2
+      },
+      "end": {
+        "line": 32,
+        "column": 6
+      }
+    },
+    "btn-skip": {
+      "start": {
+        "line": 48,
+        "column": 2
+      },
+      "end": {
+        "line": 48,
+        "column": 11
+      }
+    },
+    "uid-1": {
+      "start": {
+        "line": 53,
+        "column": 0
+      },
+      "end": {
+        "line": 63,
+        "column": 6
+      }
+    },
+    "uid-2": {
+      "start": {
+        "line": 54,
+        "column": 2
+      },
+      "end": {
+        "line": 54,
+        "column": 47
+      }
+    },
+    "uid-3": {
+      "start": {
+        "line": 55,
+        "column": 2
+      },
+      "end": {
+        "line": 55,
+        "column": 81
+      }
+    },
+    "uid-4": {
+      "start": {
+        "line": 56,
+        "column": 2
+      },
+      "end": {
+        "line": 56,
+        "column": 84
+      }
+    },
+    "uid-5": {
+      "start": {
+        "line": 57,
+        "column": 2
+      },
+      "end": {
+        "line": 57,
+        "column": 81
+      }
+    },
+    "uid-6": {
+      "start": {
+        "line": 58,
+        "column": 2
+      },
+      "end": {
+        "line": 58,
+        "column": 75
+      }
+    },
+    "uid-7": {
+      "start": {
+        "line": 59,
+        "column": 2
+      },
+      "end": {
+        "line": 59,
+        "column": 74
+      }
+    },
+    "uid-8": {
+      "start": {
+        "line": 60,
+        "column": 2
+      },
+      "end": {
+        "line": 60,
+        "column": 68
+      }
+    },
+    "uid-9": {
+      "start": {
+        "line": 61,
+        "column": 2
+      },
+      "end": {
+        "line": 61,
+        "column": 74
+      }
+    },
+    "uid-10": {
+      "start": {
+        "line": 62,
+        "column": 2
+      },
+      "end": {
+        "line": 62,
+        "column": 82
+      }
+    }
+  }
+}
