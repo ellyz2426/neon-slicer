@@ -254,6 +254,15 @@ const ACHIEVEMENTS: Achievement[] = [
   // Prestige
   { id: 'prestige_1',     name: 'Prestige I',          desc: 'Prestige for the first time' },
   { id: 'prestige_3',     name: 'Prestige III',        desc: 'Reach Prestige III' },
+  // Formation
+  { id: 'form_circle',    name: 'Circle Slayer',       desc: 'Perfect a circle formation wave' },
+  { id: 'form_line',      name: 'Blade Wall',          desc: 'Perfect a line formation wave' },
+  // Score milestones
+  { id: 'total_1m',       name: 'Millionaire',         desc: 'Earn 1,000,000 total score' },
+  { id: 'slices_5k',      name: 'Blade Addict',        desc: 'Slice 5,000 objects total' },
+  // Special
+  { id: 'no_damage',      name: 'Untouchable Run',     desc: 'Complete Classic Hard without losing a life' },
+  { id: 'speed_master',   name: 'Speed Master',        desc: 'Slice 10 objects in 3 seconds' },
 ];
 
 // ============================================================
@@ -2016,6 +2025,7 @@ async function main() {
   // Tutorial state
   let tutorialStep = 0;
   let tutorialSeen = false;
+  let currentFormation: Formation = 'random';
 
   function checkTutorial(): boolean {
     if (save.career.games > 0 || tutorialSeen) return false;
@@ -2435,6 +2445,21 @@ async function main() {
     if (s.level >= 10) tryUnlock('level_10');
     if (s.level >= 25) tryUnlock('level_25');
     if (s.level >= 50) tryUnlock('level_50');
+    // Score totals extended
+    if (s.totalScore >= 1000000) tryUnlock('total_1m');
+    if (s.totalSlices >= 5000) tryUnlock('slices_5k');
+    // No damage run
+    if (gameMode === 'classic' && difficulty === 'hard' && lives === 3 && bombsHit === 0 && waveNum >= 15) tryUnlock('no_damage');
+    // Formation achievements  
+    if (wavePerfect && waveTotal > 0 && waveSliced === waveTotal) {
+      if (currentFormation === 'circle') tryUnlock('form_circle');
+      if (currentFormation === 'line') tryUnlock('form_line');
+    }
+    // Speed slicing
+    if (slicesInWindow.length >= 10) {
+      const windowSlices = slicesInWindow.filter(t => gameTime - t <= 3);
+      if (windowSlices.length >= 10) tryUnlock('speed_master');
+    }
   }
 
 
@@ -3082,6 +3107,7 @@ async function main() {
             setTimeout(() => spawnBoss(), 1500);
           } else {
             const formation = getRandomFormation(waveNum);
+            currentFormation = formation;
             showWaveAnnouncement(`WAVE ${waveNum}`, getWaveFlavorText(waveNum));
             setTimeout(() => spawnFormation(formation, size, dailyRng || undefined), 1200);
           }
