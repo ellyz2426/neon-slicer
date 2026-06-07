@@ -17,6 +17,11 @@
     color: #ff00ff;
     font-weight: bold;
   }
+  .stars {
+    font-size: 3;
+    color: #ffd700;
+    font-weight: bold;
+  }
   .row {
     display: flex;
     flex-direction: row;
@@ -60,6 +65,7 @@
 </style>
 <div class="panel">
   <span class="heading">GAME OVER</span>
+  <span id="go-stars" class="stars">☆☆☆</span>
   <div class="row">
     <div class="stat-block">
       <span class="label">SCORE</span>
@@ -78,6 +84,16 @@
     <div class="stat-block">
       <span class="label">ACCURACY</span>
       <span id="go-accuracy" class="value">0%</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="stat-block">
+      <span class="label">STREAK</span>
+      <span id="go-streak" class="value">0</span>
+    </div>
+    <div class="stat-block">
+      <span class="label">TYPE COMBO</span>
+      <span id="go-typecombo" class="value">--</span>
     </div>
   </div>
   <div class="row">

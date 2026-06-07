@@ -450,6 +450,150 @@
         "type": "container",
         "sourceTag": "div",
         "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Eclipse"
+            ],
+            "properties": {
+              "id": "skin-13-name",
+              "class": "skin-name"
+            },
+            "dataUid": "uid-40"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Locked"
+            ],
+            "properties": {
+              "id": "skin-13-status",
+              "class": "skin-status"
+            },
+            "dataUid": "uid-41"
+          }
+        ],
+        "properties": {
+          "id": "skin-13",
+          "class": "skin-entry",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-39"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Aurora"
+            ],
+            "properties": {
+              "id": "skin-14-name",
+              "class": "skin-name"
+            },
+            "dataUid": "uid-43"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Locked"
+            ],
+            "properties": {
+              "id": "skin-14-status",
+              "class": "skin-status"
+            },
+            "dataUid": "uid-44"
+          }
+        ],
+        "properties": {
+          "id": "skin-14",
+          "class": "skin-entry",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-42"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Crimson"
+            ],
+            "properties": {
+              "id": "skin-15-name",
+              "class": "skin-name"
+            },
+            "dataUid": "uid-46"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Locked"
+            ],
+            "properties": {
+              "id": "skin-15-status",
+              "class": "skin-status"
+            },
+            "dataUid": "uid-47"
+          }
+        ],
+        "properties": {
+          "id": "skin-15",
+          "class": "skin-entry",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-45"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Starlight"
+            ],
+            "properties": {
+              "id": "skin-16-name",
+              "class": "skin-name"
+            },
+            "dataUid": "uid-49"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "Locked"
+            ],
+            "properties": {
+              "id": "skin-16-status",
+              "class": "skin-status"
+            },
+            "dataUid": "uid-50"
+          }
+        ],
+        "properties": {
+          "id": "skin-16",
+          "class": "skin-entry",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-48"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
           "BACK"
         ],
         "properties": {
@@ -457,7 +601,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-39"
+        "dataUid": "uid-51"
       }
     ],
     "properties": {
@@ -619,7 +763,7 @@
         "column": 0
       },
       "end": {
-        "line": 68,
+        "line": 72,
         "column": 6
       }
     },
@@ -1000,6 +1144,126 @@
       },
       "end": {
         "line": 67,
+        "column": 177
+      }
+    },
+    "uid-40": {
+      "start": {
+        "line": 67,
+        "column": 56
+      },
+      "end": {
+        "line": 67,
+        "column": 112
+      }
+    },
+    "uid-41": {
+      "start": {
+        "line": 67,
+        "column": 112
+      },
+      "end": {
+        "line": 67,
+        "column": 171
+      }
+    },
+    "uid-42": {
+      "start": {
+        "line": 68,
+        "column": 2
+      },
+      "end": {
+        "line": 68,
+        "column": 176
+      }
+    },
+    "uid-43": {
+      "start": {
+        "line": 68,
+        "column": 56
+      },
+      "end": {
+        "line": 68,
+        "column": 111
+      }
+    },
+    "uid-44": {
+      "start": {
+        "line": 68,
+        "column": 111
+      },
+      "end": {
+        "line": 68,
+        "column": 170
+      }
+    },
+    "uid-45": {
+      "start": {
+        "line": 69,
+        "column": 2
+      },
+      "end": {
+        "line": 69,
+        "column": 177
+      }
+    },
+    "uid-46": {
+      "start": {
+        "line": 69,
+        "column": 56
+      },
+      "end": {
+        "line": 69,
+        "column": 112
+      }
+    },
+    "uid-47": {
+      "start": {
+        "line": 69,
+        "column": 112
+      },
+      "end": {
+        "line": 69,
+        "column": 171
+      }
+    },
+    "uid-48": {
+      "start": {
+        "line": 70,
+        "column": 2
+      },
+      "end": {
+        "line": 70,
+        "column": 179
+      }
+    },
+    "uid-49": {
+      "start": {
+        "line": 70,
+        "column": 56
+      },
+      "end": {
+        "line": 70,
+        "column": 114
+      }
+    },
+    "uid-50": {
+      "start": {
+        "line": 70,
+        "column": 114
+      },
+      "end": {
+        "line": 70,
+        "column": 173
+      }
+    },
+    "uid-51": {
+      "start": {
+        "line": 71,
+        "column": 2
+      },
+      "end": {
+        "line": 71,
         "column": 66
       }
     }

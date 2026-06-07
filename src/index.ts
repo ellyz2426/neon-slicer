@@ -126,6 +126,10 @@ const BLADE_SKINS = [
   { name: 'Nova',       color: '#ff8844', emissive: '#ff6622', glow: '#ffaa66', unlock: 'Lv 25' },
   { name: 'Phantom',    color: '#88ffcc', emissive: '#44cc88', glow: '#aaffdd', unlock: 'Lv 40' },
   { name: 'Celestial',  color: '#ffccff', emissive: '#cc88cc', glow: '#ffeeff', unlock: 'Lv 50' },
+  { name: 'Eclipse',    color: '#220044', emissive: '#440088', glow: '#6600cc', unlock: '25 bosses' },
+  { name: 'Aurora',     color: '#44ffaa', emissive: '#22cc88', glow: '#88ffcc', unlock: '100 crystals' },
+  { name: 'Crimson',    color: '#cc0022', emissive: '#990011', glow: '#ff2244', unlock: 'Survival 3m' },
+  { name: 'Starlight',  color: '#ffffcc', emissive: '#cccc88', glow: '#ffffee', unlock: '50K total' },
 ];
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -221,6 +225,25 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'onelife_win',    name: 'Flawless Victory',    desc: 'Complete Classic on One Life' },
   // Music
   { id: 'play_music',     name: 'Synthwave',           desc: 'Play with music enabled' },
+  // Charge attack
+  { id: 'charge_first',   name: 'Power Strike',        desc: 'Use a charge attack' },
+  { id: 'charge_5',       name: 'Charged Up',          desc: 'Use 5 charge attacks' },
+  { id: 'charge_aoe_3',   name: 'Chain Reaction',      desc: 'Slice 3+ objects with one charge' },
+  // Type combos
+  { id: 'type_combo_3',   name: 'Color Coded',         desc: 'Slice 3 same type in a row' },
+  { id: 'type_combo_5',   name: 'Mono Maniac',         desc: 'Slice 5 same type in a row' },
+  // Stars
+  { id: 'star_first',     name: 'Rising Star',         desc: 'Earn your first star' },
+  { id: 'stars_10',       name: 'Star Collector',      desc: 'Earn 10 total stars' },
+  { id: 'stars_all',      name: 'Constellation',       desc: 'Earn 3 stars in every mode' },
+  // Boss milestones
+  { id: 'boss_5',         name: 'Boss Hunter',         desc: 'Defeat 5 bosses total' },
+  { id: 'boss_25',        name: 'Boss Bane',           desc: 'Defeat 25 bosses total' },
+  // Quick play
+  { id: 'quick_play_3',   name: 'Quick Draw',          desc: 'Play 3 Quick Play games' },
+  // Streak
+  { id: 'streak_20',      name: 'On Fire',             desc: 'Reach a 20 slice streak' },
+  { id: 'streak_50',      name: 'Unstoppable',         desc: 'Reach a 50 slice streak' },
 ];
 
 // ============================================================
@@ -236,10 +259,12 @@ interface SaveData {
     xp: number; level: number;
     crystalsShattered: number; modifiersUsed: string[];
     bestEndlessWave: number;
+    bossesDefeated: number; chargesUsed: number; quickPlays: number;
   };
   achievements: string[];
   leaderboard: LeaderboardEntry[];
-  settings: { masterVol: number; sfxVol: number; musicVol: number; themeIdx: number; skinIdx: number };
+  settings: { masterVol: number; sfxVol: number; musicVol: number; themeIdx: number; skinIdx: number; screenShake: boolean };
+  stars: Record<string, number>; // "mode_difficulty" -> 1|2|3
 }
 
 function loadSave(): SaveData {
@@ -248,10 +273,11 @@ function loadSave(): SaveData {
     if (raw) return JSON.parse(raw);
   } catch {}
   return {
-    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0 },
+    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0, bossesDefeated: 0, chargesUsed: 0, quickPlays: 0 },
     achievements: [],
     leaderboard: [],
-    settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0 },
+    settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0, screenShake: true },
+    stars: {},
   };
 }
 
@@ -460,6 +486,27 @@ class AudioManager {
   countdownGo() {
     this.playSfx(880, 'sine', 0.2, 0.3, false);
     this.playSfx(1100, 'triangle', 0.15, 0.2, false);
+  }
+
+  chargeLoop(level: number) {
+    if (!this.ctx) return;
+    const freq = 200 + level * 600;
+    this.playSfx(freq, 'sine', 0.08, 0.1 + level * 0.1, false);
+  }
+
+  chargeRelease() {
+    if (!this.ctx) return;
+    this.playSfx(300, 'sawtooth', 0.3, 0.4);
+    this.playSfx(600, 'sine', 0.2, 0.3);
+    this.playSfx(900, 'triangle', 0.15, 0.2);
+    this.playSfx(1200, 'sine', 0.1, 0.15);
+  }
+
+  typeCombo(count: number) {
+    if (!this.ctx) return;
+    const base = 550 + count * 100;
+    this.playSfx(base, 'sine', 0.15, 0.2, false);
+    this.playSfx(base * 1.25, 'triangle', 0.1, 0.15, false);
   }
 
   gameStart() {
@@ -722,6 +769,39 @@ async function main() {
   // Challenge modifier state
   let activeModifiers: Set<Modifier> = new Set();
   let crystalsThisGame = 0;
+
+  // Charge attack state
+  let chargeLevel = 0;         // 0 to 1
+  let chargeActive = false;    // is player holding charge
+  let chargeReady = false;     // charge fully loaded
+  const CHARGE_TIME = 1.5;     // seconds to full charge
+  const CHARGE_RADIUS = 1.2;   // AOE radius
+  let chargesThisGame = 0;
+
+  // Type combo state — slice same type in sequence for bonus
+  let lastSlicedType: ObjType | null = null;
+  let typeComboCount = 0;
+  let bestTypeCombo = 0;
+
+  // Screen shake state
+  let shakeIntensity = 0;
+  let shakeTimer = 0;
+  const cameraOrigPos = new Vector3(0, 1.6, 0);
+
+  // Quick play counter
+  let isQuickPlay = false;
+
+  // Star rating thresholds per mode
+  const STAR_THRESHOLDS: Record<GameMode, Record<Difficulty, [number, number, number]>> = {
+    classic:    { easy: [2000, 5000, 10000], medium: [3000, 8000, 15000], hard: [5000, 12000, 25000] },
+    zen:        { easy: [1000, 3000, 8000],  medium: [2000, 5000, 12000], hard: [3000, 8000, 20000] },
+    timeAttack: { easy: [2000, 5000, 10000], medium: [3000, 8000, 16000], hard: [5000, 12000, 25000] },
+    survival:   { easy: [1500, 4000, 8000],  medium: [2500, 6000, 12000], hard: [4000, 10000, 20000] },
+    frenzy:     { easy: [1500, 4000, 8000],  medium: [2000, 5000, 10000], hard: [3000, 8000, 15000] },
+    daily:      { easy: [2000, 5000, 10000], medium: [3000, 8000, 15000], hard: [5000, 12000, 25000] },
+    precision:  { easy: [1000, 3000, 6000],  medium: [2000, 5000, 10000], hard: [3000, 8000, 16000] },
+    endless:    { easy: [3000, 8000, 20000], medium: [5000, 15000, 40000], hard: [8000, 25000, 60000] },
+  };
 
   const MODIFIER_DESCS: Record<Modifier, string> = {
     bigObjects: 'Objects are 2x larger',
@@ -1168,8 +1248,25 @@ async function main() {
     keys[e.code] = true;
     if (e.code === 'Escape') handlePause();
     if (e.code === 'KeyR' && gameState === 'gameOver') startRematch();
+    if (e.code === 'Space' && gameState === 'playing' && !chargeActive) {
+      chargeActive = true;
+      chargeLevel = 0;
+      chargeReady = false;
+    }
   });
-  window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+  window.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+    if (e.code === 'Space' && gameState === 'playing' && chargeActive) {
+      chargeActive = false;
+      if (chargeLevel >= 0.5) {
+        // Execute charge attack at browser blade position
+        const pos = browserBlade.visible ? currTipBrowser.clone() : new Vector3(0, 1.5, -1.8);
+        executeChargeAttack(pos);
+      }
+      chargeLevel = 0;
+      chargeReady = false;
+    }
+  });
 
   // ---- UI Panel System ----
   interface PanelRef {
@@ -1271,6 +1368,15 @@ async function main() {
 
     // Title
     bindClick(titleDoc, 'btn-play', () => { audio.buttonClick(); switchState('modeSelect'); });
+    bindClick(titleDoc, 'btn-quickplay', () => {
+      audio.buttonClick();
+      const modes: GameMode[] = ['classic', 'survival', 'timeAttack', 'frenzy', 'endless'];
+      const diffs: Difficulty[] = ['easy', 'medium', 'hard'];
+      gameMode = modes[Math.floor(Math.random() * modes.length)];
+      difficulty = diffs[Math.floor(Math.random() * diffs.length)];
+      isQuickPlay = true;
+      startCountdown();
+    });
     bindClick(titleDoc, 'btn-scores', () => { audio.buttonClick(); updateLeaderboard(); switchState('leaderboard'); });
     bindClick(titleDoc, 'btn-achievements', () => { audio.buttonClick(); achPage = 0; updateAchievements(); switchState('achievements'); });
     bindClick(titleDoc, 'btn-stats', () => { audio.buttonClick(); updateStats(); switchState('stats'); });
@@ -1326,6 +1432,7 @@ async function main() {
     bindClick(setDoc, 'vol-music-down', () => { save.settings.musicVol = Math.max(0, save.settings.musicVol - 10); updateSettingsUI(); applyVolumes(); });
     bindClick(setDoc, 'theme-prev', () => { themeIdx = (themeIdx - 1 + THEMES.length) % THEMES.length; save.settings.themeIdx = themeIdx; updateSettingsUI(); applyTheme(); saveSave(save); });
     bindClick(setDoc, 'theme-next', () => { themeIdx = (themeIdx + 1) % THEMES.length; save.settings.themeIdx = themeIdx; updateSettingsUI(); applyTheme(); saveSave(save); });
+    bindClick(setDoc, 'shake-toggle', () => { save.settings.screenShake = !save.settings.screenShake; updateSettingsUI(); saveSave(save); });
     bindClick(setDoc, 'btn-back-settings', () => { audio.buttonClick(); saveSave(save); switchState('title'); });
 
     // Help
@@ -1333,7 +1440,7 @@ async function main() {
 
     // Skins
     const skinDoc = getDoc('skins');
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 16; i++) {
       const idx = i - 1;
       bindClick(skinDoc, `skin-${i}`, () => {
         if (isSkinUnlocked(idx)) {
@@ -1401,6 +1508,10 @@ async function main() {
       case 9: return s.level >= 25;
       case 10: return s.level >= 40;
       case 11: return s.level >= 50;
+      case 12: return (s.bossesDefeated || 0) >= 25;
+      case 13: return (s.crystalsShattered || 0) >= 100;
+      case 14: return save.achievements.includes('survival_180');
+      case 15: return s.totalScore >= 50000;
       default: return false;
     }
   }
@@ -1423,6 +1534,14 @@ async function main() {
     }
     setText(doc, 'hud-slices', sliceCount.toString());
     setText(doc, 'hud-best', `x${bestCombo + 1}`);
+    setText(doc, 'hud-streak', sliceStreak.toString());
+    // Charge indicator
+    if (chargeActive && chargeLevel > 0) {
+      const bar = Math.round(chargeLevel * 10);
+      setText(doc, 'hud-charge', '[' + '|'.repeat(bar) + '.'.repeat(10 - bar) + ']');
+    } else {
+      setText(doc, 'hud-charge', '');
+    }
   }
 
   function updateComboDisplay() {
@@ -1571,6 +1690,9 @@ async function main() {
     setText(doc, 'stat-xp', s.xp.toString());
     setText(doc, 'stat-crystals', (s.crystalsShattered || 0).toString());
     setText(doc, 'stat-endless', (s.bestEndlessWave || 0).toString());
+    setText(doc, 'stat-bosses', (s.bossesDefeated || 0).toString());
+    setText(doc, 'stat-charges', (s.chargesUsed || 0).toString());
+    setText(doc, 'stat-stars', getTotalStars().toString());
   }
 
   function updateModifiersUI() {
@@ -1590,10 +1712,93 @@ async function main() {
     setText(doc, 'mod-count', count > 0 ? `${count} active` : 'None active');
   }
 
+  // Screen shake
+  function triggerShake(intensity: number, duration: number) {
+    if (!save.settings.screenShake) return;
+    shakeIntensity = intensity;
+    shakeTimer = duration;
+  }
+
+  function updateScreenShake(dt: number) {
+    if (shakeTimer <= 0) return;
+    shakeTimer -= dt;
+    const t = shakeTimer > 0 ? shakeIntensity * (shakeTimer / 0.3) : 0;
+    const camera = (world as any).render?.camera;
+    if (camera) {
+      camera.position.x = cameraOrigPos.x + (Math.random() - 0.5) * t * 0.05;
+      camera.position.y = cameraOrigPos.y + (Math.random() - 0.5) * t * 0.03;
+    }
+    if (shakeTimer <= 0) {
+      if (camera) {
+        camera.position.x = cameraOrigPos.x;
+        camera.position.y = cameraOrigPos.y;
+      }
+    }
+  }
+
+  // Star rating
+  function calculateStars(mode: GameMode, diff: Difficulty, finalScore: number): number {
+    const thresholds = STAR_THRESHOLDS[mode]?.[diff];
+    if (!thresholds) return 0;
+    if (finalScore >= thresholds[2]) return 3;
+    if (finalScore >= thresholds[1]) return 2;
+    if (finalScore >= thresholds[0]) return 1;
+    return 0;
+  }
+
+  function getTotalStars(): number {
+    return Object.values(save.stars).reduce((sum, s) => sum + s, 0);
+  }
+
+  // Type combo helper
+  function handleTypeCombo(type: ObjType) {
+    if (type === lastSlicedType) {
+      typeComboCount++;
+      if (typeComboCount > bestTypeCombo) bestTypeCombo = typeComboCount;
+      if (typeComboCount >= 3) {
+        const bonus = typeComboCount * 100;
+        score += bonus;
+        showToast(`TYPE COMBO x${typeComboCount}! +${bonus}`);
+        audio.typeCombo(typeComboCount);
+        if (typeComboCount >= 3) checkAchievementSilent('type_combo_3');
+        if (typeComboCount >= 5) checkAchievementSilent('type_combo_5');
+      }
+    } else {
+      lastSlicedType = type;
+      typeComboCount = 1;
+    }
+  }
+
+  // Charge attack AOE
+  function executeChargeAttack(pos: Vector3) {
+    chargesThisGame++;
+    save.career.chargesUsed = (save.career.chargesUsed || 0) + 1;
+    audio.chargeRelease();
+    spawnParticles(pos, 30, bladeSkin().glow, 6);
+    triggerShake(1.0, 0.3);
+
+    let slicedCount = 0;
+    for (const obj of objPool) {
+      if (!obj.active) continue;
+      const dist = obj.group.position.distanceTo(pos);
+      if (dist <= CHARGE_RADIUS) {
+        handleSlice(obj);
+        slicedCount++;
+      }
+    }
+    if (slicedCount > 0) {
+      showToast(`CHARGE! ${slicedCount} SLICED!`);
+      addXP(slicedCount * 15);
+    }
+    if (chargesThisGame === 1) checkAchievementSilent('charge_first');
+    if (save.career.chargesUsed >= 5) checkAchievementSilent('charge_5');
+    if (slicedCount >= 3) checkAchievementSilent('charge_aoe_3');
+  }
+
   function updateSkins() {
     const doc = getDoc('skins');
     if (!doc) return;
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 16; i++) {
       const idx = i - 1;
       const unlocked = isSkinUnlocked(idx);
       const equipped = skinIdx === idx;
@@ -1609,6 +1814,7 @@ async function main() {
     setText(doc, 'vol-sfx', save.settings.sfxVol.toString());
     setText(doc, 'vol-music', save.settings.musicVol.toString());
     setText(doc, 'theme-name', THEMES[themeIdx].name);
+    setText(doc, 'shake-status', save.settings.screenShake ? 'ON' : 'OFF');
   }
 
   function updateGameOverUI() {
@@ -1623,6 +1829,14 @@ async function main() {
     setText(doc, 'go-bombs', bombsHit.toString());
     setText(doc, 'go-xp', `+${sessionXP} XP`);
     setText(doc, 'go-level', `LV ${save.career.level}`);
+    // Star rating
+    const stars = calculateStars(gameMode, difficulty, score);
+    const starStr = stars > 0 ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : '☆☆☆';
+    setText(doc, 'go-stars', starStr);
+    // Streak
+    setText(doc, 'go-streak', sliceStreak.toString());
+    // Type combo
+    setText(doc, 'go-typecombo', bestTypeCombo >= 3 ? `x${bestTypeCombo}` : '--');
   }
 
   // ---- State Management ----
@@ -1710,6 +1924,10 @@ async function main() {
     shieldsCollected = 0; magnetsCollected = 0; doublesCollected = 0;
     totalPowerups = 0; usedPowerups = false;
     crystalsThisGame = 0;
+    chargesThisGame = 0;
+    chargeLevel = 0; chargeActive = false; chargeReady = false;
+    lastSlicedType = null; typeComboCount = 0; bestTypeCombo = 0;
+    shakeIntensity = 0; shakeTimer = 0;
 
     // Reset boss
     bossActive = false; bossHP = 0; bossObj = null;
@@ -1785,6 +2003,33 @@ async function main() {
     if (gameMode === 'endless' && score >= 100000) checkAchievementSilent('endless_100k');
     // Music achievement
     if (save.settings.musicVol > 0) checkAchievementSilent('play_music');
+
+    // Star rating
+    const stars = calculateStars(gameMode, difficulty, score);
+    const starKey = `${gameMode}_${difficulty}`;
+    if (stars > (save.stars[starKey] || 0)) {
+      save.stars[starKey] = stars;
+      if (stars > 0) checkAchievementSilent('star_first');
+      if (getTotalStars() >= 10) checkAchievementSilent('stars_10');
+      // Check all 3-star
+      const allModes: GameMode[] = ['classic', 'zen', 'timeAttack', 'survival', 'frenzy', 'daily', 'precision', 'endless'];
+      const allDiffs: Difficulty[] = ['easy', 'medium', 'hard'];
+      let allThreeStars = true;
+      for (const m of allModes) {
+        for (const d of allDiffs) {
+          if ((save.stars[`${m}_${d}`] || 0) < 3) { allThreeStars = false; break; }
+        }
+        if (!allThreeStars) break;
+      }
+      if (allThreeStars) checkAchievementSilent('stars_all');
+    }
+
+    // Quick play tracking
+    if (isQuickPlay) {
+      save.career.quickPlays = (save.career.quickPlays || 0) + 1;
+      if (save.career.quickPlays >= 3) checkAchievementSilent('quick_play_3');
+      isQuickPlay = false;
+    }
 
     // Check achievements
     checkAchievements();
@@ -1918,7 +2163,9 @@ async function main() {
         const bossPoints = 2000 * (combo + 1);
         score += doublePointsActive ? bossPoints * 2 : bossPoints;
         sliceCount++;
+        save.career.bossesDefeated = (save.career.bossesDefeated || 0) + 1;
         audio.bossDefeat();
+        triggerShake(2.0, 0.5);
         spawnParticles(obj.group.position.clone(), 40, '#ffd700', 6);
         createSliceHalves(obj, new Vector3(0, 1, 0));
         showToast('BOSS DEFEATED! +' + bossPoints);
@@ -1932,6 +2179,8 @@ async function main() {
           showToast('Untouched!');
           audio.achievement();
         }
+        if ((save.career.bossesDefeated || 0) >= 5) checkAchievementSilent('boss_5');
+        if ((save.career.bossesDefeated || 0) >= 25) checkAchievementSilent('boss_25');
         addXP(200);
       }
       return;
@@ -1983,6 +2232,7 @@ async function main() {
       score = Math.max(0, score + obj.points);
       if (lives > 0) lives--;
       audio.bombHit();
+      triggerShake(1.5, 0.4);
       spawnParticles(obj.group.position.clone(), 20, OBJ_CONFIGS.bomb.color, 5);
       createSliceHalves(obj, new Vector3(0, 1, 0));
       showToast('BOMB!');
@@ -2042,6 +2292,15 @@ async function main() {
     // XP
     const xpGain = Math.floor(obj.points / 10) + combo;
     addXP(xpGain);
+
+    // Type combo tracking
+    if (['cube', 'sphere', 'diamond', 'star'].includes(obj.type)) {
+      handleTypeCombo(obj.type);
+    }
+
+    // Streak achievements
+    if (sliceStreak >= 20) checkAchievementSilent('streak_20');
+    if (sliceStreak >= 50) checkAchievementSilent('streak_50');
 
     // Audio
     audio.slice(obj.points);
@@ -2356,6 +2615,21 @@ async function main() {
 
     // Update objects
     updateObjects(dt);
+
+    // Screen shake
+    updateScreenShake(dt);
+
+    // Charge attack
+    if (chargeActive) {
+      chargeLevel = Math.min(chargeLevel + dt / CHARGE_TIME, 1);
+      if (chargeLevel >= 1 && !chargeReady) {
+        chargeReady = true;
+        showToast('CHARGE READY!');
+      }
+      if (chargeLevel > 0.1 && Math.random() < 0.3) {
+        audio.chargeLoop(chargeLevel);
+      }
+    }
 
     // Spawn logic
     updateSpawning(dt);
@@ -2696,17 +2970,50 @@ async function main() {
     try {
       const rightGamepad = (world as any).input?.xr?.gamepads?.right;
       if (rightGamepad) {
+        // Squeeze to charge
+        if (rightGamepad.getButtonDown?.(InputComponent.Squeeze)) {
+          if (gameState === 'playing' && !chargeActive) {
+            chargeActive = true;
+            chargeLevel = 0;
+            chargeReady = false;
+          }
+        }
+        if (rightGamepad.getButtonUp?.(InputComponent.Squeeze)) {
+          if (gameState === 'playing' && chargeActive) {
+            chargeActive = false;
+            if (chargeLevel >= 0.5) {
+              executeChargeAttack(currTipRight.clone());
+            }
+            chargeLevel = 0;
+            chargeReady = false;
+          }
+        }
         if (rightGamepad.getButtonDown?.(InputComponent.A_Button)) {
           // A button - could be used for special actions
-        }
-        if (rightGamepad.getButtonDown?.(InputComponent.Trigger)) {
-          // Trigger - used for menu interaction (handled by PanelUI)
         }
       }
       const leftGamepad = (world as any).input?.xr?.gamepads?.left;
       if (leftGamepad) {
         if (leftGamepad.getButtonDown?.(InputComponent.A_Button)) {
           handlePause();
+        }
+        // Left squeeze also charges
+        if (leftGamepad.getButtonDown?.(InputComponent.Squeeze)) {
+          if (gameState === 'playing' && !chargeActive) {
+            chargeActive = true;
+            chargeLevel = 0;
+            chargeReady = false;
+          }
+        }
+        if (leftGamepad.getButtonUp?.(InputComponent.Squeeze)) {
+          if (gameState === 'playing' && chargeActive) {
+            chargeActive = false;
+            if (chargeLevel >= 0.5) {
+              executeChargeAttack(currTipLeft.clone());
+            }
+            chargeLevel = 0;
+            chargeReady = false;
+          }
         }
       }
     } catch {}

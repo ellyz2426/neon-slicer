@@ -34,6 +34,15 @@
     font-size: 1;
     color: #ffd700;
   }
+  .streak-value {
+    font-size: 1.8;
+    color: #00ff80;
+    font-weight: bold;
+  }
+  .charge-bar {
+    font-size: 1;
+    color: #ffaa00;
+  }
 </style>
 <div class="hud">
   <span id="hud-mode" class="mode-label">CLASSIC</span>
@@ -63,8 +72,9 @@
       <span id="hud-slices" class="value">0</span>
     </div>
     <div>
-      <span class="label">BEST</span>
-      <span id="hud-best" class="value">x1</span>
+      <span class="label">STREAK</span>
+      <span id="hud-streak" class="streak-value">0</span>
     </div>
   </div>
+  <span id="hud-charge" class="charge-bar"></span>
 </div>

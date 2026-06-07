@@ -65,5 +65,9 @@
   <div id="skin-10" class="skin-entry" cursor="pointer"><span id="skin-10-name" class="skin-name">Nova</span><span id="skin-10-status" class="skin-status">Locked</span></div>
   <div id="skin-11" class="skin-entry" cursor="pointer"><span id="skin-11-name" class="skin-name">Phantom</span><span id="skin-11-status" class="skin-status">Locked</span></div>
   <div id="skin-12" class="skin-entry" cursor="pointer"><span id="skin-12-name" class="skin-name">Celestial</span><span id="skin-12-status" class="skin-status">Locked</span></div>
+  <div id="skin-13" class="skin-entry" cursor="pointer"><span id="skin-13-name" class="skin-name">Eclipse</span><span id="skin-13-status" class="skin-status">Locked</span></div>
+  <div id="skin-14" class="skin-entry" cursor="pointer"><span id="skin-14-name" class="skin-name">Aurora</span><span id="skin-14-status" class="skin-status">Locked</span></div>
+  <div id="skin-15" class="skin-entry" cursor="pointer"><span id="skin-15-name" class="skin-name">Crimson</span><span id="skin-15-status" class="skin-status">Locked</span></div>
+  <div id="skin-16" class="skin-entry" cursor="pointer"><span id="skin-16-name" class="skin-name">Starlight</span><span id="skin-16-status" class="skin-status">Locked</span></div>
   <div id="btn-back-skins" class="btn" cursor="pointer">BACK</div>
 </div>

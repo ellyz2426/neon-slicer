@@ -59,6 +59,7 @@
   <span class="title">NEON SLICER</span>
   <span class="subtitle">SLICE THE LIGHT</span>
   <div id="btn-play" class="btn" cursor="pointer">PLAY</div>
+  <div id="btn-quickplay" class="btn btn-gold" cursor="pointer">QUICK PLAY</div>
   <div id="btn-scores" class="btn btn-magenta" cursor="pointer">SCORES</div>
   <div id="btn-achievements" class="btn btn-green" cursor="pointer">ACHIEVEMENTS</div>
   <div id="btn-stats" class="btn btn-orange" cursor="pointer">STATS</div>

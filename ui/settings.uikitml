@@ -81,5 +81,10 @@
     <span id="theme-name" class="value">NEON HOLODECK</span>
     <div id="theme-next" class="btn" cursor="pointer">NEXT</div>
   </div>
+  <span class="section">EFFECTS</span>
+  <div class="row">
+    <span class="label">SCREEN SHAKE</span>
+    <div id="shake-toggle" class="btn" cursor="pointer"><span id="shake-status">ON</span></div>
+  </div>
   <div id="btn-back-settings" class="btn" cursor="pointer">BACK</div>
 </div>
