@@ -129,19 +129,41 @@ const OBJ_CONFIGS: Record<ObjType, { color: string; emissive: string; points: nu
   timeBomb:     { color: '#ff6600', emissive: '#cc4400', points: 350, radius: 0.13 },
 };
 
-const THEMES = [
-  { name: 'NEON HOLODECK', grid: '#00ffff', accent: '#ff00ff', bg: '#000510', fog: '#000510', wall: '#003344' },
-  { name: 'CRIMSON ARENA', grid: '#ff3344', accent: '#ffaa00', bg: '#0a0000', fog: '#0a0000', wall: '#330011' },
-  { name: 'TOXIC NEON',    grid: '#00ff80', accent: '#80ff00', bg: '#000a05', fog: '#000a05', wall: '#003318' },
-  { name: 'ULTRA VIOLET',  grid: '#aa44ff', accent: '#ff44aa', bg: '#050010', fog: '#050010', wall: '#220044' },
-  { name: 'SOLAR BLAZE',   grid: '#ff8c00', accent: '#ffdd00', bg: '#0a0500', fog: '#0a0500', wall: '#332200' },
-  { name: 'FROZEN GRID',   grid: '#88ccff', accent: '#44ddff', bg: '#000812', fog: '#000812', wall: '#002244' },
-  { name: 'BLOOD MOON',    grid: '#ff2244', accent: '#ff6644', bg: '#080000', fog: '#080000', wall: '#440000' },
-  { name: 'GHOST MATRIX',  grid: '#66ffcc', accent: '#aaffee', bg: '#000a08', fog: '#000a08', wall: '#003322' },
-  { name: 'DEEP OCEAN',   grid: '#0066ff', accent: '#00ccff', bg: '#000208', fog: '#000208', wall: '#001133' },
-  { name: 'NEON SUNSET',  grid: '#ff6644', accent: '#ffaa22', bg: '#0a0200', fog: '#0a0200', wall: '#331100' },
-  { name: 'ZEN GARDEN',   grid: '#88cc88', accent: '#44aa66', bg: '#020804', fog: '#020804', wall: '#113311' },
-  { name: 'NEON STORM',   grid: '#ccccff', accent: '#8888ff', bg: '#020208', fog: '#020208', wall: '#111144' },
+// Weather particle config per theme
+interface WeatherConfig {
+  color: string;
+  count: number;
+  speed: number; // downward speed
+  drift: number; // horizontal drift
+  size: number;
+  style: 'fall' | 'rise' | 'float' | 'streak'; // movement pattern
+}
+
+const THEMES: { name: string; grid: string; accent: string; bg: string; fog: string; wall: string; weather: WeatherConfig }[] = [
+  { name: 'NEON HOLODECK', grid: '#00ffff', accent: '#ff00ff', bg: '#000510', fog: '#000510', wall: '#003344',
+    weather: { color: '#00ffff', count: 15, speed: 0.3, drift: 0.1, size: 0.02, style: 'float' } },
+  { name: 'CRIMSON ARENA', grid: '#ff3344', accent: '#ffaa00', bg: '#0a0000', fog: '#0a0000', wall: '#330011',
+    weather: { color: '#ff4400', count: 20, speed: -0.2, drift: 0.15, size: 0.015, style: 'rise' } },
+  { name: 'TOXIC NEON',    grid: '#00ff80', accent: '#80ff00', bg: '#000a05', fog: '#000a05', wall: '#003318',
+    weather: { color: '#44ff44', count: 12, speed: 0.6, drift: 0.05, size: 0.018, style: 'fall' } },
+  { name: 'ULTRA VIOLET',  grid: '#aa44ff', accent: '#ff44aa', bg: '#050010', fog: '#050010', wall: '#220044',
+    weather: { color: '#cc66ff', count: 18, speed: 0.15, drift: 0.2, size: 0.025, style: 'float' } },
+  { name: 'SOLAR BLAZE',   grid: '#ff8c00', accent: '#ffdd00', bg: '#0a0500', fog: '#0a0500', wall: '#332200',
+    weather: { color: '#ffaa00', count: 22, speed: -0.4, drift: 0.12, size: 0.012, style: 'rise' } },
+  { name: 'FROZEN GRID',   grid: '#88ccff', accent: '#44ddff', bg: '#000812', fog: '#000812', wall: '#002244',
+    weather: { color: '#ffffff', count: 25, speed: 0.5, drift: 0.25, size: 0.02, style: 'fall' } },
+  { name: 'BLOOD MOON',    grid: '#ff2244', accent: '#ff6644', bg: '#080000', fog: '#080000', wall: '#440000',
+    weather: { color: '#ff2222', count: 18, speed: 1.2, drift: 0.03, size: 0.008, style: 'streak' } },
+  { name: 'GHOST MATRIX',  grid: '#66ffcc', accent: '#aaffee', bg: '#000a08', fog: '#000a08', wall: '#003322',
+    weather: { color: '#88ffcc', count: 10, speed: 0.1, drift: 0.3, size: 0.03, style: 'float' } },
+  { name: 'DEEP OCEAN',   grid: '#0066ff', accent: '#00ccff', bg: '#000208', fog: '#000208', wall: '#001133',
+    weather: { color: '#4488ff', count: 20, speed: -0.3, drift: 0.08, size: 0.022, style: 'rise' } },
+  { name: 'NEON SUNSET',  grid: '#ff6644', accent: '#ffaa22', bg: '#0a0200', fog: '#0a0200', wall: '#331100',
+    weather: { color: '#ff8844', count: 15, speed: 0.2, drift: 0.18, size: 0.02, style: 'float' } },
+  { name: 'ZEN GARDEN',   grid: '#88cc88', accent: '#44aa66', bg: '#020804', fog: '#020804', wall: '#113311',
+    weather: { color: '#ffaacc', count: 12, speed: 0.35, drift: 0.3, size: 0.025, style: 'fall' } },
+  { name: 'NEON STORM',   grid: '#ccccff', accent: '#8888ff', bg: '#020208', fog: '#020208', wall: '#111144',
+    weather: { color: '#ffffff', count: 8, speed: 2.0, drift: 0.5, size: 0.01, style: 'streak' } },
 ];
 
 const BLADE_SKINS = [
@@ -355,6 +377,14 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'duel_perfect',     name: 'Flawless Duel',       desc: 'Win a Duel with 100% accuracy' },
   // New skins
   { id: 'skin_24',          name: 'Full Arsenal',        desc: 'Unlock all 24 blade skins' },
+  // R17: Weather & accessibility
+  { id: 'weather_5',        name: 'Storm Chaser',        desc: 'Play in 5 different weather themes' },
+  { id: 'weather_all',      name: 'All Weather',         desc: 'Play in all 12 weather themes' },
+  { id: 'colorblind_game',  name: 'Inclusive',           desc: 'Complete a game with colorblind mode' },
+  { id: 'crystal_shatter_3', name: 'Crystal Storm',     desc: 'Shatter 3 crystals in one game' },
+  { id: 'ghost_chain_3',    name: 'Ghostbusters',       desc: 'Slice 3 ghosts in one game' },
+  { id: 'timebomb_chain_5', name: 'Bomb Squad',         desc: 'Defuse 5 time bombs in one game' },
+  { id: 'weather_streak',   name: 'Weather Warrior',    desc: 'Win 3 games in stormy themes' },
 ];
 
 // ============================================================
@@ -379,7 +409,7 @@ interface SaveData {
   };
   achievements: string[];
   leaderboard: LeaderboardEntry[];
-  settings: { masterVol: number; sfxVol: number; musicVol: number; themeIdx: number; skinIdx: number; screenShake: boolean };
+  settings: { masterVol: number; sfxVol: number; musicVol: number; themeIdx: number; skinIdx: number; screenShake: boolean; weatherFx: boolean; colorblind: boolean };
   stars: Record<string, number>; // "mode_difficulty" -> 1|2|3
   history: GameHistoryEntry[];
   savedChallenges: ChallengeConfig[];
@@ -394,7 +424,7 @@ function loadSave(): SaveData {
     career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0, bossesDefeated: 0, chargesUsed: 0, quickPlays: 0, prestige: 0, prestigeMultiplier: 1, dailyStreak: 0, lastDailyDate: '', seasonWins: 0, seasonBestStage: 0, ghostsSliced: 0, timeBombsDefused: 0, timeBombDetonations: 0, duelWins: 0, duelLosses: 0 },
     achievements: [],
     leaderboard: [],
-    settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0, screenShake: true },
+    settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0, screenShake: true, weatherFx: true, colorblind: false },
     stars: {},
     history: [],
     savedChallenges: [],
@@ -969,6 +999,9 @@ async function main() {
   // Challenge modifier state
   let activeModifiers: Set<Modifier> = new Set();
   let crystalsThisGame = 0;
+  let ghostsThisGame = 0;
+  let timeBombsThisGame = 0;
+  let stormyWins = 0;
 
   // Charge attack state
   let chargeLevel = 0;         // 0 to 1
@@ -1105,6 +1138,8 @@ async function main() {
       const c = i % 2 === 0 ? t.grid : t.accent;
       (d.children[0] as LineSegments).material = new LineBasicMaterial({ color: c, transparent: true, opacity: 0.4 });
     });
+    // update weather particles for this theme
+    applyWeather();
   }
 
   // Grid floor
@@ -1194,6 +1229,82 @@ async function main() {
     holoRings.push(g);
   }
 
+  // ---- Weather Particle System ----
+  interface WeatherParticle {
+    mesh: Mesh;
+    baseY: number;
+    phase: number;
+    driftX: number;
+    driftZ: number;
+    speed: number;
+  }
+  const weatherParticles: WeatherParticle[] = [];
+  const WEATHER_POOL = 30;
+  const weatherGeo = new SphereGeometry(0.02, 4, 3);
+  for (let i = 0; i < WEATHER_POOL; i++) {
+    const m = new Mesh(weatherGeo, new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.4, blending: AdditiveBlending }));
+    m.position.set((Math.random() - 0.5) * 14, Math.random() * 4, -2 + (Math.random() - 0.5) * 12);
+    m.visible = false;
+    world.scene.add(m);
+    weatherParticles.push({ mesh: m, baseY: m.position.y, phase: Math.random() * Math.PI * 2, driftX: (Math.random() - 0.5), driftZ: (Math.random() - 0.5), speed: 0.5 + Math.random() * 0.5 });
+  }
+
+  function applyWeather() {
+    const w = theme().weather;
+    const enabled = save.settings.weatherFx;
+    weatherParticles.forEach((wp, i) => {
+      const visible = enabled && i < w.count;
+      wp.mesh.visible = visible;
+      if (visible) {
+        (wp.mesh.material as MeshBasicMaterial).color.set(w.color);
+        wp.mesh.scale.setScalar(w.size / 0.02);
+        wp.speed = w.speed * (0.8 + Math.random() * 0.4);
+        wp.driftX = (Math.random() - 0.5) * w.drift * 2;
+        wp.driftZ = (Math.random() - 0.5) * w.drift;
+        // Randomize positions
+        wp.mesh.position.set((Math.random() - 0.5) * 14, Math.random() * 4, -2 + (Math.random() - 0.5) * 12);
+        wp.baseY = wp.mesh.position.y;
+      }
+    });
+  }
+
+  function updateWeather(dt: number) {
+    if (!save.settings.weatherFx) return;
+    const w = theme().weather;
+    weatherParticles.forEach((wp, i) => {
+      if (i >= w.count || !wp.mesh.visible) return;
+      wp.phase += dt;
+      switch (w.style) {
+        case 'fall':
+          wp.mesh.position.y -= Math.abs(w.speed) * wp.speed * dt;
+          wp.mesh.position.x += wp.driftX * dt * Math.sin(wp.phase * 2);
+          if (wp.mesh.position.y < 0) { wp.mesh.position.y = 4; wp.mesh.position.x = (Math.random() - 0.5) * 14; }
+          break;
+        case 'rise':
+          wp.mesh.position.y += Math.abs(w.speed) * wp.speed * dt;
+          wp.mesh.position.x += wp.driftX * dt * Math.sin(wp.phase);
+          if (wp.mesh.position.y > 4) { wp.mesh.position.y = 0; wp.mesh.position.x = (Math.random() - 0.5) * 14; }
+          break;
+        case 'float':
+          wp.mesh.position.y = wp.baseY + Math.sin(wp.phase * w.speed) * 0.3;
+          wp.mesh.position.x += wp.driftX * dt * 0.3;
+          if (Math.abs(wp.mesh.position.x) > 8) wp.driftX *= -1;
+          (wp.mesh.material as MeshBasicMaterial).opacity = 0.2 + Math.sin(wp.phase * 1.5) * 0.2;
+          break;
+        case 'streak':
+          wp.mesh.position.y -= Math.abs(w.speed) * wp.speed * dt;
+          wp.mesh.position.x += wp.driftX * w.drift * dt;
+          wp.mesh.scale.y = 3 + Math.abs(w.speed); // elongate for streak
+          if (wp.mesh.position.y < -0.5) {
+            wp.mesh.position.y = 4.5;
+            wp.mesh.position.x = (Math.random() - 0.5) * 14;
+            wp.mesh.position.z = -2 + (Math.random() - 0.5) * 12;
+          }
+          break;
+      }
+    });
+  }
+
   // ---- Particle System ----
   const particlePool: Particle[] = [];
   const particleGeo = new SphereGeometry(0.015, 4, 3);
@@ -1267,7 +1378,38 @@ async function main() {
     const glowGeo = new SphereGeometry(cfg.radius * 1.6, 8, 6);
     const glowMesh = new Mesh(glowGeo, new MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.15, blending: AdditiveBlending }));
     group.add(glowMesh);
+
+    // Colorblind indicator ring: bright white outline ring visible when colorblind mode on
+    // Each type gets a distinct ring count (1-4 rings) for non-color identification
+    const cbRingCount = COLORBLIND_RINGS[type] || 1;
+    for (let r = 0; r < cbRingCount; r++) {
+      const cbRing = new Mesh(
+        new TorusGeometry(cfg.radius * (1.3 + r * 0.3), 0.005, 6, 16),
+        new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9 })
+      );
+      cbRing.rotation.x = Math.PI / 2;
+      cbRing.visible = false;
+      cbRing.userData.isColorblindRing = true;
+      group.add(cbRing);
+    }
+
     return { group, innerMesh, wireMesh, glowMesh };
+  }
+
+  // Colorblind ring counts: distinct ring count per type for shape-agnostic identification
+  const COLORBLIND_RINGS: Record<ObjType, number> = {
+    cube: 1, sphere: 2, diamond: 3, star: 4, bomb: 1, // bomb has X pattern from icosahedron
+    freeze: 2, shield: 3, magnet: 1, doublePoints: 4, crystal: 2,
+    ghost: 3, timeBomb: 4,
+  };
+
+  function updateColorblindMarkers(obj: FlyingObj) {
+    const enabled = save.settings.colorblind;
+    obj.group.children.forEach(child => {
+      if (child.userData.isColorblindRing) {
+        child.visible = enabled && obj.active;
+      }
+    });
   }
 
   // Pre-create pool
@@ -1778,6 +1920,8 @@ async function main() {
     bindClick(setDoc, 'theme-prev', () => { themeIdx = (themeIdx - 1 + THEMES.length) % THEMES.length; save.settings.themeIdx = themeIdx; updateSettingsUI(); applyTheme(); saveSave(save); });
     bindClick(setDoc, 'theme-next', () => { themeIdx = (themeIdx + 1) % THEMES.length; save.settings.themeIdx = themeIdx; updateSettingsUI(); applyTheme(); saveSave(save); });
     bindClick(setDoc, 'shake-toggle', () => { save.settings.screenShake = !save.settings.screenShake; updateSettingsUI(); saveSave(save); });
+    bindClick(setDoc, 'weather-toggle', () => { save.settings.weatherFx = !save.settings.weatherFx; updateSettingsUI(); applyWeather(); saveSave(save); });
+    bindClick(setDoc, 'colorblind-toggle', () => { save.settings.colorblind = !save.settings.colorblind; updateSettingsUI(); saveSave(save); });
     bindClick(setDoc, 'btn-prestige', () => {
       if (canPrestige()) {
         audio.buttonClick();
@@ -2441,6 +2585,8 @@ async function main() {
     setText(doc, 'vol-music', save.settings.musicVol.toString());
     setText(doc, 'theme-name', THEMES[themeIdx].name);
     setText(doc, 'shake-status', save.settings.screenShake ? 'ON' : 'OFF');
+    setText(doc, 'weather-status', save.settings.weatherFx ? 'ON' : 'OFF');
+    setText(doc, 'colorblind-status', save.settings.colorblind ? 'ON' : 'OFF');
     const p = save.career.prestige || 0;
     setText(doc, 'prestige-status', canPrestige() ? `PRESTIGE ${p} → ${p + 1}` : `LV ${save.career.level}/50`);
   }
@@ -2712,6 +2858,8 @@ async function main() {
     shieldsCollected = 0; magnetsCollected = 0; doublesCollected = 0;
     totalPowerups = 0; usedPowerups = false;
     crystalsThisGame = 0;
+    ghostsThisGame = 0;
+    timeBombsThisGame = 0;
     chargesThisGame = 0;
     chargeLevel = 0; chargeActive = false; chargeReady = false;
     lastSlicedType = null; typeComboCount = 0; bestTypeCombo = 0;
@@ -2947,6 +3095,22 @@ async function main() {
     // Daily streak
     if (save.career.dailyStreak >= 14) checkAchievementSilent('daily_streak_14');
 
+    // R17: Weather/theme variety tracking
+    if (save.career.themesUsed.length >= 5) checkAchievementSilent('weather_5');
+    if (save.career.themesUsed.length >= 12) checkAchievementSilent('weather_all');
+    // Colorblind accessibility achievement
+    if (save.settings.colorblind) checkAchievementSilent('colorblind_game');
+    // Special object milestones per-game
+    if (crystalsThisGame >= 3) checkAchievementSilent('crystal_shatter_3');
+    if (ghostsThisGame >= 3) checkAchievementSilent('ghost_chain_3');
+    if (timeBombsThisGame >= 5) checkAchievementSilent('timebomb_chain_5');
+    // Stormy themes (Blood Moon, Neon Storm, Frozen Grid = indices 6, 11, 5)
+    const stormyThemes = [5, 6, 11];
+    if (stormyThemes.includes(themeIdx) && lives > 0 && gameMode === 'classic') {
+      stormyWins = (stormyWins || 0) + 1;
+      if (stormyWins >= 3) checkAchievementSilent('weather_streak');
+    }
+
     // Check achievements
     checkAchievements();
     saveSave(save);
@@ -3151,22 +3315,31 @@ async function main() {
       if (save.career.crystalsShattered >= 10) checkAchievementSilent('crystal_10');
       if (save.career.crystalsShattered >= 50) checkAchievementSilent('crystal_50');
       addXP(50);
+      // Crystal shatter: multi-layer ice/blue burst
+      spawnParticles(obj.group.position.clone(), 35, '#aaeeff', 5);
+      spawnParticles(obj.group.position.clone(), 20, '#ffffff', 3);
+      spawnParticles(obj.group.position.clone(), 10, '#88ccff', 6);
     }
 
     // Ghost slice — bonus for phasing targets
     if (obj.type === 'ghost') {
       save.career.ghostsSliced = (save.career.ghostsSliced || 0) + 1;
+      ghostsThisGame++;
       if (save.career.ghostsSliced === 1) checkAchievementSilent('ghost_first');
       if (save.career.ghostsSliced >= 10) checkAchievementSilent('ghost_10');
       if (save.career.ghostsSliced >= 50) checkAchievementSilent('ghost_50');
       addXP(40);
       showToast('GHOST BUSTED!');
       audio.ghostSlice();
+      // Ghost ethereal dissolve: ascending cyan particles
+      spawnParticles(obj.group.position.clone(), 25, '#aa88ff', 2);
+      spawnParticles(obj.group.position.clone().add(new Vector3(0, 0.2, 0)), 15, '#ccaaff', 1.5);
     }
 
     // TimeBomb defused — bonus for slicing before detonation
     if (obj.type === 'timeBomb') {
       save.career.timeBombsDefused = (save.career.timeBombsDefused || 0) + 1;
+      timeBombsThisGame++;
       if (save.career.timeBombsDefused === 1) checkAchievementSilent('timebomb_first');
       if (save.career.timeBombsDefused >= 10) checkAchievementSilent('timebomb_10');
       if (obj.timeBombTimer <= 0.5) checkAchievementSilent('timebomb_close');
@@ -3177,6 +3350,9 @@ async function main() {
         showToast(`CLOSE DEFUSE! +${closeBonus}`);
       }
       audio.timeBombDefuse();
+      // TimeBomb defuse: satisfying spark burst in orange/yellow
+      spawnParticles(obj.group.position.clone(), 30, '#ffaa00', 4);
+      spawnParticles(obj.group.position.clone(), 15, '#ffffff', 3);
       addXP(35);
     }
 
@@ -3491,6 +3667,9 @@ async function main() {
         (obj.innerMesh.material as any).emissiveIntensity = 0.6 + proximityFactor * 1.2;
       }
 
+      // Colorblind markers — show/hide ring indicators
+      updateColorblindMarkers(obj);
+
       // Object trail particles — emit particles behind flying objects
       if (obj.age > 0.15 && Math.random() < 0.15) {
         const trailColor = OBJ_CONFIGS[obj.type]?.color || '#ffffff';
@@ -3615,6 +3794,7 @@ async function main() {
 
     // Update particles
     updateParticles(dt);
+    updateWeather(dt);
     updateSlicedHalves(dt);
 
     // Toast timer

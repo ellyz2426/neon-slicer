@@ -86,6 +86,15 @@
     <span class="label">SCREEN SHAKE</span>
     <div id="shake-toggle" class="btn" cursor="pointer"><span id="shake-status">ON</span></div>
   </div>
+  <div class="row">
+    <span class="label">WEATHER FX</span>
+    <div id="weather-toggle" class="btn" cursor="pointer"><span id="weather-status">ON</span></div>
+  </div>
+  <span class="section">ACCESSIBILITY</span>
+  <div class="row">
+    <span class="label">COLORBLIND</span>
+    <div id="colorblind-toggle" class="btn" cursor="pointer"><span id="colorblind-status">OFF</span></div>
+  </div>
   <span class="section">PRESTIGE</span>
   <div class="row">
     <span class="label">STATUS</span>
