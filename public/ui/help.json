@@ -502,12 +502,78 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "24 blade skins | 12 arena themes | 140+ achievements"
+          "28 blade skins | 14 arena themes | 153 achievements"
         ],
         "properties": {
           "class": "text"
         },
         "dataUid": "uid-47"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Combo Finisher: x3+ combo awards bonus when it drops"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-48"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Accuracy Bonus: +10% per 10% acc above 50%"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-49"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "ACCESSIBILITY"
+        ],
+        "properties": {
+          "class": "section"
+        },
+        "dataUid": "uid-50"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Colorblind Mode: ring indicators per object type"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-51"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Weather FX: toggle theme weather particles"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-52"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Screen Shake: toggle camera shake on impacts"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-53"
       },
       {
         "type": "container",
@@ -520,7 +586,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-48"
+        "dataUid": "uid-54"
       }
     ],
     "properties": {
@@ -654,7 +720,7 @@
         "column": 0
       },
       "end": {
-        "line": 95,
+        "line": 101,
         "column": 6
       }
     },
@@ -1115,7 +1181,7 @@
       },
       "end": {
         "line": 93,
-        "column": 80
+        "column": 79
       }
     },
     "uid-48": {
@@ -1125,6 +1191,66 @@
       },
       "end": {
         "line": 94,
+        "column": 80
+      }
+    },
+    "uid-49": {
+      "start": {
+        "line": 95,
+        "column": 2
+      },
+      "end": {
+        "line": 95,
+        "column": 70
+      }
+    },
+    "uid-50": {
+      "start": {
+        "line": 96,
+        "column": 2
+      },
+      "end": {
+        "line": 96,
+        "column": 44
+      }
+    },
+    "uid-51": {
+      "start": {
+        "line": 97,
+        "column": 2
+      },
+      "end": {
+        "line": 97,
+        "column": 76
+      }
+    },
+    "uid-52": {
+      "start": {
+        "line": 98,
+        "column": 2
+      },
+      "end": {
+        "line": 98,
+        "column": 70
+      }
+    },
+    "uid-53": {
+      "start": {
+        "line": 99,
+        "column": 2
+      },
+      "end": {
+        "line": 99,
+        "column": 72
+      }
+    },
+    "uid-54": {
+      "start": {
+        "line": 100,
+        "column": 2
+      },
+      "end": {
+        "line": 100,
         "column": 65
       }
     }

@@ -404,6 +404,9 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'combo_finisher_8', name: 'Combo Legend',        desc: 'Land a x8+ combo finisher bonus' },
   { id: 'wall_viewer',      name: 'Holodeck Complete',   desc: 'Notice the walls (play 5 games)' },
   { id: 'multi_kill_4',     name: 'Quad Kill Master',    desc: 'Achieve a 4+ multi-kill 10 times' },
+  // R21: Formations & final polish
+  { id: 'form_diamond',     name: 'Diamond Slicer',      desc: 'Perfect a diamond formation wave' },
+  { id: 'form_wave',        name: 'Wave Rider',          desc: 'Perfect a wave formation' },
 ];
 
 // ============================================================
@@ -2465,8 +2468,8 @@ async function main() {
   let currentBossType: BossType = 'orbiter';
 
   // Spawn formations — objects launch in patterns
-  type Formation = 'random' | 'line' | 'vShape' | 'circle' | 'cross' | 'shower' | 'spiral';
-  const FORMATIONS: Formation[] = ['random', 'line', 'vShape', 'circle', 'cross', 'shower', 'spiral'];
+  type Formation = 'random' | 'line' | 'vShape' | 'circle' | 'cross' | 'shower' | 'spiral' | 'diamond' | 'wave';
+  const FORMATIONS: Formation[] = ['random', 'line', 'vShape', 'circle', 'cross', 'shower', 'spiral', 'diamond', 'wave'];
 
   function spawnFormation(formation: Formation, count: number, rng?: () => number) {
     const r = rng || Math.random;
@@ -2572,6 +2575,74 @@ async function main() {
             obj.group.position.set(x, -0.5, z);
             const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
             obj.velocity.set(Math.cos(angle) * 0.8, (5 + r()) * diffMult, Math.sin(angle) * 0.3);
+            obj.angVel.set((r()-0.5)*4, (r()-0.5)*4, (r()-0.5)*4);
+            obj.group.visible = true;
+            const sizeMod = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
+                            (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
+            obj.group.scale.setScalar(sizeMod);
+            obj.radius = OBJ_CONFIGS[type].radius * sizeMod;
+            obj.hitsLeft = type === 'crystal' ? 3 : 1;
+            obj.ghostPhase = type === 'ghost' ? Math.random() * Math.PI * 2 : 0;
+            obj.timeBombTimer = type === 'timeBomb' ? 3.0 : 0;
+            obj.innerMesh.material = new MeshStandardMaterial({ color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
+            totalSpawned++;
+            audio.launch();
+          }, delay);
+        }
+        break;
+      }
+      case 'diamond': {
+        // Diamond shape — objects launch from 4 cardinal points converging
+        const positions = [
+          [0, -0.5], [-1, -0.5], [1, -0.5], [0, -0.5],
+        ];
+        for (let i = 0; i < count; i++) {
+          const delay = i * 100;
+          const pi = i % 4;
+          setTimeout(() => {
+            if (gameState !== 'playing') return;
+            const type = getObjTypeForWave(r);
+            const obj = getPoolObj(type);
+            if (!obj) return;
+            obj.active = true; obj.age = 0; obj.spawnAge = 0;
+            const spread = 0.8 + (i / count) * 0.6;
+            const x = positions[pi][0] * spread;
+            const z = -1.8 + (Math.abs(positions[pi][0]) > 0 ? -0.2 : 0.2);
+            obj.group.position.set(x, -0.5, z);
+            const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
+            obj.velocity.set(-positions[pi][0] * 0.4, (5 + r()) * diffMult, 0);
+            obj.angVel.set((r()-0.5)*4, (r()-0.5)*4, (r()-0.5)*4);
+            obj.group.visible = true;
+            const sizeMod = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
+                            (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
+            obj.group.scale.setScalar(sizeMod);
+            obj.radius = OBJ_CONFIGS[type].radius * sizeMod;
+            obj.hitsLeft = type === 'crystal' ? 3 : 1;
+            obj.ghostPhase = type === 'ghost' ? Math.random() * Math.PI * 2 : 0;
+            obj.timeBombTimer = type === 'timeBomb' ? 3.0 : 0;
+            obj.innerMesh.material = new MeshStandardMaterial({ color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
+            totalSpawned++;
+            audio.launch();
+          }, delay);
+        }
+        break;
+      }
+      case 'wave': {
+        // Sine wave — objects launch in a sine pattern across the arena
+        for (let i = 0; i < count; i++) {
+          const delay = i * 120;
+          setTimeout(() => {
+            if (gameState !== 'playing') return;
+            const type = getObjTypeForWave(r);
+            const obj = getPoolObj(type);
+            if (!obj) return;
+            obj.active = true; obj.age = 0; obj.spawnAge = 0;
+            const t = i / Math.max(count - 1, 1);
+            const x = -1.5 + t * 3;
+            const zOff = Math.sin(t * Math.PI * 2) * 0.4;
+            obj.group.position.set(x, -0.5, -1.8 + zOff);
+            const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
+            obj.velocity.set(0, (5 + r() * 0.5) * diffMult, zOff * 0.3);
             obj.angVel.set((r()-0.5)*4, (r()-0.5)*4, (r()-0.5)*4);
             obj.group.visible = true;
             const sizeMod = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
@@ -3287,6 +3358,8 @@ async function main() {
       if (currentFormation === 'circle') tryUnlock('form_circle');
       if (currentFormation === 'line') tryUnlock('form_line');
       if (currentFormation === 'spiral') tryUnlock('form_spiral');
+      if (currentFormation === 'diamond') tryUnlock('form_diamond');
+      if (currentFormation === 'wave') tryUnlock('form_wave');
     }
     // Speed slicing
     if (slicesInWindow.length >= 10) {
