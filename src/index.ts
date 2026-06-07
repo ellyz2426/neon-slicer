@@ -20,9 +20,10 @@ import {
 // ============================================================
 // TYPES
 // ============================================================
-type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown';
-type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints';
-type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision';
+type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers';
+type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal';
+type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless';
+type Modifier = 'bigObjects' | 'speedDemon' | 'noBombs' | 'mirror' | 'oneLife' | 'tinyObjects' | 'chaos';
 type Difficulty = 'easy' | 'medium' | 'hard';
 
 interface FlyingObj {
@@ -37,6 +38,7 @@ interface FlyingObj {
   angVel: Vector3;
   active: boolean;
   age: number;
+  hitsLeft: number; // for multi-hit objects like crystal
 }
 
 interface SlicedHalf {
@@ -97,6 +99,7 @@ const OBJ_CONFIGS: Record<ObjType, { color: string; emissive: string; points: nu
   shield:  { color: '#00ff80', emissive: '#00cc60', points: 75,  radius: 0.11 },
   magnet:  { color: '#ffaa00', emissive: '#cc8800', points: 75,  radius: 0.10 },
   doublePoints: { color: '#ff44ff', emissive: '#cc22cc', points: 50, radius: 0.12 },
+  crystal:      { color: '#aaeeff', emissive: '#88ccff', points: 500, radius: 0.15 },
 };
 
 const THEMES = [
@@ -202,6 +205,22 @@ const ACHIEVEMENTS: Achievement[] = [
   // Boss
   { id: 'boss_kill',      name: 'Boss Slayer',         desc: 'Defeat a boss object' },
   { id: 'boss_no_hit',    name: 'Untouched',           desc: 'Beat a boss without losing a life' },
+  // Endless
+  { id: 'endless_w10',    name: 'Marathon Runner',     desc: 'Reach wave 10 in Endless' },
+  { id: 'endless_w25',    name: 'Endurance Master',    desc: 'Reach wave 25 in Endless' },
+  { id: 'endless_w50',    name: 'Infinity Blade',      desc: 'Reach wave 50 in Endless' },
+  { id: 'endless_100k',   name: 'Endless Legend',      desc: 'Score 100K in Endless' },
+  // Crystal
+  { id: 'crystal_first',  name: 'Crystal Breaker',     desc: 'Shatter your first crystal' },
+  { id: 'crystal_10',     name: 'Crystal Collector',   desc: 'Shatter 10 crystals' },
+  { id: 'crystal_50',     name: 'Crystal Connoisseur', desc: 'Shatter 50 crystals total' },
+  // Modifiers
+  { id: 'mod_complete',   name: 'Modified',            desc: 'Complete a game with a modifier' },
+  { id: 'mod_all',        name: 'Rule Breaker',        desc: 'Play with every modifier' },
+  { id: 'chaos_10k',      name: 'Chaos Agent',         desc: 'Score 10K with Chaos modifier' },
+  { id: 'onelife_win',    name: 'Flawless Victory',    desc: 'Complete Classic on One Life' },
+  // Music
+  { id: 'play_music',     name: 'Synthwave',           desc: 'Play with music enabled' },
 ];
 
 // ============================================================
@@ -215,6 +234,8 @@ interface SaveData {
     bestCombo: number; totalBombs: number; totalMisses: number; totalShots: number;
     playTimeMs: number; modesPlayed: string[]; themesUsed: string[];
     xp: number; level: number;
+    crystalsShattered: number; modifiersUsed: string[];
+    bestEndlessWave: number;
   };
   achievements: string[];
   leaderboard: LeaderboardEntry[];
@@ -227,7 +248,7 @@ function loadSave(): SaveData {
     if (raw) return JSON.parse(raw);
   } catch {}
   return {
-    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1 },
+    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0 },
     achievements: [],
     leaderboard: [],
     settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0 },
@@ -455,6 +476,9 @@ class AudioManager {
     if (!this.ctx || !this.musicGain) return;
     this.stopDrone();
     const t = this.ctx.currentTime;
+
+    // --- Procedural Synthwave Music Engine ---
+    // Bass drone
     const makeOsc = (freq: number, type: OscillatorType, vol: number) => {
       const osc = this.ctx!.createOscillator();
       osc.type = type;
@@ -469,20 +493,124 @@ class AudioManager {
       g.connect(this.musicGain!);
       osc.start(t);
       this.droneOscs.push(osc);
+      return osc;
     };
-    makeOsc(55, 'sine', 0.08);
-    makeOsc(82.5, 'triangle', 0.05);
-    makeOsc(110, 'sine', 0.03);
-    // LFO
+    makeOsc(55, 'sine', 0.06);
+    makeOsc(82.5, 'triangle', 0.04);
+
+    // Arpeggiator - synthwave-style repeating pattern
+    const arpNotes = [110, 138.59, 164.81, 220, 164.81, 138.59, 110, 82.41,
+                      130.81, 164.81, 196, 261.63, 196, 164.81, 130.81, 98];
+    const arpOsc = this.ctx.createOscillator();
+    arpOsc.type = 'sawtooth';
+    const arpFilter = this.ctx.createBiquadFilter();
+    arpFilter.type = 'lowpass';
+    arpFilter.frequency.value = 800;
+    arpFilter.Q.value = 5;
+    const arpGain = this.ctx.createGain();
+    arpGain.gain.value = 0.04;
+    arpOsc.connect(arpFilter);
+    arpFilter.connect(arpGain);
+    arpGain.connect(this.musicGain);
+
+    // Schedule arpeggio pattern (loops every 4 bars)
+    const bpm = 128;
+    const stepDur = 60 / bpm / 4; // 16th notes
+    const patternLen = arpNotes.length;
+    const totalBars = 64; // pre-schedule 64 repetitions
+    for (let rep = 0; rep < totalBars; rep++) {
+      for (let i = 0; i < patternLen; i++) {
+        const noteTime = t + (rep * patternLen + i) * stepDur;
+        arpOsc.frequency.setValueAtTime(arpNotes[i], noteTime);
+        arpGain.gain.setValueAtTime(0.04, noteTime);
+        arpGain.gain.setValueAtTime(0.01, noteTime + stepDur * 0.8);
+      }
+    }
+    arpOsc.start(t);
+    this.droneOscs.push(arpOsc);
+
+    // Pad chord - warm ambient pad
+    const padNotes = [130.81, 164.81, 196, 261.63]; // C3 chord
+    padNotes.forEach(freq => {
+      const osc = this.ctx!.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const g = this.ctx!.createGain();
+      g.gain.value = 0.015;
+      const lp = this.ctx!.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 600;
+      osc.connect(lp);
+      lp.connect(g);
+      g.connect(this.musicGain!);
+      osc.start(t);
+      this.droneOscs.push(osc);
+    });
+
+    // Kick drum pattern
+    const kickInterval = 60 / bpm; // quarter notes
+    for (let i = 0; i < totalBars * 4; i++) {
+      const kickTime = t + i * kickInterval;
+      this.scheduleKick(kickTime);
+    }
+
+    // Hi-hat pattern (offbeats)
+    for (let i = 0; i < totalBars * 8; i++) {
+      const hhTime = t + i * (kickInterval / 2) + kickInterval / 4;
+      this.scheduleHihat(hhTime);
+    }
+
+    // LFO for filter sweep
     const lfo = this.ctx.createOscillator();
     lfo.type = 'sine';
-    lfo.frequency.value = 0.15;
+    lfo.frequency.value = 0.08;
     const lfoG = this.ctx.createGain();
-    lfoG.gain.value = 0.02;
+    lfoG.gain.value = 300;
     lfo.connect(lfoG);
-    if (this.droneOscs[0]) lfoG.connect(this.droneOscs[0].frequency);
+    lfoG.connect(arpFilter.frequency);
     lfo.start(t);
     this.droneOscs.push(lfo);
+
+    if (!this.musicTriggered) {
+      this.musicTriggered = true;
+    }
+  }
+
+  private musicTriggered = false;
+
+  private scheduleKick(time: number) {
+    if (!this.ctx || !this.musicGain) return;
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, time);
+    osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.12, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+    osc.connect(g);
+    g.connect(this.musicGain);
+    osc.start(time);
+    osc.stop(time + 0.2);
+  }
+
+  private scheduleHihat(time: number) {
+    if (!this.ctx || !this.musicGain) return;
+    const buf = this.ctx.createBuffer(1, Math.floor(this.ctx.sampleRate * 0.03), this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buf;
+    const hp = this.ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 8000;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.035, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+    noise.connect(hp);
+    hp.connect(g);
+    g.connect(this.musicGain);
+    noise.start(time);
+    noise.stop(time + 0.05);
   }
 
   stopDrone() {
@@ -590,6 +718,20 @@ async function main() {
 
   // Combo color escalation
   const COMBO_COLORS = ['#ff00ff', '#ff44aa', '#ff8800', '#ffcc00', '#ffff00', '#00ffff', '#00ff80', '#88ff00', '#ffffff', '#ffd700'];
+
+  // Challenge modifier state
+  let activeModifiers: Set<Modifier> = new Set();
+  let crystalsThisGame = 0;
+
+  const MODIFIER_DESCS: Record<Modifier, string> = {
+    bigObjects: 'Objects are 2x larger',
+    speedDemon: 'Objects move 50% faster',
+    noBombs: 'No bombs spawn',
+    mirror: 'Objects spawn from above',
+    oneLife: 'One life only',
+    tinyObjects: 'Objects are half size',
+    chaos: 'All modifiers active!',
+  };
 
   // ---- Holodeck Environment ----
   const theme = () => THEMES[themeIdx];
@@ -731,6 +873,7 @@ async function main() {
       case 'shield':  geo = new TorusGeometry(0.09, 0.04, 8, 12); break;
       case 'magnet':  geo = new ConeGeometry(0.08, 0.2, 4); break;
       case 'doublePoints': geo = new OctahedronGeometry(0.1); break;
+      case 'crystal': geo = new IcosahedronGeometry(0.14); break;
     }
     const mat = new MeshStandardMaterial({ color: cfg.color, emissive: cfg.emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
     const innerMesh = new Mesh(geo, mat);
@@ -745,7 +888,7 @@ async function main() {
   }
 
   // Pre-create pool
-  const objTypes: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'bomb', 'freeze', 'shield', 'magnet', 'doublePoints'];
+  const objTypes: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'bomb', 'freeze', 'shield', 'magnet', 'doublePoints', 'crystal'];
   for (let i = 0; i < OBJ_POOL_SIZE; i++) {
     const type = objTypes[i % objTypes.length];
     const { group, innerMesh, wireMesh, glowMesh } = createObjMesh(type);
@@ -756,7 +899,7 @@ async function main() {
       radius: OBJ_CONFIGS[type].radius,
       points: OBJ_CONFIGS[type].points,
       velocity: new Vector3(), angVel: new Vector3(),
-      active: false, age: 0,
+      active: false, age: 0, hitsLeft: 1,
     });
   }
 
@@ -796,13 +939,30 @@ async function main() {
     obj.group.position.set(x, startY, z);
     // Launch velocity
     const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
-    const vy = (4.5 + r() * 2.5) * diffMult;
-    const vx = (r() - 0.5) * 2.5;
-    const vz = (r() - 0.5) * 0.6;
-    obj.velocity.set(vx, vy, vz);
+    const speedMod = (activeModifiers.has('speedDemon') || activeModifiers.has('chaos')) ? 1.5 : 1.0;
+    const mirrorMode = activeModifiers.has('mirror') || activeModifiers.has('chaos');
+    if (mirrorMode) {
+      // Spawn from above, fall down
+      obj.group.position.set(x, 3.5, z);
+      const vy = -(2 + r() * 1.5) * diffMult * speedMod;
+      const vx = (r() - 0.5) * 2.5 * speedMod;
+      const vz = (r() - 0.5) * 0.6;
+      obj.velocity.set(vx, vy, vz);
+    } else {
+      const vy = (4.5 + r() * 2.5) * diffMult * speedMod;
+      const vx = (r() - 0.5) * 2.5 * speedMod;
+      const vz = (r() - 0.5) * 0.6;
+      obj.velocity.set(vx, vy, vz);
+    }
     obj.angVel.set((r() - 0.5) * 4, (r() - 0.5) * 4, (r() - 0.5) * 4);
     obj.group.visible = true;
-    obj.group.scale.setScalar(1);
+    // Size modifiers
+    const sizeMod = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
+                    (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
+    obj.group.scale.setScalar(sizeMod);
+    obj.radius = OBJ_CONFIGS[type].radius * sizeMod;
+    // Crystal multi-hit
+    obj.hitsLeft = type === 'crystal' ? 3 : 1;
     obj.innerMesh.material = new MeshStandardMaterial({
       color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive,
       emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3,
@@ -1053,6 +1213,7 @@ async function main() {
   panels.help          = createWorldPanel('/ui/help.json', 0.8, 1.4, [0, 1.5, -2.5]);
   panels.skins         = createWorldPanel('/ui/skins.json', 0.7, 1.1, [0, 1.5, -2.5]);
   panels.stats         = createWorldPanel('/ui/stats.json', 0.8, 1.2, [0, 1.5, -2.5]);
+  panels.modifiers     = createWorldPanel('/ui/modifiers.json', 0.8, 1.2, [0, 1.5, -2.5]);
   panels.hud           = createFollowerPanel('/ui/hud.json', 0.35, 0.2, [0.3, -0.15, -0.5]);
   panels.combo         = createFollowerPanel('/ui/combo.json', 0.15, 0.08, [-0.25, 0, -0.5]);
   panels.toast         = createFollowerPanel('/ui/toast.json', 0.3, 0.06, [0, 0.15, -0.5]);
@@ -1119,10 +1280,11 @@ async function main() {
 
     // Mode select
     const modeDoc = getDoc('modeSelect');
-    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision']];
+    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision'],['btn-endless','endless']];
     modes.forEach(([id, mode]) => {
       bindClick(modeDoc, id, () => { audio.buttonClick(); gameMode = mode; switchState('difficulty'); });
     });
+    bindClick(modeDoc, 'btn-modifiers', () => { audio.buttonClick(); updateModifiersUI(); switchState('modifiers' as any); });
     bindClick(modeDoc, 'btn-back-mode', () => { audio.buttonClick(); switchState('title'); });
 
     // Difficulty
@@ -1190,6 +1352,33 @@ async function main() {
 
     // Stats
     bindClick(getDoc('stats'), 'btn-back-stats', () => { audio.buttonClick(); switchState('title'); });
+
+    // Modifiers
+    const modDoc = getDoc('modifiers');
+    const allMods: Modifier[] = ['bigObjects', 'speedDemon', 'noBombs', 'mirror', 'oneLife', 'tinyObjects', 'chaos'];
+    allMods.forEach((mod, i) => {
+      bindClick(modDoc, `mod-${i + 1}-toggle`, () => {
+        audio.buttonClick();
+        if (mod === 'chaos') {
+          // Chaos toggles ALL modifiers
+          if (activeModifiers.has('chaos')) {
+            activeModifiers.clear();
+          } else {
+            activeModifiers.clear();
+            activeModifiers.add('chaos');
+          }
+        } else {
+          activeModifiers.delete('chaos'); // disable chaos if individual toggled
+          if (activeModifiers.has(mod)) activeModifiers.delete(mod);
+          else activeModifiers.add(mod);
+          // Mutually exclusive: big + tiny
+          if (mod === 'bigObjects' && activeModifiers.has('tinyObjects')) activeModifiers.delete('tinyObjects');
+          if (mod === 'tinyObjects' && activeModifiers.has('bigObjects')) activeModifiers.delete('bigObjects');
+        }
+        updateModifiersUI();
+      });
+    });
+    bindClick(modDoc, 'btn-back-mod', () => { audio.buttonClick(); switchState('modeSelect'); });
   }
 
   function applyVolumes() {
@@ -1207,7 +1396,7 @@ async function main() {
       case 4: return s.bestCombo >= 5;
       case 5: return save.achievements.includes('classic_win');
       case 6: return s.totalShots > 0 && (s.totalSlices / s.totalShots) >= 0.8;
-      case 7: return s.modesPlayed.length >= 7;
+      case 7: return s.modesPlayed.length >= 8;
       case 8: return s.level >= 10;
       case 9: return s.level >= 25;
       case 10: return s.level >= 40;
@@ -1220,7 +1409,7 @@ async function main() {
   function updateHUD() {
     const doc = getDoc('hud');
     if (!doc) return;
-    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION' };
+    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION', endless: 'ENDLESS' };
     setText(doc, 'hud-mode', modeNames[gameMode]);
     setText(doc, 'hud-score', score.toString());
     setText(doc, 'hud-combo', `x${combo + 1}`);
@@ -1380,6 +1569,25 @@ async function main() {
     setText(doc, 'stat-misses', s.totalMisses.toString());
     setText(doc, 'stat-level', s.level.toString());
     setText(doc, 'stat-xp', s.xp.toString());
+    setText(doc, 'stat-crystals', (s.crystalsShattered || 0).toString());
+    setText(doc, 'stat-endless', (s.bestEndlessWave || 0).toString());
+  }
+
+  function updateModifiersUI() {
+    const doc = getDoc('modifiers');
+    if (!doc) return;
+    const allMods: Modifier[] = ['bigObjects', 'speedDemon', 'noBombs', 'mirror', 'oneLife', 'tinyObjects', 'chaos'];
+    allMods.forEach((mod, i) => {
+      const on = activeModifiers.has(mod);
+      setText(doc, `mod-${i + 1}-name`, mod === 'bigObjects' ? 'BIG OBJECTS' :
+        mod === 'speedDemon' ? 'SPEED DEMON' : mod === 'noBombs' ? 'NO BOMBS' :
+        mod === 'mirror' ? 'MIRROR' : mod === 'oneLife' ? 'ONE LIFE' :
+        mod === 'tinyObjects' ? 'TINY OBJECTS' : 'CHAOS');
+      setText(doc, `mod-${i + 1}-status`, on ? '[ON]' : '[OFF]');
+      setText(doc, `mod-${i + 1}-desc`, MODIFIER_DESCS[mod]);
+    });
+    const count = activeModifiers.size;
+    setText(doc, 'mod-count', count > 0 ? `${count} active` : 'None active');
   }
 
   function updateSkins() {
@@ -1447,6 +1655,7 @@ async function main() {
       case 'help': showPanel('help'); break;
       case 'skins': showPanel('skins'); break;
       case 'stats': showPanel('stats'); break;
+      case 'modifiers': showPanel('modifiers'); break;
       case 'countdown': showPanel('countdown'); break;
     }
   }
@@ -1471,7 +1680,8 @@ async function main() {
 
   function startGame() {
     score = 0;
-    lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy') ? -1 : 3;
+    lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy') ? -1 :
+            (activeModifiers.has('oneLife')) ? 1 : 3;
     combo = 0;
     bestCombo = 0;
     sliceCount = 0;
@@ -1499,6 +1709,7 @@ async function main() {
     doublePointsActive = false; doublePointsTimer = 0;
     shieldsCollected = 0; magnetsCollected = 0; doublesCollected = 0;
     totalPowerups = 0; usedPowerups = false;
+    crystalsThisGame = 0;
 
     // Reset boss
     bossActive = false; bossHP = 0; bossObj = null;
@@ -1559,6 +1770,21 @@ async function main() {
     save.leaderboard.push(entry);
     save.leaderboard.sort((a, b) => b.score - a.score);
     save.leaderboard = save.leaderboard.slice(0, 20);
+
+    // Modifier tracking
+    if (activeModifiers.size > 0) {
+      checkAchievementSilent('mod_complete');
+      activeModifiers.forEach(mod => {
+        if (!save.career.modifiersUsed.includes(mod)) save.career.modifiersUsed.push(mod);
+      });
+      if (save.career.modifiersUsed.length >= 7) checkAchievementSilent('mod_all');
+      if (activeModifiers.has('chaos') && score >= 10000) checkAchievementSilent('chaos_10k');
+      if (activeModifiers.has('oneLife') && gameMode === 'classic' && lives > 0) checkAchievementSilent('onelife_win');
+    }
+    // Endless score check
+    if (gameMode === 'endless' && score >= 100000) checkAchievementSilent('endless_100k');
+    // Music achievement
+    if (save.settings.musicVol > 0) checkAchievementSilent('play_music');
 
     // Check achievements
     checkAchievements();
@@ -1651,7 +1877,7 @@ async function main() {
     if (gameMode === 'daily') tryUnlock('daily_done');
     if (gameMode === 'zen' && sliceCount >= 100) tryUnlock('zen_100');
     if (gameMode === 'timeAttack' && score >= 5000) tryUnlock('timeattack_5k');
-    if (s.modesPlayed.length >= 7) tryUnlock('all_modes');
+    if (s.modesPlayed.length >= 8) tryUnlock('all_modes');
     // Theme explorer
     if (s.themesUsed.length >= THEMES.length) tryUnlock('theme_explorer');
     // Score totals
@@ -1709,6 +1935,32 @@ async function main() {
         addXP(200);
       }
       return;
+    }
+
+    // Crystal multi-hit check
+    if (obj.type === 'crystal' && obj.hitsLeft > 1) {
+      obj.hitsLeft--;
+      audio.bossHit();
+      spawnParticles(obj.group.position.clone(), 8, OBJ_CONFIGS.crystal.color, 3);
+      // Flash and shrink slightly
+      (obj.innerMesh.material as any).emissiveIntensity = 3;
+      setTimeout(() => { if (obj.innerMesh.material) (obj.innerMesh.material as any).emissiveIntensity = 0.8; }, 100);
+      const shrink = 0.8 + obj.hitsLeft * 0.1;
+      obj.group.scale.multiplyScalar(shrink / obj.group.scale.x || 1);
+      showToast(`CRYSTAL ${3 - obj.hitsLeft}/3`);
+      combo = Math.min(combo + 1, MAX_COMBO - 1);
+      lastSliceTime = gameTime;
+      updateComboDisplay();
+      return;
+    }
+    // Crystal final hit
+    if (obj.type === 'crystal') {
+      crystalsThisGame++;
+      save.career.crystalsShattered = (save.career.crystalsShattered || 0) + 1;
+      if (save.career.crystalsShattered === 1) checkAchievementSilent('crystal_first');
+      if (save.career.crystalsShattered >= 10) checkAchievementSilent('crystal_10');
+      if (save.career.crystalsShattered >= 50) checkAchievementSilent('crystal_50');
+      addXP(50);
     }
 
     obj.active = false;
@@ -1855,12 +2107,14 @@ async function main() {
   // ---- Wave/Spawn System ----
   function getObjTypeForWave(rng: () => number): ObjType {
     const r = rng();
-    const hasBombs = gameMode !== 'zen' && gameMode !== 'frenzy';
+    const hasBombs = gameMode !== 'zen' && gameMode !== 'frenzy' &&
+                     !activeModifiers.has('noBombs') && !activeModifiers.has('chaos');
     const bombChance = difficulty === 'easy' ? 0.08 : difficulty === 'hard' ? 0.2 : 0.13;
     const freezeChance = 0.06;
     const shieldChance = 0.04;
     const magnetChance = 0.04;
     const doubleChance = 0.04;
+    const crystalChance = 0.05;
 
     let cumChance = 0;
     if (hasBombs) { cumChance += bombChance; if (r < cumChance) return 'bomb'; }
@@ -1868,6 +2122,7 @@ async function main() {
     cumChance += shieldChance; if (r < cumChance) return 'shield';
     cumChance += magnetChance; if (r < cumChance) return 'magnet';
     cumChance += doubleChance; if (r < cumChance) return 'doublePoints';
+    cumChance += crystalChance; if (r < cumChance) return 'crystal';
 
     const types: ObjType[] = ['cube', 'sphere', 'diamond', 'star'];
     const weights = [0.35, 0.3, 0.2, 0.15];
@@ -2329,6 +2584,62 @@ async function main() {
         if (waveActive) {
           const activeCount = objPool.filter(o => o.active).length;
           if (activeCount === 0) {
+            waveActive = false;
+            waveTimer = 0;
+          }
+        }
+        break;
+      }
+
+      case 'endless': {
+        // Never-ending waves, progressively harder
+        if (!waveActive && waveTimer >= Math.max(0.6, getWaveDelay() - waveNum * 0.05)) {
+          waveActive = true;
+          waveTimer = 0;
+          waveNum++;
+          wavePerfect = true;
+          waveSliced = 0;
+          const baseSize = getWaveSize(waveNum);
+          const scaledSize = Math.min(baseSize + Math.floor(waveNum / 5), 12);
+          waveTotal = scaledSize;
+
+          // Boss every 10 waves in endless
+          if (waveNum % 10 === 0) {
+            showWaveAnnouncement(`BOSS WAVE ${waveNum}`, `BOSS HP: ${5 + Math.floor(waveNum / 5)}`);
+            setTimeout(() => spawnBoss(), 1500);
+          } else if (waveNum % 5 === 0) {
+            // Bonus wave every 5 waves — all high-value + crystals
+            showWaveAnnouncement(`BONUS WAVE ${waveNum}`, 'HIGH VALUE TARGETS!');
+            setTimeout(() => {
+              const bonusTypes: ObjType[] = ['star', 'diamond', 'crystal', 'doublePoints'];
+              for (let i = 0; i < scaledSize; i++) {
+                setTimeout(() => {
+                  if (gameState !== 'playing') return;
+                  launchObj(bonusTypes[Math.floor(Math.random() * bonusTypes.length)]);
+                }, i * 150);
+              }
+            }, 1200);
+          } else {
+            const flavorTexts = ['GET READY', 'INCOMING!', 'HERE THEY COME', 'STAY SHARP',
+              'FASTER!', 'RELENTLESS!', 'NO STOPPING!', 'ENDURE!', 'INFINITE!', 'ETERNAL!'];
+            showWaveAnnouncement(`WAVE ${waveNum}`, flavorTexts[Math.min(waveNum - 1, flavorTexts.length - 1)]);
+            setTimeout(() => spawnWave(scaledSize), 1200);
+          }
+
+          // Achievements
+          if (waveNum >= 10) checkAchievementSilent('endless_w10');
+          if (waveNum >= 25) checkAchievementSilent('endless_w25');
+          if (waveNum >= 50) checkAchievementSilent('endless_w50');
+          if (waveNum > save.career.bestEndlessWave) save.career.bestEndlessWave = waveNum;
+        }
+        if (waveActive) {
+          const activeCount = objPool.filter(o => o.active && o !== bossObj).length;
+          if (activeCount === 0 && !bossActive) {
+            // Perfect wave bonus
+            if (wavePerfect && waveSliced === waveTotal && waveTotal > 0) {
+              score += 500;
+              showToast('PERFECT WAVE! +500');
+            }
             waveActive = false;
             waveTimer = 0;
           }

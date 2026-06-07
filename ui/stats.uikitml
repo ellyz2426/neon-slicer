@@ -28,11 +28,11 @@
     flex-direction: column;
   }
   .label {
-    font-size: 1.2;
+    font-size: 1.1;
     color: #888888;
   }
   .value {
-    font-size: 1.6;
+    font-size: 1.5;
     color: #ffffff;
     font-weight: bold;
   }
@@ -78,6 +78,10 @@
   <div class="row">
     <div class="stat-block"><span class="label">LEVEL</span><span id="stat-level" class="value">1</span></div>
     <div class="stat-block"><span class="label">TOTAL XP</span><span id="stat-xp" class="value">0</span></div>
+  </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">CRYSTALS</span><span id="stat-crystals" class="value">0</span></div>
+    <div class="stat-block"><span class="label">BEST ENDLESS</span><span id="stat-endless" class="value">0</span></div>
   </div>
   <div id="btn-back-stats" class="btn" cursor="pointer">BACK</div>
 </div>

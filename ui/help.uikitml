@@ -9,7 +9,7 @@
     border-color: #00ffff;
     border-width: 0.15;
     border-radius: 1.5;
-    gap: 0.8;
+    gap: 0.6;
   }
   .heading {
     font-size: 2.5;
@@ -17,16 +17,16 @@
     font-weight: bold;
   }
   .section {
-    font-size: 1.5;
+    font-size: 1.4;
     color: #ff00ff;
     font-weight: bold;
   }
   .text {
-    font-size: 1.2;
+    font-size: 1.1;
     color: #cccccc;
   }
   .key {
-    font-size: 1.2;
+    font-size: 1.1;
     color: #00ffff;
   }
   .btn {
@@ -48,37 +48,37 @@
 <div class="panel">
   <span class="heading">HOW TO PLAY</span>
   <span class="section">BROWSER</span>
-  <span class="text">Move mouse to aim blade</span>
-  <span class="text">Swing through objects to slice them</span>
+  <span class="text">Move mouse to aim blade, swing through objects</span>
   <span class="key">ESC = Pause | R = Rematch</span>
   <span class="section">VR CONTROLLERS</span>
-  <span class="text">Swing controllers to slice with blades</span>
-  <span class="text">Each hand has an energy blade</span>
+  <span class="text">Swing controllers to slice with dual energy blades</span>
   <span class="key">B = Pause | Trigger = Menu select</span>
   <span class="section">GAMEPLAY</span>
   <span class="text">Slice neon objects as they fly up</span>
-  <span class="text">Avoid BOMBS (red, octahedron)</span>
-  <span class="text">Build combos with rapid slicing</span>
-  <span class="text">Freeze orbs slow time briefly</span>
-  <span class="section">SCORING</span>
-  <span class="text">Cube: 100 | Sphere: 150 | Diamond: 200</span>
-  <span class="text">Star: 300 | Freeze: 50</span>
-  <span class="text">Combo multiplier: x1 to x10</span>
+  <span class="text">Avoid BOMBS (red) — build combos x1-x10</span>
+  <span class="section">OBJECTS</span>
+  <span class="text">Cube: 100 | Sphere: 150 | Diamond: 200 | Star: 300</span>
+  <span class="text">Crystal (light blue): 500, requires 3 hits</span>
   <span class="section">MODES</span>
   <span class="text">Classic: Waves + boss, 3 lives</span>
-  <span class="text">Zen: No bombs, endless, relax</span>
+  <span class="text">Zen: No bombs, relax</span>
   <span class="text">Time Attack: 60s, max score</span>
   <span class="text">Survival: Rising difficulty, 3 lives</span>
   <span class="text">Frenzy: 30s rapid fire</span>
-  <span class="text">Daily: Same puzzle for everyone</span>
+  <span class="text">Daily: Same puzzle for everyone today</span>
   <span class="text">Precision: Slice only targets, 3 lives</span>
+  <span class="text">Endless: Infinite waves, how far can you go?</span>
   <span class="section">POWER-UPS</span>
-  <span class="text">Freeze (blue knot): Slow time 5s</span>
-  <span class="text">Shield (green ring): Blocks 1 bomb</span>
-  <span class="text">Magnet (yellow cone): Pulls objects</span>
-  <span class="text">Double (purple gem): 2x points 8s</span>
+  <span class="text">Freeze: Slow time 5s | Shield: Block 1 bomb</span>
+  <span class="text">Magnet: Pull objects | Double: 2x points 8s</span>
   <span class="section">BOSSES</span>
-  <span class="text">Appear every 5 waves in Classic</span>
-  <span class="text">Large golden objects, multiple hits</span>
+  <span class="text">Classic: every 5 waves | Endless: every 10 waves</span>
+  <span class="text">Large golden objects, multiple hits to defeat</span>
+  <span class="section">MODIFIERS</span>
+  <span class="text">Toggle challenge mutators from mode select</span>
+  <span class="text">Big/Tiny objects, Speed Demon, Mirror, One Life, Chaos</span>
+  <span class="section">MUSIC</span>
+  <span class="text">Procedural synthwave plays during gameplay</span>
+  <span class="text">Adjust volume in Settings</span>
   <div id="btn-back-help" class="btn" cursor="pointer">BACK</div>
 </div>

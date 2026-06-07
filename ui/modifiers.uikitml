@@ -1,0 +1,148 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 0, 0, 0.88);
+    border-color: #8844cc;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 0.8;
+  }
+  .heading {
+    font-size: 3;
+    color: #8844cc;
+    font-weight: bold;
+  }
+  .sub {
+    font-size: 1.3;
+    color: #aa88ee;
+  }
+  .count {
+    font-size: 1.5;
+    color: #ffaa00;
+    font-weight: bold;
+  }
+  .mod-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding: 0.5;
+    gap: 1;
+  }
+  .mod-name {
+    font-size: 1.5;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .mod-status {
+    font-size: 1.3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .mod-desc {
+    font-size: 1;
+    color: #888888;
+  }
+  .toggle {
+    font-size: 1.4;
+    color: #ffffff;
+    background-color: rgba(136, 68, 204, 0.2);
+    border-color: #8844cc;
+    border-width: 0.08;
+    border-radius: 0.6;
+    padding: 0.5;
+    padding-left: 1;
+    padding-right: 1;
+    cursor: pointer;
+  }
+  .btn-back {
+    font-size: 1.6;
+    color: #ffffff;
+    background-color: rgba(255, 0, 255, 0.15);
+    border-color: #ff00ff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+<div class="panel">
+  <span class="heading">MODIFIERS</span>
+  <span class="sub">Toggle challenge mutators</span>
+  <span id="mod-count" class="count">None active</span>
+  <div class="mod-row">
+    <div id="mod-1-toggle" class="toggle" cursor="pointer">
+      <span id="mod-1-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-1-name" class="mod-name">BIG OBJECTS</span>
+      <span id="mod-1-desc" class="mod-desc">Objects are 2x larger</span>
+    </div>
+  </div>
+  <div class="mod-row">
+    <div id="mod-2-toggle" class="toggle" cursor="pointer">
+      <span id="mod-2-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-2-name" class="mod-name">SPEED DEMON</span>
+      <span id="mod-2-desc" class="mod-desc">Objects move 50% faster</span>
+    </div>
+  </div>
+  <div class="mod-row">
+    <div id="mod-3-toggle" class="toggle" cursor="pointer">
+      <span id="mod-3-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-3-name" class="mod-name">NO BOMBS</span>
+      <span id="mod-3-desc" class="mod-desc">No bombs spawn</span>
+    </div>
+  </div>
+  <div class="mod-row">
+    <div id="mod-4-toggle" class="toggle" cursor="pointer">
+      <span id="mod-4-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-4-name" class="mod-name">MIRROR</span>
+      <span id="mod-4-desc" class="mod-desc">Objects spawn from above</span>
+    </div>
+  </div>
+  <div class="mod-row">
+    <div id="mod-5-toggle" class="toggle" cursor="pointer">
+      <span id="mod-5-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-5-name" class="mod-name">ONE LIFE</span>
+      <span id="mod-5-desc" class="mod-desc">One life only</span>
+    </div>
+  </div>
+  <div class="mod-row">
+    <div id="mod-6-toggle" class="toggle" cursor="pointer">
+      <span id="mod-6-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-6-name" class="mod-name">TINY OBJECTS</span>
+      <span id="mod-6-desc" class="mod-desc">Objects are half size</span>
+    </div>
+  </div>
+  <div class="mod-row">
+    <div id="mod-7-toggle" class="toggle" cursor="pointer">
+      <span id="mod-7-status">[OFF]</span>
+    </div>
+    <div>
+      <span id="mod-7-name" class="mod-name">CHAOS</span>
+      <span id="mod-7-desc" class="mod-desc">All modifiers active!</span>
+    </div>
+  </div>
+  <div id="btn-back-mod" class="btn-back" cursor="pointer">BACK</div>
+</div>

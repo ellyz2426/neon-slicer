@@ -10,7 +10,7 @@
     border-color: #00ffff;
     border-width: 0.15;
     border-radius: 1.5;
-    gap: 1;
+    gap: 0.8;
   }
   .heading {
     font-size: 3;
@@ -18,13 +18,13 @@
     font-weight: bold;
   }
   .btn {
-    font-size: 1.8;
+    font-size: 1.6;
     color: #ffffff;
     background-color: rgba(0, 255, 255, 0.15);
     border-color: #00ffff;
     border-width: 0.1;
     border-radius: 0.8;
-    padding: 0.8;
+    padding: 0.6;
     padding-left: 2;
     padding-right: 2;
     cursor: pointer;
@@ -34,12 +34,22 @@
     justify-content: center;
   }
   .desc {
-    font-size: 1.2;
+    font-size: 1;
     color: #888888;
   }
   .btn-back {
     background-color: rgba(255, 0, 255, 0.15);
     border-color: #ff00ff;
+  }
+  .btn-endless {
+    background-color: rgba(255, 170, 0, 0.2);
+    border-color: #ffaa00;
+    color: #ffcc00;
+  }
+  .btn-mod {
+    background-color: rgba(136, 68, 204, 0.2);
+    border-color: #8844cc;
+    color: #aa88ee;
   }
 </style>
 <div class="panel">
@@ -58,5 +68,9 @@
   <span class="desc">Same puzzle for everyone today</span>
   <div id="btn-precision" class="btn" cursor="pointer">PRECISION</div>
   <span class="desc">Slice only marked targets, 3 lives</span>
+  <div id="btn-endless" class="btn btn-endless" cursor="pointer">ENDLESS</div>
+  <span class="desc">Infinite waves, how far can you go?</span>
+  <div id="btn-modifiers" class="btn btn-mod" cursor="pointer">MODIFIERS</div>
+  <span class="desc">Toggle challenge mutators</span>
   <div id="btn-back-mode" class="btn btn-back" cursor="pointer">BACK</div>
 </div>
