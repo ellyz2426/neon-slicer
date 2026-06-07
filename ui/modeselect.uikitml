@@ -51,6 +51,11 @@
     border-color: #8844cc;
     color: #aa88ee;
   }
+  .btn-season {
+    background-color: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+    color: #ffd700;
+  }
 </style>
 <div class="panel">
   <span class="heading">SELECT MODE</span>
@@ -70,6 +75,8 @@
   <span class="desc">Slice only marked targets, 3 lives</span>
   <div id="btn-endless" class="btn btn-endless" cursor="pointer">ENDLESS</div>
   <span class="desc">Infinite waves, how far can you go?</span>
+  <div id="btn-season" class="btn btn-season" cursor="pointer">SEASON</div>
+  <span class="desc">Defeat 8 AI opponents to become champion</span>
   <div id="btn-modifiers" class="btn btn-mod" cursor="pointer">MODIFIERS</div>
   <span class="desc">Toggle challenge mutators</span>
   <div id="btn-back-mode" class="btn btn-back" cursor="pointer">BACK</div>

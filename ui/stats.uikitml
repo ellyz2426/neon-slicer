@@ -89,6 +89,11 @@
   </div>
   <div class="row">
     <div class="stat-block"><span class="label">TOTAL STARS</span><span id="stat-stars" class="value">0</span></div>
+    <div class="stat-block"><span class="label">PRESTIGE</span><span id="stat-prestige" class="value">0</span></div>
+  </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">SEASON WINS</span><span id="stat-season-wins" class="value">0</span></div>
+    <div class="stat-block"><span class="label">DAILY STREAK</span><span id="stat-daily-streak" class="value">0</span></div>
   </div>
   <div id="btn-back-stats" class="btn" cursor="pointer">BACK</div>
 </div>

@@ -86,5 +86,11 @@
     <span class="label">SCREEN SHAKE</span>
     <div id="shake-toggle" class="btn" cursor="pointer"><span id="shake-status">ON</span></div>
   </div>
+  <span class="section">PRESTIGE</span>
+  <div class="row">
+    <span class="label">STATUS</span>
+    <span id="prestige-status" class="value">LV 1/50</span>
+  </div>
+  <div id="btn-prestige" class="btn" cursor="pointer">PRESTIGE</div>
   <div id="btn-back-settings" class="btn" cursor="pointer">BACK</div>
 </div>

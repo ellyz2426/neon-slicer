@@ -20,7 +20,7 @@ import {
 // ============================================================
 // TYPES
 // ============================================================
-type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers';
+type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season';
 type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal';
 type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless';
 type Modifier = 'bigObjects' | 'speedDemon' | 'noBombs' | 'mirror' | 'oneLife' | 'tinyObjects' | 'chaos';
@@ -244,6 +244,16 @@ const ACHIEVEMENTS: Achievement[] = [
   // Streak
   { id: 'streak_20',      name: 'On Fire',             desc: 'Reach a 20 slice streak' },
   { id: 'streak_50',      name: 'Unstoppable',         desc: 'Reach a 50 slice streak' },
+  // Season
+  { id: 'season_win',     name: 'Season Champion',     desc: 'Complete a Season' },
+  { id: 'season_stage_4', name: 'Quarterfinals',       desc: 'Reach Season Stage 4' },
+  { id: 'season_stage_8', name: 'Grand Finals',        desc: 'Reach Season Stage 8' },
+  // Daily streak
+  { id: 'daily_streak_3', name: 'Consistent',          desc: '3-day Daily Challenge streak' },
+  { id: 'daily_streak_7', name: 'Weekly Warrior',      desc: '7-day Daily Challenge streak' },
+  // Prestige
+  { id: 'prestige_1',     name: 'Prestige I',          desc: 'Prestige for the first time' },
+  { id: 'prestige_3',     name: 'Prestige III',        desc: 'Reach Prestige III' },
 ];
 
 // ============================================================
@@ -260,6 +270,9 @@ interface SaveData {
     crystalsShattered: number; modifiersUsed: string[];
     bestEndlessWave: number;
     bossesDefeated: number; chargesUsed: number; quickPlays: number;
+    prestige: number; prestigeMultiplier: number;
+    dailyStreak: number; lastDailyDate: string;
+    seasonWins: number; seasonBestStage: number;
   };
   achievements: string[];
   leaderboard: LeaderboardEntry[];
@@ -273,7 +286,7 @@ function loadSave(): SaveData {
     if (raw) return JSON.parse(raw);
   } catch {}
   return {
-    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0, bossesDefeated: 0, chargesUsed: 0, quickPlays: 0 },
+    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0, bossesDefeated: 0, chargesUsed: 0, quickPlays: 0, prestige: 0, prestigeMultiplier: 1, dailyStreak: 0, lastDailyDate: '', seasonWins: 0, seasonBestStage: 0 },
     achievements: [],
     leaderboard: [],
     settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0, screenShake: true },
@@ -803,6 +816,20 @@ async function main() {
     endless:    { easy: [3000, 8000, 20000], medium: [5000, 15000, 40000], hard: [8000, 25000, 60000] },
   };
 
+  // Season Mode — fight through 8 AI "opponents" with increasing difficulty
+  const SEASON_OPPONENTS = [
+    { name: 'ROOKIE BOT',       difficulty: 'easy' as Difficulty, waves: 5,  bombRate: 0.06, speedMult: 0.8, title: 'Stage 1' },
+    { name: 'CIRCUIT SLASHER',  difficulty: 'easy' as Difficulty, waves: 6,  bombRate: 0.10, speedMult: 0.9, title: 'Stage 2' },
+    { name: 'NEON PHANTOM',     difficulty: 'medium' as Difficulty, waves: 7,  bombRate: 0.12, speedMult: 1.0, title: 'Stage 3' },
+    { name: 'BLADE DANCER',     difficulty: 'medium' as Difficulty, waves: 8,  bombRate: 0.14, speedMult: 1.1, title: 'Stage 4' },
+    { name: 'GRID REAPER',      difficulty: 'medium' as Difficulty, waves: 9,  bombRate: 0.16, speedMult: 1.2, title: 'Stage 5' },
+    { name: 'VOID HUNTER',      difficulty: 'hard' as Difficulty, waves: 10, bombRate: 0.18, speedMult: 1.3, title: 'Stage 6' },
+    { name: 'QUANTUM EDGE',     difficulty: 'hard' as Difficulty, waves: 12, bombRate: 0.20, speedMult: 1.4, title: 'Stage 7' },
+    { name: 'OMEGA SLICER',     difficulty: 'hard' as Difficulty, waves: 15, bombRate: 0.22, speedMult: 1.5, title: 'FINALS' },
+  ];
+  let seasonStage = 0;
+  let inSeasonMode = false;
+
   const MODIFIER_DESCS: Record<Modifier, string> = {
     bigObjects: 'Objects are 2x larger',
     speedDemon: 'Objects move 50% faster',
@@ -1311,6 +1338,7 @@ async function main() {
   panels.skins         = createWorldPanel('/ui/skins.json', 0.7, 1.1, [0, 1.5, -2.5]);
   panels.stats         = createWorldPanel('/ui/stats.json', 0.8, 1.2, [0, 1.5, -2.5]);
   panels.modifiers     = createWorldPanel('/ui/modifiers.json', 0.8, 1.2, [0, 1.5, -2.5]);
+  panels.season        = createWorldPanel('/ui/season.json', 0.8, 1.4, [0, 1.5, -2.5]);
   panels.hud           = createFollowerPanel('/ui/hud.json', 0.35, 0.2, [0.3, -0.15, -0.5]);
   panels.combo         = createFollowerPanel('/ui/combo.json', 0.15, 0.08, [-0.25, 0, -0.5]);
   panels.toast         = createFollowerPanel('/ui/toast.json', 0.3, 0.06, [0, 0.15, -0.5]);
@@ -1393,6 +1421,21 @@ async function main() {
     bindClick(modeDoc, 'btn-modifiers', () => { audio.buttonClick(); updateModifiersUI(); switchState('modifiers' as any); });
     bindClick(modeDoc, 'btn-back-mode', () => { audio.buttonClick(); switchState('title'); });
 
+    // Season mode
+    bindClick(modeDoc, 'btn-season', () => { audio.buttonClick(); updateSeasonUI(); switchState('season' as any); });
+    const seasonDoc = getDoc('season');
+    bindClick(seasonDoc, 'btn-season-fight', () => {
+      audio.buttonClick();
+      if (seasonStage < SEASON_OPPONENTS.length) {
+        const opp = SEASON_OPPONENTS[seasonStage];
+        gameMode = 'classic';
+        difficulty = opp.difficulty;
+        inSeasonMode = true;
+        startCountdown();
+      }
+    });
+    bindClick(seasonDoc, 'btn-back-season', () => { audio.buttonClick(); switchState('modeSelect'); });
+
     // Difficulty
     const diffDoc = getDoc('difficulty');
     const diffs: [string, Difficulty][] = [['btn-easy','easy'],['btn-medium','medium'],['btn-hard','hard']];
@@ -1433,6 +1476,13 @@ async function main() {
     bindClick(setDoc, 'theme-prev', () => { themeIdx = (themeIdx - 1 + THEMES.length) % THEMES.length; save.settings.themeIdx = themeIdx; updateSettingsUI(); applyTheme(); saveSave(save); });
     bindClick(setDoc, 'theme-next', () => { themeIdx = (themeIdx + 1) % THEMES.length; save.settings.themeIdx = themeIdx; updateSettingsUI(); applyTheme(); saveSave(save); });
     bindClick(setDoc, 'shake-toggle', () => { save.settings.screenShake = !save.settings.screenShake; updateSettingsUI(); saveSave(save); });
+    bindClick(setDoc, 'btn-prestige', () => {
+      if (canPrestige()) {
+        audio.buttonClick();
+        doPrestige();
+        updateSettingsUI();
+      }
+    });
     bindClick(setDoc, 'btn-back-settings', () => { audio.buttonClick(); saveSave(save); switchState('title'); });
 
     // Help
@@ -1693,6 +1743,9 @@ async function main() {
     setText(doc, 'stat-bosses', (s.bossesDefeated || 0).toString());
     setText(doc, 'stat-charges', (s.chargesUsed || 0).toString());
     setText(doc, 'stat-stars', getTotalStars().toString());
+    setText(doc, 'stat-prestige', (s.prestige || 0).toString());
+    setText(doc, 'stat-season-wins', (s.seasonWins || 0).toString());
+    setText(doc, 'stat-daily-streak', (s.dailyStreak || 0).toString());
   }
 
   function updateModifiersUI() {
@@ -1795,6 +1848,53 @@ async function main() {
     if (slicedCount >= 3) checkAchievementSilent('charge_aoe_3');
   }
 
+  // Prestige system — reset level for permanent score multiplier
+  function canPrestige(): boolean {
+    return save.career.level >= 50;
+  }
+
+  function doPrestige() {
+    if (!canPrestige()) return;
+    save.career.prestige = (save.career.prestige || 0) + 1;
+    save.career.level = 1;
+    save.career.xp = 0;
+    save.career.prestigeMultiplier = 1 + save.career.prestige * 0.1; // +10% per prestige
+    if (save.career.prestige === 1) checkAchievementSilent('prestige_1');
+    if (save.career.prestige >= 3) checkAchievementSilent('prestige_3');
+    saveSave(save);
+    showToast(`PRESTIGE ${save.career.prestige}! +${save.career.prestige * 10}% SCORE`);
+    audio.levelUp();
+    updateStats();
+  }
+
+  // Daily streak
+  function updateDailyStreak() {
+    const today = new Date().toISOString().split('T')[0];
+    const last = save.career.lastDailyDate || '';
+    if (last === today) return; // already played today
+
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    if (last === yesterday) {
+      save.career.dailyStreak = (save.career.dailyStreak || 0) + 1;
+    } else {
+      save.career.dailyStreak = 1;
+    }
+    save.career.lastDailyDate = today;
+    if (save.career.dailyStreak >= 3) checkAchievementSilent('daily_streak_3');
+    if (save.career.dailyStreak >= 7) checkAchievementSilent('daily_streak_7');
+    showToast(`DAILY STREAK: ${save.career.dailyStreak}`);
+    saveSave(save);
+  }
+
+  // Season mode boss types — different behaviors
+  type BossType = 'orbiter' | 'charger' | 'splitter';
+  const BOSS_TYPES: { type: BossType; color: string; emissive: string; hp: number; desc: string }[] = [
+    { type: 'orbiter', color: '#ffd700', emissive: '#ffaa00', hp: 1.0, desc: 'Orbits in circles' },
+    { type: 'charger', color: '#ff4444', emissive: '#cc2222', hp: 0.8, desc: 'Charges toward player' },
+    { type: 'splitter', color: '#44ff88', emissive: '#22cc44', hp: 1.3, desc: 'Splits into mini-bosses' },
+  ];
+  let currentBossType: BossType = 'orbiter';
+
   function updateSkins() {
     const doc = getDoc('skins');
     if (!doc) return;
@@ -1815,6 +1915,26 @@ async function main() {
     setText(doc, 'vol-music', save.settings.musicVol.toString());
     setText(doc, 'theme-name', THEMES[themeIdx].name);
     setText(doc, 'shake-status', save.settings.screenShake ? 'ON' : 'OFF');
+    const p = save.career.prestige || 0;
+    setText(doc, 'prestige-status', canPrestige() ? `PRESTIGE ${p} → ${p + 1}` : `LV ${save.career.level}/50`);
+  }
+
+  function updateSeasonUI() {
+    const doc = getDoc('season');
+    if (!doc) return;
+    for (let i = 1; i <= 8; i++) {
+      const opp = SEASON_OPPONENTS[i - 1];
+      setText(doc, `opp-${i}-stage`, opp.title);
+      setText(doc, `opp-${i}-name`, opp.name);
+      if (i - 1 < seasonStage) {
+        setText(doc, `opp-${i}-status`, 'CLEARED');
+      } else if (i - 1 === seasonStage) {
+        setText(doc, `opp-${i}-status`, 'NEXT');
+      } else {
+        setText(doc, `opp-${i}-status`, '--');
+      }
+    }
+    setText(doc, 'season-subtitle', seasonStage >= 8 ? 'SEASON COMPLETE!' : `STAGE ${seasonStage + 1}/8`);
   }
 
   function updateGameOverUI() {
@@ -1870,6 +1990,7 @@ async function main() {
       case 'skins': showPanel('skins'); break;
       case 'stats': showPanel('stats'); break;
       case 'modifiers': showPanel('modifiers'); break;
+      case 'season': showPanel('season'); break;
       case 'countdown': showPanel('countdown'); break;
     }
   }
@@ -1928,6 +2049,15 @@ async function main() {
     chargeLevel = 0; chargeActive = false; chargeReady = false;
     lastSlicedType = null; typeComboCount = 0; bestTypeCombo = 0;
     shakeIntensity = 0; shakeTimer = 0;
+
+    // Season mode adjustments
+    if (inSeasonMode && seasonStage < SEASON_OPPONENTS.length) {
+      const opp = SEASON_OPPONENTS[seasonStage];
+      // Apply season-specific wave count — override normal wave count
+      // Theme matches opponent flavor
+      themeIdx = seasonStage % THEMES.length;
+      applyTheme();
+    }
 
     // Reset boss
     bossActive = false; bossHP = 0; bossObj = null;
@@ -2029,6 +2159,46 @@ async function main() {
       save.career.quickPlays = (save.career.quickPlays || 0) + 1;
       if (save.career.quickPlays >= 3) checkAchievementSilent('quick_play_3');
       isQuickPlay = false;
+    }
+
+    // Season mode tracking
+    if (inSeasonMode) {
+      // Win condition: survived all waves (lives > 0)
+      if (lives > 0 && gameMode === 'classic') {
+        // Season win!
+        seasonStage++;
+        if (seasonStage > (save.career.seasonBestStage || 0)) {
+          save.career.seasonBestStage = seasonStage;
+        }
+        if (seasonStage >= 4) checkAchievementSilent('season_stage_4');
+        if (seasonStage >= 8) {
+          checkAchievementSilent('season_stage_8');
+          checkAchievementSilent('season_win');
+          save.career.seasonWins = (save.career.seasonWins || 0) + 1;
+          showToast('SEASON CHAMPION!');
+          seasonStage = 0; // Reset for next season
+        } else {
+          showToast(`STAGE ${seasonStage} CLEARED!`);
+        }
+      } else {
+        // Lost — season resets
+        showToast('SEASON OVER');
+        seasonStage = 0;
+      }
+      inSeasonMode = false;
+    }
+
+    // Daily challenge streak
+    if (gameMode === 'daily') {
+      updateDailyStreak();
+    }
+
+    // Apply prestige multiplier to final score
+    const prestigeMult = save.career.prestigeMultiplier || 1;
+    if (prestigeMult > 1) {
+      const bonus = Math.floor(score * (prestigeMult - 1));
+      save.career.totalScore += bonus;
+      // Already added regular score above
     }
 
     // Check achievements
@@ -2568,10 +2738,25 @@ async function main() {
       }
     }
 
-    // Boss hover behavior
+    // Boss behavior based on type
     if (bossActive && bossObj) {
-      bossObj.group.position.y = 1.8 + Math.sin(gameTime * 1.5) * 0.15;
-      bossObj.group.position.x = Math.sin(gameTime * 0.8) * 0.5;
+      switch (currentBossType) {
+        case 'orbiter':
+          bossObj.group.position.y = 1.8 + Math.sin(gameTime * 1.5) * 0.15;
+          bossObj.group.position.x = Math.sin(gameTime * 0.8) * 0.5;
+          break;
+        case 'charger':
+          // Periodically charge toward player position then retreat
+          const chargePhase = Math.sin(gameTime * 0.6);
+          bossObj.group.position.z = -2.5 + chargePhase * 0.8;
+          bossObj.group.position.y = 1.6 + Math.sin(gameTime * 2) * 0.1;
+          bossObj.group.position.x = Math.sin(gameTime * 1.2) * 0.3;
+          break;
+        case 'splitter':
+          bossObj.group.position.y = 2.0 + Math.sin(gameTime * 1) * 0.2;
+          bossObj.group.position.x = Math.cos(gameTime * 0.5) * 0.6;
+          break;
+      }
       bossObj.velocity.set(0, 0, 0); // override gravity for boss
     }
 
@@ -2723,7 +2908,9 @@ async function main() {
 
     switch (gameMode) {
       case 'classic': {
-        const maxWaves = difficulty === 'easy' ? 8 : difficulty === 'hard' ? 15 : 10;
+        const seasonWaves = inSeasonMode && seasonStage < SEASON_OPPONENTS.length ? SEASON_OPPONENTS[seasonStage].waves : 0;
+        const maxWaves = seasonWaves > 0 ? seasonWaves :
+                         difficulty === 'easy' ? 8 : difficulty === 'hard' ? 15 : 10;
         if (waveNum >= maxWaves) {
           const activeCount = objPool.filter(o => o.active).length;
           if (activeCount === 0 && slicedHalves.length === 0) endGame();
@@ -2945,25 +3132,38 @@ async function main() {
     if (!obj) return;
     obj.active = true;
     obj.age = 0;
-    // Boss is large and hovers
+
+    // Choose boss type based on wave number
+    const bossTypes: BossType[] = ['orbiter', 'charger', 'splitter'];
+    currentBossType = bossTypes[waveNum % 3];
+    const bossInfo = BOSS_TYPES.find(b => b.type === currentBossType) || BOSS_TYPES[0];
+
+    // Boss position
     obj.group.position.set(0, 1.8, -2.5);
     obj.velocity.set(0, 0, 0);
     obj.angVel.set(0, 0.8, 0.3);
     obj.group.visible = true;
     obj.group.scale.setScalar(3);
     obj.radius = 0.35;
-    // Bright golden material
-    obj.innerMesh.material = new MeshStandardMaterial({ color: '#ffd700', emissive: '#ffaa00', emissiveIntensity: 1.5, metalness: 0.9, roughness: 0.1 });
-    (obj.glowMesh.material as MeshBasicMaterial).color.set('#ffd700');
+
+    // Boss material based on type
+    obj.innerMesh.material = new MeshStandardMaterial({
+      color: bossInfo.color, emissive: bossInfo.emissive,
+      emissiveIntensity: 1.5, metalness: 0.9, roughness: 0.1,
+    });
+    (obj.glowMesh.material as MeshBasicMaterial).color.set(bossInfo.color);
     (obj.glowMesh.material as MeshBasicMaterial).opacity = 0.3;
 
+    const baseHP = difficulty === 'easy' ? 5 : difficulty === 'hard' ? 12 : 8;
+    const seasonMult = inSeasonMode && seasonStage < SEASON_OPPONENTS.length ? SEASON_OPPONENTS[seasonStage].speedMult : 1;
     bossActive = true;
-    bossHP = difficulty === 'easy' ? 5 : difficulty === 'hard' ? 12 : 8;
+    bossHP = Math.round(baseHP * bossInfo.hp * seasonMult);
     bossMaxHP = bossHP;
     bossObj = obj;
     bossLivesAtStart = lives;
     audio.bossAppear();
-    showToast(`BOSS! ${bossHP} HITS TO DEFEAT`);
+    const typeLabel = currentBossType.toUpperCase();
+    showToast(`${typeLabel} BOSS! ${bossHP} HITS`);
   }
 
   function handleXRInput() {

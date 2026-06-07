@@ -317,6 +317,63 @@
         "dataUid": "uid-25"
       },
       {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "PRESTIGE"
+        ],
+        "properties": {
+          "class": "section"
+        },
+        "dataUid": "uid-29"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "STATUS"
+            ],
+            "properties": {
+              "class": "label"
+            },
+            "dataUid": "uid-31"
+          },
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "LV 1/50"
+            ],
+            "properties": {
+              "id": "prestige-status",
+              "class": "value"
+            },
+            "dataUid": "uid-32"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-30"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          "PRESTIGE"
+        ],
+        "properties": {
+          "id": "btn-prestige",
+          "class": "btn",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-33"
+      },
+      {
         "type": "container",
         "sourceTag": "div",
         "children": [
@@ -327,7 +384,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-29"
+        "dataUid": "uid-34"
       }
     ],
     "properties": {
@@ -482,7 +539,7 @@
         "column": 0
       },
       "end": {
-        "line": 89,
+        "line": 95,
         "column": 6
       }
     },
@@ -763,6 +820,56 @@
       },
       "end": {
         "line": 88,
+        "column": 39
+      }
+    },
+    "uid-30": {
+      "start": {
+        "line": 89,
+        "column": 2
+      },
+      "end": {
+        "line": 92,
+        "column": 8
+      }
+    },
+    "uid-31": {
+      "start": {
+        "line": 90,
+        "column": 4
+      },
+      "end": {
+        "line": 90,
+        "column": 37
+      }
+    },
+    "uid-32": {
+      "start": {
+        "line": 91,
+        "column": 4
+      },
+      "end": {
+        "line": 91,
+        "column": 59
+      }
+    },
+    "uid-33": {
+      "start": {
+        "line": 93,
+        "column": 2
+      },
+      "end": {
+        "line": 93,
+        "column": 68
+      }
+    },
+    "uid-34": {
+      "start": {
+        "line": 94,
+        "column": 2
+      },
+      "end": {
+        "line": 94,
         "column": 69
       }
     }

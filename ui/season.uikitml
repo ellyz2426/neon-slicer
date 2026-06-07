@@ -1,0 +1,95 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-color: #ffd700;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 0.6;
+  }
+  .heading {
+    font-size: 2.5;
+    color: #ffd700;
+    font-weight: bold;
+  }
+  .subtitle {
+    font-size: 1.5;
+    color: #ff00ff;
+    font-weight: bold;
+  }
+  .opponent {
+    display: flex;
+    flex-direction: row;
+    gap: 1;
+    width: 100%;
+    padding: 0.4;
+    padding-left: 1;
+    padding-right: 1;
+    background-color: rgba(255, 215, 0, 0.05);
+    border-color: rgba(255, 215, 0, 0.2);
+    border-width: 0.05;
+    border-radius: 0.5;
+  }
+  .opp-stage {
+    font-size: 1;
+    color: #888888;
+    width: 20%;
+  }
+  .opp-name {
+    font-size: 1.2;
+    color: #ffffff;
+    width: 50%;
+  }
+  .opp-status {
+    font-size: 1;
+    color: #888888;
+    width: 30%;
+  }
+  .current {
+    border-color: #ffd700;
+    border-width: 0.1;
+    background-color: rgba(255, 215, 0, 0.15);
+  }
+  .cleared {
+    background-color: rgba(0, 255, 128, 0.08);
+  }
+  .btn {
+    font-size: 1.8;
+    color: #ffffff;
+    background-color: rgba(255, 215, 0, 0.15);
+    border-color: #ffd700;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-cyan {
+    background-color: rgba(0, 255, 255, 0.15);
+    border-color: #00ffff;
+  }
+</style>
+<div class="panel">
+  <span class="heading">SEASON MODE</span>
+  <span id="season-subtitle" class="subtitle">DEFEAT 8 OPPONENTS</span>
+  <div id="opp-1" class="opponent"><span id="opp-1-stage" class="opp-stage">1</span><span id="opp-1-name" class="opp-name">ROOKIE BOT</span><span id="opp-1-status" class="opp-status">--</span></div>
+  <div id="opp-2" class="opponent"><span id="opp-2-stage" class="opp-stage">2</span><span id="opp-2-name" class="opp-name">CIRCUIT SLASHER</span><span id="opp-2-status" class="opp-status">--</span></div>
+  <div id="opp-3" class="opponent"><span id="opp-3-stage" class="opp-stage">3</span><span id="opp-3-name" class="opp-name">NEON PHANTOM</span><span id="opp-3-status" class="opp-status">--</span></div>
+  <div id="opp-4" class="opponent"><span id="opp-4-stage" class="opp-stage">4</span><span id="opp-4-name" class="opp-name">BLADE DANCER</span><span id="opp-4-status" class="opp-status">--</span></div>
+  <div id="opp-5" class="opponent"><span id="opp-5-stage" class="opp-stage">5</span><span id="opp-5-name" class="opp-name">GRID REAPER</span><span id="opp-5-status" class="opp-status">--</span></div>
+  <div id="opp-6" class="opponent"><span id="opp-6-stage" class="opp-stage">6</span><span id="opp-6-name" class="opp-name">VOID HUNTER</span><span id="opp-6-status" class="opp-status">--</span></div>
+  <div id="opp-7" class="opponent"><span id="opp-7-stage" class="opp-stage">7</span><span id="opp-7-name" class="opp-name">QUANTUM EDGE</span><span id="opp-7-status" class="opp-status">--</span></div>
+  <div id="opp-8" class="opponent"><span id="opp-8-stage" class="opp-stage">8</span><span id="opp-8-name" class="opp-name">OMEGA SLICER</span><span id="opp-8-status" class="opp-status">--</span></div>
+  <div id="btn-season-fight" class="btn" cursor="pointer">FIGHT!</div>
+  <div id="btn-back-season" class="btn btn-cyan" cursor="pointer">BACK</div>
+</div>
