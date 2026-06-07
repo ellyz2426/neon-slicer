@@ -22,7 +22,7 @@ import {
 // ============================================================
 type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season' | 'tutorial' | 'challenge' | 'history';
 type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal';
-type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless';
+type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless' | 'blitz';
 type Modifier = 'bigObjects' | 'speedDemon' | 'noBombs' | 'mirror' | 'oneLife' | 'tinyObjects' | 'chaos';
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -316,6 +316,9 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'score_200k',       name: 'Score Legend',        desc: 'Score 200,000 in a single game' },
   { id: 'endless_w100',     name: 'Century',             desc: 'Reach wave 100 in Endless' },
   { id: 'daily_streak_14',  name: 'Two Weeks',           desc: '14-day Daily Challenge streak' },
+  // Blitz
+  { id: 'blitz_5k',         name: 'Blitz Master',        desc: 'Score 5K in Blitz mode' },
+  { id: 'blitz_10k',        name: 'Blitz Legend',        desc: 'Score 10K in Blitz mode' },
 ];
 
 // ============================================================
@@ -366,7 +369,7 @@ function saveSave(data: SaveData): void {
 
 // Challenge code encoding/decoding
 function encodeChallenge(cfg: ChallengeConfig): string {
-  const modeIdx = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless'].indexOf(cfg.mode);
+  const modeIdx = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless','blitz'].indexOf(cfg.mode);
   const diffIdx = ['easy','medium','hard'].indexOf(cfg.difficulty);
   const modBits = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'].reduce(
     (bits: number, mod: string, i: number) => bits | ((cfg.modifiers.includes(mod as Modifier) ? 1 : 0) << i), 0
@@ -380,7 +383,7 @@ function decodeChallenge(code: string): ChallengeConfig | null {
     const padded = code + '='.repeat((4 - code.length % 4) % 4);
     const bytes = atob(padded).split('').map(c => c.charCodeAt(0));
     if (bytes.length < 5) return null;
-    const modes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless'];
+    const modes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless','blitz'];
     const diffs: Difficulty[] = ['easy','medium','hard'];
     const allMods: Modifier[] = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'];
     const modeIdx = bytes[0]; const diffIdx = bytes[1]; const modBits = bytes[2];
@@ -937,6 +940,7 @@ async function main() {
     daily:      { easy: [2000, 5000, 10000], medium: [3000, 8000, 15000], hard: [5000, 12000, 25000] },
     precision:  { easy: [1000, 3000, 6000],  medium: [2000, 5000, 10000], hard: [3000, 8000, 16000] },
     endless:    { easy: [3000, 8000, 20000], medium: [5000, 15000, 40000], hard: [8000, 25000, 60000] },
+    blitz:      { easy: [2000, 5000, 10000], medium: [3000, 8000, 15000], hard: [5000, 12000, 25000] },
   };
 
   // Season Mode — fight through 8 AI "opponents" with increasing difficulty
@@ -1547,7 +1551,7 @@ async function main() {
     bindClick(titleDoc, 'btn-play', () => { audio.buttonClick(); switchState('modeSelect'); });
     bindClick(titleDoc, 'btn-quickplay', () => {
       audio.buttonClick();
-      const modes: GameMode[] = ['classic', 'survival', 'timeAttack', 'frenzy', 'endless'];
+      const modes: GameMode[] = ['classic', 'survival', 'timeAttack', 'frenzy', 'endless', 'blitz'];
       const diffs: Difficulty[] = ['easy', 'medium', 'hard'];
       gameMode = modes[Math.floor(Math.random() * modes.length)];
       difficulty = diffs[Math.floor(Math.random() * diffs.length)];
@@ -1565,7 +1569,7 @@ async function main() {
 
     // Mode select
     const modeDoc = getDoc('modeSelect');
-    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision'],['btn-endless','endless']];
+    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision'],['btn-endless','endless'],['btn-blitz','blitz']];
     modes.forEach(([id, mode]) => {
       bindClick(modeDoc, id, () => { audio.buttonClick(); gameMode = mode; switchState('difficulty'); });
     });
@@ -1794,12 +1798,12 @@ async function main() {
   function updateHUD() {
     const doc = getDoc('hud');
     if (!doc) return;
-    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION', endless: 'ENDLESS' };
+    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION', endless: 'ENDLESS', blitz: 'BLITZ' };
     setText(doc, 'hud-mode', modeNames[gameMode]);
     setText(doc, 'hud-score', score.toString());
     setText(doc, 'hud-combo', `x${combo + 1}`);
     setText(doc, 'hud-lives', lives >= 0 ? lives.toString() : '--');
-    if (gameMode === 'timeAttack' || gameMode === 'frenzy') {
+    if (gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'blitz') {
       setText(doc, 'hud-time', Math.max(0, Math.ceil(gameTimer)).toString() + 's');
     } else if (gameMode === 'survival') {
       setText(doc, 'hud-time', Math.floor(gameTime).toString() + 's');
@@ -2489,7 +2493,7 @@ async function main() {
     stopReplay();
     replayBuffer.length = 0;
     score = 0;
-    lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy') ? -1 :
+    lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'blitz') ? -1 :
             (activeModifiers.has('oneLife')) ? 1 : 3;
     combo = 0;
     bestCombo = 0;
@@ -2542,6 +2546,7 @@ async function main() {
 
     if (gameMode === 'timeAttack') gameTimer = 60;
     else if (gameMode === 'frenzy') gameTimer = 30;
+    else if (gameMode === 'blitz') gameTimer = 45;
     else if (gameMode === 'precision') { gameTimer = 0; lives = 3; }
     else gameTimer = 0;
 
@@ -2700,7 +2705,7 @@ async function main() {
     if (highAccGames >= 10) checkAchievementSilent('accuracy_90_10');
     // Hard all modes achievement
     const hardModes = new Set(save.history.filter(h => h.difficulty === 'hard' && h.stars > 0).map(h => h.mode));
-    const allBaseModes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','precision','endless'];
+    const allBaseModes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','precision','endless','blitz'];
     if (allBaseModes.every(m => hardModes.has(m))) checkAchievementSilent('hard_all_modes');
     // Challenge tracking
     if (inChallengeMode) {
@@ -2817,6 +2822,8 @@ async function main() {
     if (gameMode === 'survival' && gameTime >= 180) tryUnlock('survival_180');
     if (gameMode === 'frenzy' && score >= 1000) tryUnlock('frenzy_1k');
     if (gameMode === 'frenzy' && score >= 5000) tryUnlock('frenzy_5k');
+    if (gameMode === 'blitz' && score >= 5000) tryUnlock('blitz_5k');
+    if (gameMode === 'blitz' && score >= 10000) tryUnlock('blitz_10k');
     if (gameMode === 'daily') tryUnlock('daily_done');
     if (gameMode === 'zen' && sliceCount >= 100) tryUnlock('zen_100');
     if (gameMode === 'timeAttack' && score >= 5000) tryUnlock('timeattack_5k');
@@ -3382,6 +3389,11 @@ async function main() {
     // Survival speed increase
     if (gameMode === 'survival') {
       survivalSpeedMult = 1 + gameTime / 30 * 0.5; // +50% every 30s
+    }
+
+    // Blitz speed increase (faster ramp than survival)
+    if (gameMode === 'blitz') {
+      survivalSpeedMult = 1 + gameTime / 15 * 0.8; // +80% every 15s
     }
 
     // Update blade positions

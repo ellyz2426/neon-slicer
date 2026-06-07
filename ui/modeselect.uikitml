@@ -75,6 +75,8 @@
   <span class="desc">Slice only marked targets, 3 lives</span>
   <div id="btn-endless" class="btn btn-endless" cursor="pointer">ENDLESS</div>
   <span class="desc">Infinite waves, how far can you go?</span>
+  <div id="btn-blitz" class="btn btn-endless" cursor="pointer">BLITZ</div>
+  <span class="desc">45s rapid waves, speed builds</span>
   <div id="btn-season" class="btn btn-season" cursor="pointer">SEASON</div>
   <span class="desc">Defeat 8 AI opponents to become champion</span>
   <div id="btn-modifiers" class="btn btn-mod" cursor="pointer">MODIFIERS</div>
