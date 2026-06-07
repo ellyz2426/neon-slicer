@@ -21,8 +21,8 @@ import {
 // TYPES
 // ============================================================
 type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season' | 'tutorial' | 'challenge' | 'history';
-type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal';
-type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless' | 'blitz';
+type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal' | 'ghost' | 'timeBomb';
+type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless' | 'blitz' | 'duel';
 type Modifier = 'bigObjects' | 'speedDemon' | 'noBombs' | 'mirror' | 'oneLife' | 'tinyObjects' | 'chaos';
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -40,6 +40,8 @@ interface FlyingObj {
   age: number;
   hitsLeft: number; // for multi-hit objects like crystal
   spawnAge: number; // spawn animation timer
+  ghostPhase: number; // ghost: phase timer for visibility cycling
+  timeBombTimer: number; // timeBomb: countdown before detonation
 }
 
 interface SlicedHalf {
@@ -123,6 +125,8 @@ const OBJ_CONFIGS: Record<ObjType, { color: string; emissive: string; points: nu
   magnet:  { color: '#ffaa00', emissive: '#cc8800', points: 75,  radius: 0.10 },
   doublePoints: { color: '#ff44ff', emissive: '#cc22cc', points: 50, radius: 0.12 },
   crystal:      { color: '#aaeeff', emissive: '#88ccff', points: 500, radius: 0.15 },
+  ghost:        { color: '#aa88ff', emissive: '#7744cc', points: 400, radius: 0.12 },
+  timeBomb:     { color: '#ff6600', emissive: '#cc4400', points: 350, radius: 0.13 },
 };
 
 const THEMES = [
@@ -136,6 +140,8 @@ const THEMES = [
   { name: 'GHOST MATRIX',  grid: '#66ffcc', accent: '#aaffee', bg: '#000a08', fog: '#000a08', wall: '#003322' },
   { name: 'DEEP OCEAN',   grid: '#0066ff', accent: '#00ccff', bg: '#000208', fog: '#000208', wall: '#001133' },
   { name: 'NEON SUNSET',  grid: '#ff6644', accent: '#ffaa22', bg: '#0a0200', fog: '#0a0200', wall: '#331100' },
+  { name: 'ZEN GARDEN',   grid: '#88cc88', accent: '#44aa66', bg: '#020804', fog: '#020804', wall: '#113311' },
+  { name: 'NEON STORM',   grid: '#ccccff', accent: '#8888ff', bg: '#020208', fog: '#020208', wall: '#111144' },
 ];
 
 const BLADE_SKINS = [
@@ -160,6 +166,11 @@ const BLADE_SKINS = [
   { name: 'Glacier',    color: '#aaddff', emissive: '#88bbcc', glow: '#cceeFF', unlock: 'Endless w25' },
   { name: 'Berserker',  color: '#ff2200', emissive: '#cc1100', glow: '#ff4422', unlock: 'Season win' },
   { name: 'Hologram',   color: '#44ffff', emissive: '#22cccc', glow: '#66ffff', unlock: '100% acc (20+)' },
+  // Round 14 skins
+  { name: 'Specter',    color: '#aa66ff', emissive: '#8844cc', glow: '#cc88ff', unlock: '50 ghosts' },
+  { name: 'Detonator',  color: '#ff8800', emissive: '#cc6600', glow: '#ffaa44', unlock: '20 timeBombs' },
+  { name: 'Zen',        color: '#66cc88', emissive: '#44aa66', glow: '#88eebb', unlock: 'Zen 200 slices' },
+  { name: 'Storm',      color: '#8888ff', emissive: '#6666cc', glow: '#aaaaff', unlock: 'All 12 themes' },
 ];
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -327,6 +338,22 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'prestige_5',       name: 'Prestige V',          desc: 'Reach Prestige V' },
   { id: 'total_games_200',  name: 'Veteran Slicer',      desc: 'Play 200 total games' },
   { id: 'streak_100',       name: 'Centurion Streak',    desc: 'Reach a 100 slice streak' },
+  // Ghost & TimeBomb
+  { id: 'ghost_first',      name: 'Ghost Buster',        desc: 'Slice your first ghost object' },
+  { id: 'ghost_10',         name: 'Phantom Slayer',      desc: 'Slice 10 ghost objects total' },
+  { id: 'ghost_50',         name: 'Ghost Hunter',        desc: 'Slice 50 ghost objects total' },
+  { id: 'timebomb_first',   name: 'Defuser',             desc: 'Defuse your first time bomb' },
+  { id: 'timebomb_10',      name: 'Bomb Squad',          desc: 'Defuse 10 time bombs total' },
+  { id: 'timebomb_close',   name: 'Last Second',         desc: 'Defuse a time bomb in the final 0.5s' },
+  { id: 'timebomb_det',     name: 'Too Slow',            desc: 'Let a time bomb detonate' },
+  // New themes
+  { id: 'theme_12',         name: 'Dimension Master',    desc: 'Play in all 12 arena themes' },
+  // Duel mode
+  { id: 'duel_win',         name: 'Duelist',             desc: 'Win a Duel' },
+  { id: 'duel_win_5',       name: 'Duel Champion',       desc: 'Win 5 Duels' },
+  { id: 'duel_perfect',     name: 'Flawless Duel',       desc: 'Win a Duel with 100% accuracy' },
+  // New skins
+  { id: 'skin_24',          name: 'Full Arsenal',        desc: 'Unlock all 24 blade skins' },
 ];
 
 // ============================================================
@@ -346,6 +373,8 @@ interface SaveData {
     prestige: number; prestigeMultiplier: number;
     dailyStreak: number; lastDailyDate: string;
     seasonWins: number; seasonBestStage: number;
+    ghostsSliced: number; timeBombsDefused: number; timeBombDetonations: number;
+    duelWins: number; duelLosses: number;
   };
   achievements: string[];
   leaderboard: LeaderboardEntry[];
@@ -361,7 +390,7 @@ function loadSave(): SaveData {
     if (raw) return JSON.parse(raw);
   } catch {}
   return {
-    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0, bossesDefeated: 0, chargesUsed: 0, quickPlays: 0, prestige: 0, prestigeMultiplier: 1, dailyStreak: 0, lastDailyDate: '', seasonWins: 0, seasonBestStage: 0 },
+    career: { games: 0, totalSlices: 0, bestScore: 0, totalScore: 0, bestCombo: 0, totalBombs: 0, totalMisses: 0, totalShots: 0, playTimeMs: 0, modesPlayed: [], themesUsed: [], xp: 0, level: 1, crystalsShattered: 0, modifiersUsed: [], bestEndlessWave: 0, bossesDefeated: 0, chargesUsed: 0, quickPlays: 0, prestige: 0, prestigeMultiplier: 1, dailyStreak: 0, lastDailyDate: '', seasonWins: 0, seasonBestStage: 0, ghostsSliced: 0, timeBombsDefused: 0, timeBombDetonations: 0, duelWins: 0, duelLosses: 0 },
     achievements: [],
     leaderboard: [],
     settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0, screenShake: true },
@@ -377,7 +406,7 @@ function saveSave(data: SaveData): void {
 
 // Challenge code encoding/decoding
 function encodeChallenge(cfg: ChallengeConfig): string {
-  const modeIdx = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless','blitz'].indexOf(cfg.mode);
+  const modeIdx = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless','blitz','duel'].indexOf(cfg.mode);
   const diffIdx = ['easy','medium','hard'].indexOf(cfg.difficulty);
   const modBits = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'].reduce(
     (bits: number, mod: string, i: number) => bits | ((cfg.modifiers.includes(mod as Modifier) ? 1 : 0) << i), 0
@@ -391,7 +420,7 @@ function decodeChallenge(code: string): ChallengeConfig | null {
     const padded = code + '='.repeat((4 - code.length % 4) % 4);
     const bytes = atob(padded).split('').map(c => c.charCodeAt(0));
     if (bytes.length < 5) return null;
-    const modes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless','blitz'];
+    const modes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless','blitz','duel'];
     const diffs: Difficulty[] = ['easy','medium','hard'];
     const allMods: Modifier[] = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'];
     const modeIdx = bytes[0]; const diffIdx = bytes[1]; const modBits = bytes[2];
@@ -670,6 +699,8 @@ class AudioManager {
       { bass: 55, arpNotes: [110, 146.83, 164.81, 220, 164.81, 146.83, 110, 82.41, 146.83, 196, 220, 293.66, 220, 196, 146.83, 82.41], padNotes: [110, 146.83, 196, 261.63], bpm: 124, filterQ: 4 }, // Ghost Matrix — Am (ethereal)
       { bass: 46.25, arpNotes: [92.5, 116.54, 138.59, 185, 138.59, 116.54, 92.5, 69.3, 116.54, 138.59, 185, 246.94, 185, 138.59, 116.54, 69.3], padNotes: [92.5, 116.54, 138.59, 185], bpm: 112, filterQ: 3 }, // Deep Ocean — Bb minor (deep)
       { bass: 73.42, arpNotes: [146.83, 185, 220, 293.66, 220, 185, 146.83, 110, 185, 220, 293.66, 369.99, 293.66, 220, 185, 110], padNotes: [146.83, 220, 293.66, 369.99], bpm: 138, filterQ: 7 }, // Neon Sunset — D major (warm)
+      { bass: 55, arpNotes: [110, 130.81, 164.81, 220, 164.81, 130.81, 110, 82.41, 130.81, 164.81, 196, 220, 196, 164.81, 130.81, 82.41], padNotes: [110, 130.81, 164.81, 220], bpm: 108, filterQ: 2 }, // Zen Garden — Am pentatonic (serene, slow)
+      { bass: 65.41, arpNotes: [130.81, 155.56, 196, 261.63, 196, 155.56, 130.81, 98, 155.56, 196, 261.63, 311.13, 261.63, 196, 155.56, 98], padNotes: [130.81, 155.56, 196, 261.63], bpm: 148, filterQ: 10 }, // Neon Storm — C#m (aggressive, fast)
     ];
     const tm = THEME_MUSIC[themeIndex % THEME_MUSIC.length];
 
@@ -949,6 +980,7 @@ async function main() {
     precision:  { easy: [1000, 3000, 6000],  medium: [2000, 5000, 10000], hard: [3000, 8000, 16000] },
     endless:    { easy: [3000, 8000, 20000], medium: [5000, 15000, 40000], hard: [8000, 25000, 60000] },
     blitz:      { easy: [2000, 5000, 10000], medium: [3000, 8000, 15000], hard: [5000, 12000, 25000] },
+    duel:       { easy: [2000, 5000, 10000], medium: [3000, 8000, 15000], hard: [5000, 12000, 25000] },
   };
 
   // Season Mode — fight through 8 AI "opponents" with increasing difficulty
@@ -966,6 +998,12 @@ async function main() {
   let inSeasonMode = false;
   let inChallengeMode = false;
   let activeChallenge: ChallengeConfig | null = null;
+
+  // Duel mode — compete against AI scorer
+  let duelActive = false;
+  let aiScore = 0;
+  let aiSliceChance = 0.7; // AI's chance to "slice" each object
+  let aiComboMultiplier = 1;
   // ============================================================
   // HAPTIC FEEDBACK (XR Controllers)
   // ============================================================
@@ -1168,6 +1206,8 @@ async function main() {
       case 'magnet':  geo = new ConeGeometry(0.08, 0.2, 4); break;
       case 'doublePoints': geo = new OctahedronGeometry(0.1); break;
       case 'crystal': geo = new IcosahedronGeometry(0.14); break;
+      case 'ghost':   geo = new SphereGeometry(0.12, 8, 6); break;
+      case 'timeBomb': geo = new CylinderGeometry(0.06, 0.08, 0.16, 8); break;
     }
     const mat = new MeshStandardMaterial({ color: cfg.color, emissive: cfg.emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
     const innerMesh = new Mesh(geo, mat);
@@ -1182,7 +1222,7 @@ async function main() {
   }
 
   // Pre-create pool
-  const objTypes: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'bomb', 'freeze', 'shield', 'magnet', 'doublePoints', 'crystal'];
+  const objTypes: ObjType[] = ['cube', 'sphere', 'diamond', 'star', 'bomb', 'freeze', 'shield', 'magnet', 'doublePoints', 'crystal', 'ghost', 'timeBomb'];
   for (let i = 0; i < OBJ_POOL_SIZE; i++) {
     const type = objTypes[i % objTypes.length];
     const { group, innerMesh, wireMesh, glowMesh } = createObjMesh(type);
@@ -1193,7 +1233,7 @@ async function main() {
       radius: OBJ_CONFIGS[type].radius,
       points: OBJ_CONFIGS[type].points,
       velocity: new Vector3(), angVel: new Vector3(),
-      active: false, age: 0, hitsLeft: 1, spawnAge: 0,
+      active: false, age: 0, hitsLeft: 1, spawnAge: 0, ghostPhase: 0, timeBombTimer: 0,
     });
   }
 
@@ -1259,6 +1299,10 @@ async function main() {
     obj.radius = OBJ_CONFIGS[type].radius * sizeMod;
     // Crystal multi-hit
     obj.hitsLeft = type === 'crystal' ? 3 : 1;
+    // Ghost phase timer
+    obj.ghostPhase = type === 'ghost' ? Math.random() * Math.PI * 2 : 0;
+    // TimeBomb countdown (3 seconds to slice)
+    obj.timeBombTimer = type === 'timeBomb' ? 3.0 : 0;
     obj.innerMesh.material = new MeshStandardMaterial({
       color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive,
       emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3,
@@ -1608,7 +1652,7 @@ async function main() {
 
     // Mode select
     const modeDoc = getDoc('modeSelect');
-    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision'],['btn-endless','endless'],['btn-blitz','blitz']];
+    const modes: [string, GameMode][] = [['btn-classic','classic'],['btn-zen','zen'],['btn-timeattack','timeAttack'],['btn-survival','survival'],['btn-frenzy','frenzy'],['btn-daily','daily'],['btn-precision','precision'],['btn-endless','endless'],['btn-blitz','blitz'],['btn-duel','duel']];
     modes.forEach(([id, mode]) => {
       bindClick(modeDoc, id, () => { audio.buttonClick(); gameMode = mode; switchState('difficulty'); });
     });
@@ -1829,6 +1873,10 @@ async function main() {
       case 17: return (s.bestEndlessWave || 0) >= 25; // Glacier — Endless w25
       case 18: return (s.seasonWins || 0) >= 1; // Berserker — Season win
       case 19: return save.achievements.includes('accuracy_100'); // Hologram — 100% accuracy
+      case 20: return (s.ghostsSliced || 0) >= 50; // Specter — 50 ghosts
+      case 21: return (s.timeBombsDefused || 0) >= 20; // Detonator — 20 timeBombs
+      case 22: return save.achievements.includes('zen_100') && s.totalSlices >= 200; // Zen — Zen 200 slices
+      case 23: return s.themesUsed.length >= 12; // Storm — All 12 themes
       default: return false;
     }
   }
@@ -1837,12 +1885,12 @@ async function main() {
   function updateHUD() {
     const doc = getDoc('hud');
     if (!doc) return;
-    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION', endless: 'ENDLESS', blitz: 'BLITZ' };
+    const modeNames: Record<GameMode, string> = { classic: 'CLASSIC', zen: 'ZEN', timeAttack: 'TIME ATTACK', survival: 'SURVIVAL', frenzy: 'FRENZY', daily: 'DAILY', precision: 'PRECISION', endless: 'ENDLESS', blitz: 'BLITZ', duel: 'DUEL' };
     setText(doc, 'hud-mode', modeNames[gameMode]);
     setText(doc, 'hud-score', score.toString());
     setText(doc, 'hud-combo', `x${combo + 1}`);
     setText(doc, 'hud-lives', lives >= 0 ? lives.toString() : '--');
-    if (gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'blitz') {
+    if (gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'blitz' || gameMode === 'duel') {
       setText(doc, 'hud-time', Math.max(0, Math.ceil(gameTimer)).toString() + 's');
     } else if (gameMode === 'survival') {
       setText(doc, 'hud-time', Math.floor(gameTime).toString() + 's');
@@ -2013,6 +2061,9 @@ async function main() {
     setText(doc, 'stat-prestige', (s.prestige || 0).toString());
     setText(doc, 'stat-season-wins', (s.seasonWins || 0).toString());
     setText(doc, 'stat-daily-streak', (s.dailyStreak || 0).toString());
+    setText(doc, 'stat-ghosts', (s.ghostsSliced || 0).toString());
+    setText(doc, 'stat-timebombs', (s.timeBombsDefused || 0).toString());
+    setText(doc, 'stat-duels', `${(s.duelWins || 0)}W / ${(s.duelLosses || 0)}L`);
   }
 
   function updateModifiersUI() {
@@ -2417,6 +2468,8 @@ async function main() {
     setText(doc, 'go-typecombo', bestTypeCombo >= 3 ? `x${bestTypeCombo}` : '--');
     // Replay summary
     setText(doc, 'go-replay', replayBuffer.length > 0 ? `Last ${REPLAY_WINDOW}s: ${replayBuffer.length} slices` : '');
+    // Duel result
+    setText(doc, 'go-duel', gameMode === 'duel' ? `YOU: ${score} | AI: ${aiScore}` : '');
     // Start instant replay visualization
     startReplay();
   }
@@ -2533,7 +2586,7 @@ async function main() {
     stopReplay();
     replayBuffer.length = 0;
     score = 0;
-    lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'blitz') ? -1 :
+    lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'blitz' || gameMode === 'duel') ? -1 :
             (activeModifiers.has('oneLife')) ? 1 : 3;
     combo = 0;
     bestCombo = 0;
@@ -2587,8 +2640,15 @@ async function main() {
     if (gameMode === 'timeAttack') gameTimer = 60;
     else if (gameMode === 'frenzy') gameTimer = 30;
     else if (gameMode === 'blitz') gameTimer = 45;
+    else if (gameMode === 'duel') gameTimer = 60;
     else if (gameMode === 'precision') { gameTimer = 0; lives = 3; }
     else gameTimer = 0;
+
+    // Duel mode setup
+    duelActive = gameMode === 'duel';
+    aiScore = 0;
+    aiSliceChance = difficulty === 'easy' ? 0.55 : difficulty === 'hard' ? 0.85 : 0.7;
+    aiComboMultiplier = difficulty === 'easy' ? 0.7 : difficulty === 'hard' ? 1.3 : 1.0;
 
     if (gameMode === 'daily') dailyRng = mulberry32(dateSeed());
     else dailyRng = null;
@@ -2713,6 +2773,23 @@ async function main() {
       updateDailyStreak();
     }
 
+    // Duel result
+    if (duelActive) {
+      const playerWon = score > aiScore;
+      if (playerWon) {
+        save.career.duelWins = (save.career.duelWins || 0) + 1;
+        checkAchievementSilent('duel_win');
+        if (save.career.duelWins >= 5) checkAchievementSilent('duel_win_5');
+        const acc = totalSpawned > 0 ? sliceCount / totalSpawned : 0;
+        if (acc >= 1.0 && totalSpawned >= 10) checkAchievementSilent('duel_perfect');
+        showToast(`YOU WIN! ${score} vs ${aiScore}`);
+      } else {
+        save.career.duelLosses = (save.career.duelLosses || 0) + 1;
+        showToast(`AI WINS! ${aiScore} vs ${score}`);
+      }
+      duelActive = false;
+    }
+
     // Apply prestige multiplier to final score
     const prestigeMult = save.career.prestigeMultiplier || 1;
     if (prestigeMult > 1) {
@@ -2745,7 +2822,7 @@ async function main() {
     if (highAccGames >= 10) checkAchievementSilent('accuracy_90_10');
     // Hard all modes achievement
     const hardModes = new Set(save.history.filter(h => h.difficulty === 'hard' && h.stars > 0).map(h => h.mode));
-    const allBaseModes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','precision','endless','blitz'];
+    const allBaseModes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','precision','endless','blitz','duel'];
     if (allBaseModes.every(m => hardModes.has(m))) checkAchievementSilent('hard_all_modes');
     // Challenge tracking
     if (inChallengeMode) {
@@ -2765,6 +2842,7 @@ async function main() {
     }
     if (save.career.themesUsed.length >= THEMES.length) checkAchievementSilent('all_themes_play');
     if (save.career.themesUsed.length >= 10) checkAchievementSilent('theme_10');
+    if (save.career.themesUsed.length >= 12) checkAchievementSilent('theme_12');
     // Total slices milestone
     if (save.career.totalSlices >= 10000) checkAchievementSilent('slice_10k');
     // Score milestones
@@ -2906,6 +2984,11 @@ async function main() {
   function handleSlice(obj: FlyingObj) {
     if (!obj.active) return;
 
+    // Ghost can only be sliced when visible
+    if (obj.type === 'ghost' && !obj.group.userData.ghostVisible) {
+      return; // phase through — can't slice when invisible
+    }
+
     // Boss object — takes multiple hits
     if (obj === bossObj && bossActive) {
       bossHP--;
@@ -2972,6 +3055,31 @@ async function main() {
       if (save.career.crystalsShattered >= 10) checkAchievementSilent('crystal_10');
       if (save.career.crystalsShattered >= 50) checkAchievementSilent('crystal_50');
       addXP(50);
+    }
+
+    // Ghost slice — bonus for phasing targets
+    if (obj.type === 'ghost') {
+      save.career.ghostsSliced = (save.career.ghostsSliced || 0) + 1;
+      if (save.career.ghostsSliced === 1) checkAchievementSilent('ghost_first');
+      if (save.career.ghostsSliced >= 10) checkAchievementSilent('ghost_10');
+      if (save.career.ghostsSliced >= 50) checkAchievementSilent('ghost_50');
+      addXP(40);
+      showToast('GHOST BUSTED!');
+    }
+
+    // TimeBomb defused — bonus for slicing before detonation
+    if (obj.type === 'timeBomb') {
+      save.career.timeBombsDefused = (save.career.timeBombsDefused || 0) + 1;
+      if (save.career.timeBombsDefused === 1) checkAchievementSilent('timebomb_first');
+      if (save.career.timeBombsDefused >= 10) checkAchievementSilent('timebomb_10');
+      if (obj.timeBombTimer <= 0.5) checkAchievementSilent('timebomb_close');
+      // Bonus points for close defuse
+      const closeBonus = obj.timeBombTimer <= 1 ? 200 : 0;
+      if (closeBonus > 0) {
+        score += closeBonus;
+        showToast(`CLOSE DEFUSE! +${closeBonus}`);
+      }
+      addXP(35);
     }
 
     obj.active = false;
@@ -3193,6 +3301,8 @@ async function main() {
     const magnetChance = 0.04;
     const doubleChance = 0.04;
     const crystalChance = 0.05;
+    const ghostChance = 0.04;
+    const timeBombChance = 0.04;
 
     let cumChance = 0;
     if (hasBombs) { cumChance += bombChance; if (r < cumChance) return 'bomb'; }
@@ -3201,6 +3311,8 @@ async function main() {
     cumChance += magnetChance; if (r < cumChance) return 'magnet';
     cumChance += doubleChance; if (r < cumChance) return 'doublePoints';
     cumChance += crystalChance; if (r < cumChance) return 'crystal';
+    cumChance += ghostChance; if (r < cumChance) return 'ghost';
+    if (hasBombs) { cumChance += timeBombChance; if (r < cumChance) return 'timeBomb'; }
 
     const types: ObjType[] = ['cube', 'sphere', 'diamond', 'star'];
     const weights = [0.35, 0.3, 0.2, 0.15];
@@ -3276,6 +3388,56 @@ async function main() {
       if (obj.age > 0.15 && Math.random() < 0.15) {
         const trailColor = OBJ_CONFIGS[obj.type]?.color || '#ffffff';
         spawnParticles(obj.group.position.clone(), 1, trailColor, 0.5);
+      }
+
+      // Ghost phasing — cycles visible/invisible
+      if (obj.type === 'ghost') {
+        obj.ghostPhase += effectiveDt * 3;
+        const vis = Math.sin(obj.ghostPhase) > -0.2; // visible ~65% of cycle
+        const opacity = vis ? 0.5 + Math.sin(obj.ghostPhase) * 0.5 : 0.08;
+        (obj.innerMesh.material as MeshStandardMaterial).opacity = opacity;
+        (obj.innerMesh.material as MeshStandardMaterial).transparent = true;
+        (obj.wireMesh.material as LineBasicMaterial).opacity = vis ? 0.8 : 0.1;
+        (obj.glowMesh.material as MeshBasicMaterial).opacity = vis ? 0.2 : 0.03;
+        obj.group.userData.ghostVisible = vis;
+      }
+
+      // TimeBomb countdown
+      if (obj.type === 'timeBomb') {
+        obj.timeBombTimer -= effectiveDt;
+        // Visual urgency: pulsing faster as timer runs down
+        const urgency = 1 - Math.max(0, obj.timeBombTimer) / 3;
+        const flashRate = 4 + urgency * 12;
+        const flash = 0.5 + Math.sin(gameTime * flashRate) * 0.5;
+        (obj.innerMesh.material as MeshStandardMaterial).emissiveIntensity = 0.8 + urgency * 2 + flash * urgency;
+        // Scale pulsing
+        const baseSz = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
+                        (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
+        obj.group.scale.setScalar(baseSz * (1 + flash * urgency * 0.15));
+        if (obj.timeBombTimer <= 0) {
+          // DETONATION — acts like a bomb
+          obj.active = false;
+          obj.group.visible = false;
+          save.career.timeBombDetonations = (save.career.timeBombDetonations || 0) + 1;
+          bombsHit++;
+          score = Math.max(0, score - 300);
+          if (lives > 0) lives--;
+          audio.bombHit();
+          pulseHaptic('both', 0.9, 200);
+          triggerShake(1.5, 0.4);
+          spawnParticles(obj.group.position.clone(), 30, '#ff6600', 6);
+          spawnParticles(obj.group.position.clone(), 15, '#ffaa00', 4);
+          createSliceHalves(obj, new Vector3(0, 1, 0));
+          showToast('TIME BOMB DETONATED!');
+          checkAchievementSilent('timebomb_det');
+          if (lives === 0 && (gameMode === 'classic' || gameMode === 'survival' || gameMode === 'precision')) {
+            endGame();
+            return;
+          }
+          sliceStreak = 0;
+          wavePerfect = false;
+          continue;
+        }
       }
 
       // Check if fallen below threshold
@@ -3469,7 +3631,7 @@ async function main() {
     }
 
     // Timed modes
-    if (gameMode === 'timeAttack' || gameMode === 'frenzy') {
+    if (gameMode === 'timeAttack' || gameMode === 'frenzy' || gameMode === 'duel') {
       gameTimer -= dt;
       if (gameTimer <= 0) {
         endGame();
@@ -3819,6 +3981,23 @@ async function main() {
         }
         break;
       }
+
+      case 'duel': {
+        // Duel mode: timed 60s, head-to-head vs AI
+        if (waveTimer >= (difficulty === 'easy' ? 1.0 : difficulty === 'hard' ? 0.5 : 0.7)) {
+          waveTimer = 0;
+          const count = 2 + Math.floor(rng() * 3);
+          spawnWave(count);
+        }
+        break;
+      }
+    }
+
+    // Duel mode AI scoring — AI "slices" objects, accumulates score
+    if (duelActive && gameState === 'playing') {
+      // AI scores gradually based on difficulty
+      const aiBaseRate = difficulty === 'easy' ? 30 : difficulty === 'hard' ? 80 : 50;
+      aiScore += Math.floor(aiBaseRate * dt * aiComboMultiplier);
     }
   }
 

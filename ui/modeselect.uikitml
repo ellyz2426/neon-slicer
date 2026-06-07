@@ -77,6 +77,8 @@
   <span class="desc">Infinite waves, how far can you go?</span>
   <div id="btn-blitz" class="btn btn-endless" cursor="pointer">BLITZ</div>
   <span class="desc">45s rapid waves, speed builds</span>
+  <div id="btn-duel" class="btn btn-season" cursor="pointer">DUEL</div>
+  <span class="desc">60s head-to-head vs AI — outscore to win</span>
   <div id="btn-season" class="btn btn-season" cursor="pointer">SEASON</div>
   <span class="desc">Defeat 8 AI opponents to become champion</span>
   <div id="btn-modifiers" class="btn btn-mod" cursor="pointer">MODIFIERS</div>

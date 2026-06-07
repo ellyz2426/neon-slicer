@@ -421,6 +421,20 @@
         "dataUid": "uid-39"
       },
       {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [],
+        "properties": {
+          "id": "go-duel",
+          "style": {
+            "fontSize": "2",
+            "color": "#ffd700",
+            "fontWeight": "bold"
+          }
+        },
+        "dataUid": "uid-40"
+      },
+      {
         "type": "container",
         "sourceTag": "div",
         "children": [
@@ -431,7 +445,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-40"
+        "dataUid": "uid-41"
       },
       {
         "type": "container",
@@ -444,7 +458,7 @@
           "class": "btn btn-magenta",
           "cursor": "pointer"
         },
-        "dataUid": "uid-41"
+        "dataUid": "uid-42"
       }
     ],
     "properties": {
@@ -632,7 +646,7 @@
         "column": 0
       },
       "end": {
-        "line": 121,
+        "line": 122,
         "column": 6
       }
     },
@@ -1023,7 +1037,7 @@
       },
       "end": {
         "line": 119,
-        "column": 66
+        "column": 85
       }
     },
     "uid-41": {
@@ -1033,6 +1047,16 @@
       },
       "end": {
         "line": 120,
+        "column": 66
+      }
+    },
+    "uid-42": {
+      "start": {
+        "line": 121,
+        "column": 2
+      },
+      "end": {
+        "line": 121,
         "column": 73
       }
     }

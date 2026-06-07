@@ -778,6 +778,125 @@
         "type": "container",
         "sourceTag": "div",
         "children": [
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "GHOSTS SLICED"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-75"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "0"
+                ],
+                "properties": {
+                  "id": "stat-ghosts",
+                  "class": "value"
+                },
+                "dataUid": "uid-76"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-74"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "BOMBS DEFUSED"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-78"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "0"
+                ],
+                "properties": {
+                  "id": "stat-timebombs",
+                  "class": "value"
+                },
+                "dataUid": "uid-79"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-77"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-73"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "DUEL RECORD"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-82"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "0W / 0L"
+                ],
+                "properties": {
+                  "id": "stat-duels",
+                  "class": "value"
+                },
+                "dataUid": "uid-83"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-81"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-80"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
           "BACK"
         ],
         "properties": {
@@ -785,7 +904,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-73"
+        "dataUid": "uid-84"
       }
     ],
     "properties": {
@@ -939,7 +1058,7 @@
         "column": 0
       },
       "end": {
-        "line": 98,
+        "line": 105,
         "column": 6
       }
     },
@@ -1659,7 +1778,117 @@
         "column": 2
       },
       "end": {
-        "line": 97,
+        "line": 100,
+        "column": 8
+      }
+    },
+    "uid-74": {
+      "start": {
+        "line": 98,
+        "column": 4
+      },
+      "end": {
+        "line": 98,
+        "column": 119
+      }
+    },
+    "uid-75": {
+      "start": {
+        "line": 98,
+        "column": 28
+      },
+      "end": {
+        "line": 98,
+        "column": 68
+      }
+    },
+    "uid-76": {
+      "start": {
+        "line": 98,
+        "column": 68
+      },
+      "end": {
+        "line": 98,
+        "column": 113
+      }
+    },
+    "uid-77": {
+      "start": {
+        "line": 99,
+        "column": 4
+      },
+      "end": {
+        "line": 99,
+        "column": 122
+      }
+    },
+    "uid-78": {
+      "start": {
+        "line": 99,
+        "column": 28
+      },
+      "end": {
+        "line": 99,
+        "column": 68
+      }
+    },
+    "uid-79": {
+      "start": {
+        "line": 99,
+        "column": 68
+      },
+      "end": {
+        "line": 99,
+        "column": 116
+      }
+    },
+    "uid-80": {
+      "start": {
+        "line": 101,
+        "column": 2
+      },
+      "end": {
+        "line": 103,
+        "column": 8
+      }
+    },
+    "uid-81": {
+      "start": {
+        "line": 102,
+        "column": 4
+      },
+      "end": {
+        "line": 102,
+        "column": 122
+      }
+    },
+    "uid-82": {
+      "start": {
+        "line": 102,
+        "column": 28
+      },
+      "end": {
+        "line": 102,
+        "column": 66
+      }
+    },
+    "uid-83": {
+      "start": {
+        "line": 102,
+        "column": 66
+      },
+      "end": {
+        "line": 102,
+        "column": 116
+      }
+    },
+    "uid-84": {
+      "start": {
+        "line": 104,
+        "column": 2
+      },
+      "end": {
+        "line": 104,
         "column": 66
       }
     }
