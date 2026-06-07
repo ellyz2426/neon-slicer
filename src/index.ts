@@ -164,6 +164,10 @@ const THEMES: { name: string; grid: string; accent: string; bg: string; fog: str
     weather: { color: '#ffaacc', count: 12, speed: 0.35, drift: 0.3, size: 0.025, style: 'fall' } },
   { name: 'NEON STORM',   grid: '#ccccff', accent: '#8888ff', bg: '#020208', fog: '#020208', wall: '#111144',
     weather: { color: '#ffffff', count: 8, speed: 2.0, drift: 0.5, size: 0.01, style: 'streak' } },
+  { name: 'CYBER FOREST', grid: '#22ff88', accent: '#00cc44', bg: '#010804', fog: '#010804', wall: '#0a2a10',
+    weather: { color: '#44ff66', count: 15, speed: 0.4, drift: 0.2, size: 0.018, style: 'fall' } },
+  { name: 'VOID ABYSS',   grid: '#4444aa', accent: '#8800cc', bg: '#020004', fog: '#020004', wall: '#0a0020',
+    weather: { color: '#6644cc', count: 10, speed: -0.15, drift: 0.25, size: 0.028, style: 'float' } },
 ];
 
 const BLADE_SKINS = [
@@ -193,6 +197,11 @@ const BLADE_SKINS = [
   { name: 'Detonator',  color: '#ff8800', emissive: '#cc6600', glow: '#ffaa44', unlock: '20 timeBombs' },
   { name: 'Zen',        color: '#66cc88', emissive: '#44aa66', glow: '#88eebb', unlock: 'Zen 200 slices' },
   { name: 'Storm',      color: '#8888ff', emissive: '#6666cc', glow: '#aaaaff', unlock: 'All 12 themes' },
+  // Round 18 skins
+  { name: 'Sylvan',     color: '#22cc66', emissive: '#119944', glow: '#44ee88', unlock: 'Cyber Forest win' },
+  { name: 'Abyssal',    color: '#6622aa', emissive: '#440088', glow: '#8844cc', unlock: 'Void Abyss win' },
+  { name: 'Platinum',   color: '#ccddee', emissive: '#aabbcc', glow: '#eeeeff', unlock: 'Season 3 wins' },
+  { name: 'Infernal',   color: '#ff0000', emissive: '#cc0000', glow: '#ff4444', unlock: 'Hard 100K' },
 ];
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -370,13 +379,13 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'timebomb_close',   name: 'Last Second',         desc: 'Defuse a time bomb in the final 0.5s' },
   { id: 'timebomb_det',     name: 'Too Slow',            desc: 'Let a time bomb detonate' },
   // New themes
-  { id: 'theme_12',         name: 'Dimension Master',    desc: 'Play in all 12 arena themes' },
+  { id: 'theme_12',         name: 'Dimension Master',    desc: 'Play in all 14 arena themes' },
   // Duel mode
   { id: 'duel_win',         name: 'Duelist',             desc: 'Win a Duel' },
   { id: 'duel_win_5',       name: 'Duel Champion',       desc: 'Win 5 Duels' },
   { id: 'duel_perfect',     name: 'Flawless Duel',       desc: 'Win a Duel with 100% accuracy' },
   // New skins
-  { id: 'skin_24',          name: 'Full Arsenal',        desc: 'Unlock all 24 blade skins' },
+  { id: 'skin_24',          name: 'Full Arsenal',        desc: 'Unlock all 28 blade skins' },
   // R17: Weather & accessibility
   { id: 'weather_5',        name: 'Storm Chaser',        desc: 'Play in 5 different weather themes' },
   { id: 'weather_all',      name: 'All Weather',         desc: 'Play in all 12 weather themes' },
@@ -385,6 +394,11 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'ghost_chain_3',    name: 'Ghostbusters',       desc: 'Slice 3 ghosts in one game' },
   { id: 'timebomb_chain_5', name: 'Bomb Squad',         desc: 'Defuse 5 time bombs in one game' },
   { id: 'weather_streak',   name: 'Weather Warrior',    desc: 'Win 3 games in stormy themes' },
+  // R18: New themes & skins
+  { id: 'theme_14',         name: 'Universe Explorer',   desc: 'Play in all 14 arena themes' },
+  { id: 'skin_28',          name: 'Blade Collector',     desc: 'Unlock all 28 blade skins' },
+  { id: 'hard_100k',        name: 'Hardcore Legend',      desc: 'Score 100K on Hard difficulty' },
+  { id: 'season_3_wins',    name: 'Triple Champion',     desc: 'Win 3 complete Seasons' },
 ];
 
 // ============================================================
@@ -753,6 +767,8 @@ class AudioManager {
       { bass: 73.42, arpNotes: [146.83, 185, 220, 293.66, 220, 185, 146.83, 110, 185, 220, 293.66, 369.99, 293.66, 220, 185, 110], padNotes: [146.83, 220, 293.66, 369.99], bpm: 138, filterQ: 7 }, // Neon Sunset — D major (warm)
       { bass: 55, arpNotes: [110, 130.81, 164.81, 220, 164.81, 130.81, 110, 82.41, 130.81, 164.81, 196, 220, 196, 164.81, 130.81, 82.41], padNotes: [110, 130.81, 164.81, 220], bpm: 108, filterQ: 2 }, // Zen Garden — Am pentatonic (serene, slow)
       { bass: 65.41, arpNotes: [130.81, 155.56, 196, 261.63, 196, 155.56, 130.81, 98, 155.56, 196, 261.63, 311.13, 261.63, 196, 155.56, 98], padNotes: [130.81, 155.56, 196, 261.63], bpm: 148, filterQ: 10 }, // Neon Storm — C#m (aggressive, fast)
+      { bass: 51.91, arpNotes: [103.83, 130.81, 164.81, 207.65, 164.81, 130.81, 103.83, 77.78, 130.81, 164.81, 207.65, 261.63, 207.65, 164.81, 130.81, 77.78], padNotes: [103.83, 130.81, 164.81, 207.65], bpm: 122, filterQ: 5 }, // Cyber Forest — Ab (organic, mid-tempo)
+      { bass: 43.65, arpNotes: [87.31, 103.83, 130.81, 174.61, 130.81, 103.83, 87.31, 65.41, 103.83, 130.81, 174.61, 220, 174.61, 130.81, 103.83, 65.41], padNotes: [87.31, 103.83, 130.81, 174.61], bpm: 100, filterQ: 2 }, // Void Abyss — F minor (deep, slow, ominous)
     ];
     const tm = THEME_MUSIC[themeIndex % THEME_MUSIC.length];
 
@@ -2069,7 +2085,12 @@ async function main() {
       case 20: return (s.ghostsSliced || 0) >= 50; // Specter — 50 ghosts
       case 21: return (s.timeBombsDefused || 0) >= 20; // Detonator — 20 timeBombs
       case 22: return save.achievements.includes('zen_100') && s.totalSlices >= 200; // Zen — Zen 200 slices
-      case 23: return s.themesUsed.length >= 12; // Storm — All 12 themes
+      case 23: return s.themesUsed.length >= 14; // Storm — All 14 themes
+      // Round 18 skins
+      case 24: return s.themesUsed.includes('CYBER FOREST') && s.games >= 1; // Sylvan — Cyber Forest win
+      case 25: return s.themesUsed.includes('VOID ABYSS') && s.games >= 1; // Abyssal — Void Abyss win
+      case 26: return (s.seasonWins || 0) >= 3; // Platinum — 3 Season wins
+      case 27: return s.bestScore >= 100000 && save.history.some(h => h.difficulty === 'hard' && h.score >= 100000); // Infernal — Hard 100K
       default: return false;
     }
   }
@@ -3085,7 +3106,7 @@ async function main() {
     }
     if (save.career.themesUsed.length >= THEMES.length) checkAchievementSilent('all_themes_play');
     if (save.career.themesUsed.length >= 10) checkAchievementSilent('theme_10');
-    if (save.career.themesUsed.length >= 12) checkAchievementSilent('theme_12');
+    if (save.career.themesUsed.length >= 14) checkAchievementSilent('theme_12');
     // Total slices milestone
     if (save.career.totalSlices >= 10000) checkAchievementSilent('slice_10k');
     // Score milestones
@@ -3110,6 +3131,10 @@ async function main() {
       stormyWins = (stormyWins || 0) + 1;
       if (stormyWins >= 3) checkAchievementSilent('weather_streak');
     }
+    // R18 achievements
+    if (save.career.themesUsed.length >= 14) checkAchievementSilent('theme_14');
+    if (difficulty === 'hard' && score >= 100000) checkAchievementSilent('hard_100k');
+    if ((save.career.seasonWins || 0) >= 3) checkAchievementSilent('season_3_wins');
 
     // Check achievements
     checkAchievements();

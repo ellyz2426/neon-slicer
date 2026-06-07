@@ -317,6 +317,105 @@
         "dataUid": "uid-25"
       },
       {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "WEATHER FX"
+            ],
+            "properties": {
+              "class": "label"
+            },
+            "dataUid": "uid-30"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "ON"
+                ],
+                "properties": {
+                  "id": "weather-status"
+                },
+                "dataUid": "uid-32"
+              }
+            ],
+            "properties": {
+              "id": "weather-toggle",
+              "class": "btn",
+              "cursor": "pointer"
+            },
+            "dataUid": "uid-31"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-29"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "ACCESSIBILITY"
+        ],
+        "properties": {
+          "class": "section"
+        },
+        "dataUid": "uid-33"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "sourceTag": "span",
+            "type": "custom",
+            "children": [
+              "COLORBLIND"
+            ],
+            "properties": {
+              "class": "label"
+            },
+            "dataUid": "uid-35"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "OFF"
+                ],
+                "properties": {
+                  "id": "colorblind-status"
+                },
+                "dataUid": "uid-37"
+              }
+            ],
+            "properties": {
+              "id": "colorblind-toggle",
+              "class": "btn",
+              "cursor": "pointer"
+            },
+            "dataUid": "uid-36"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-34"
+      },
+      {
         "sourceTag": "span",
         "type": "custom",
         "children": [
@@ -325,7 +424,7 @@
         "properties": {
           "class": "section"
         },
-        "dataUid": "uid-29"
+        "dataUid": "uid-38"
       },
       {
         "type": "container",
@@ -340,7 +439,7 @@
             "properties": {
               "class": "label"
             },
-            "dataUid": "uid-31"
+            "dataUid": "uid-40"
           },
           {
             "sourceTag": "span",
@@ -352,13 +451,13 @@
               "id": "prestige-status",
               "class": "value"
             },
-            "dataUid": "uid-32"
+            "dataUid": "uid-41"
           }
         ],
         "properties": {
           "class": "row"
         },
-        "dataUid": "uid-30"
+        "dataUid": "uid-39"
       },
       {
         "type": "container",
@@ -371,7 +470,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-33"
+        "dataUid": "uid-42"
       },
       {
         "type": "container",
@@ -384,7 +483,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-34"
+        "dataUid": "uid-43"
       }
     ],
     "properties": {
@@ -539,7 +638,7 @@
         "column": 0
       },
       "end": {
-        "line": 95,
+        "line": 104,
         "column": 6
       }
     },
@@ -819,18 +918,18 @@
         "column": 2
       },
       "end": {
-        "line": 88,
-        "column": 39
+        "line": 91,
+        "column": 8
       }
     },
     "uid-30": {
       "start": {
         "line": 89,
-        "column": 2
+        "column": 4
       },
       "end": {
-        "line": 92,
-        "column": 8
+        "line": 89,
+        "column": 41
       }
     },
     "uid-31": {
@@ -840,36 +939,126 @@
       },
       "end": {
         "line": 90,
-        "column": 37
+        "column": 99
       }
     },
     "uid-32": {
       "start": {
-        "line": 91,
-        "column": 4
+        "line": 90,
+        "column": 58
       },
       "end": {
-        "line": 91,
-        "column": 59
+        "line": 90,
+        "column": 93
       }
     },
     "uid-33": {
       "start": {
-        "line": 93,
+        "line": 92,
         "column": 2
       },
       "end": {
-        "line": 93,
-        "column": 68
+        "line": 92,
+        "column": 44
       }
     },
     "uid-34": {
       "start": {
-        "line": 94,
+        "line": 93,
         "column": 2
       },
       "end": {
+        "line": 96,
+        "column": 8
+      }
+    },
+    "uid-35": {
+      "start": {
         "line": 94,
+        "column": 4
+      },
+      "end": {
+        "line": 94,
+        "column": 41
+      }
+    },
+    "uid-36": {
+      "start": {
+        "line": 95,
+        "column": 4
+      },
+      "end": {
+        "line": 95,
+        "column": 106
+      }
+    },
+    "uid-37": {
+      "start": {
+        "line": 95,
+        "column": 61
+      },
+      "end": {
+        "line": 95,
+        "column": 100
+      }
+    },
+    "uid-38": {
+      "start": {
+        "line": 97,
+        "column": 2
+      },
+      "end": {
+        "line": 97,
+        "column": 39
+      }
+    },
+    "uid-39": {
+      "start": {
+        "line": 98,
+        "column": 2
+      },
+      "end": {
+        "line": 101,
+        "column": 8
+      }
+    },
+    "uid-40": {
+      "start": {
+        "line": 99,
+        "column": 4
+      },
+      "end": {
+        "line": 99,
+        "column": 37
+      }
+    },
+    "uid-41": {
+      "start": {
+        "line": 100,
+        "column": 4
+      },
+      "end": {
+        "line": 100,
+        "column": 59
+      }
+    },
+    "uid-42": {
+      "start": {
+        "line": 102,
+        "column": 2
+      },
+      "end": {
+        "line": 102,
+        "column": 68
+      }
+    },
+    "uid-43": {
+      "start": {
+        "line": 103,
+        "column": 2
+      },
+      "end": {
+        "line": 103,
         "column": 69
       }
     }
