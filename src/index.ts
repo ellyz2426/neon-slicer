@@ -399,6 +399,11 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'skin_28',          name: 'Blade Collector',     desc: 'Unlock all 28 blade skins' },
   { id: 'hard_100k',        name: 'Hardcore Legend',      desc: 'Score 100K on Hard difficulty' },
   { id: 'season_3_wins',    name: 'Triple Champion',     desc: 'Win 3 complete Seasons' },
+  // R19: Combo finishers & holodeck
+  { id: 'combo_finisher_5', name: 'Combo Master',        desc: 'Land a x5+ combo finisher bonus' },
+  { id: 'combo_finisher_8', name: 'Combo Legend',        desc: 'Land a x8+ combo finisher bonus' },
+  { id: 'wall_viewer',      name: 'Holodeck Complete',   desc: 'Notice the walls (play 5 games)' },
+  { id: 'multi_kill_4',     name: 'Quad Kill Master',    desc: 'Achieve a 4+ multi-kill 10 times' },
 ];
 
 // ============================================================
@@ -1146,6 +1151,10 @@ async function main() {
     // update grid, lights, etc
     if (gridFloor) (gridFloor.material as MeshBasicMaterial).color.set(t.grid);
     if (gridCeiling) (gridCeiling.material as MeshBasicMaterial).color.set(t.grid);
+    // update wall grids
+    (wallLeft.material as MeshBasicMaterial).color.set(t.wall);
+    (wallRight.material as MeshBasicMaterial).color.set(t.wall);
+    (wallBack.material as MeshBasicMaterial).color.set(t.wall);
     ambientLight.color.set('#333333');
     accentLight1.color.set(t.grid);
     accentLight2.color.set(t.accent);
@@ -1170,6 +1179,20 @@ async function main() {
   gridCeiling.rotation.x = Math.PI / 2;
   gridCeiling.position.y = 4;
   world.scene.add(gridCeiling);
+
+  // Side wall grids for full holodeck enclosure
+  const wallGeo = new PlaneGeometry(20, 4, 20, 4);
+  const wallLeft = new Mesh(wallGeo, new MeshBasicMaterial({ color: theme().wall, wireframe: true, transparent: true, opacity: 0.06 }));
+  wallLeft.position.set(-10, 2, -2);
+  wallLeft.rotation.y = Math.PI / 2;
+  world.scene.add(wallLeft);
+  const wallRight = new Mesh(new PlaneGeometry(20, 4, 20, 4), new MeshBasicMaterial({ color: theme().wall, wireframe: true, transparent: true, opacity: 0.06 }));
+  wallRight.position.set(10, 2, -2);
+  wallRight.rotation.y = -Math.PI / 2;
+  world.scene.add(wallRight);
+  const wallBack = new Mesh(new PlaneGeometry(20, 4, 20, 4), new MeshBasicMaterial({ color: theme().wall, wireframe: true, transparent: true, opacity: 0.08 }));
+  wallBack.position.set(0, 2, -12);
+  world.scene.add(wallBack);
 
   // Lights
   const ambientLight = new AmbientLight('#333333', 0.8);
@@ -2728,6 +2751,16 @@ async function main() {
     setText(doc, 'go-streak', sliceStreak.toString());
     // Type combo
     setText(doc, 'go-typecombo', bestTypeCombo >= 3 ? `x${bestTypeCombo}` : '--');
+    // Accuracy bonus
+    const accRatio = totalSpawned > 0 ? sliceCount / totalSpawned : 0;
+    const accBonus = accRatio > 0.5 && totalSpawned >= 5 ? `+${Math.floor((accRatio - 0.5) * 10) * 10}%` : '--';
+    setText(doc, 'go-accbonus', accBonus);
+    // Duration
+    setText(doc, 'go-duration', `${Math.floor(gameTime)}s`);
+    // Multi-kill
+    setText(doc, 'go-multikill', multiKillBest >= 3 ? `${multiKillBest}x` : '--');
+    // Theme name
+    setText(doc, 'go-theme', THEMES[themeIdx].name);
     // Replay summary
     setText(doc, 'go-replay', replayBuffer.length > 0 ? `Last ${REPLAY_WINDOW}s: ${replayBuffer.length} slices` : '');
     // Duel result
@@ -3653,6 +3686,12 @@ async function main() {
     return difficulty === 'easy' ? 2.5 : difficulty === 'hard' ? 1.2 : 1.8;
   }
 
+  // ---- Temp vectors for GC-free per-frame ops ----
+  const _tmpV1 = new Vector3();
+  const _tmpV2 = new Vector3();
+  const _tmpQ1 = new Quaternion();
+  const _playerPos = new Vector3(0, 1.5, 0);
+
   // ---- Object update ----
   function updateObjects(dt: number) {
     const effectiveDt = freezeTimer > 0 ? dt * 0.3 : dt; // slow-mo
@@ -3683,7 +3722,7 @@ async function main() {
       obj.group.rotation.z += obj.angVel.z * effectiveDt;
 
       // Proximity + pulsing glow — objects brighten as they approach
-      const distToPlayer = obj.group.position.distanceTo(new Vector3(0, 1.5, 0));
+      const distToPlayer = obj.group.position.distanceTo(_playerPos);
       const proximityFactor = Math.max(0, 1 - distToPlayer / 4); // 0 far, 1 close
       const baseGlow = 0.1 + Math.sin(gameTime * 4) * 0.05;
       (obj.glowMesh.material as MeshBasicMaterial).opacity = baseGlow + proximityFactor * 0.25;
@@ -3931,6 +3970,15 @@ async function main() {
 
     // Combo decay
     if (combo > 0 && gameTime - lastSliceTime > COMBO_DECAY_TIME) {
+      // Combo finisher bonus: award bonus based on final combo level
+      if (combo >= 3) {
+        const finisherBonus = combo * 50;
+        score += finisherBonus;
+        showToast(`COMBO FINISHER x${combo + 1} +${finisherBonus}`);
+        audio.comboAnnounce(combo);
+        if (combo >= 5) checkAchievementSilent('combo_finisher_5');
+        if (combo >= 8) checkAchievementSilent('combo_finisher_8');
+      }
       combo = 0;
       comboAnnounceLast = 0;
       updateComboDisplay();

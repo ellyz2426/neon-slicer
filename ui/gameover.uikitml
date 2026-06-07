@@ -116,6 +116,26 @@
       <span id="go-level" class="value">LV 1</span>
     </div>
   </div>
+  <div class="row">
+    <div class="stat-block">
+      <span class="label">ACC BONUS</span>
+      <span id="go-accbonus" class="value">--</span>
+    </div>
+    <div class="stat-block">
+      <span class="label">DURATION</span>
+      <span id="go-duration" class="value">0s</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="stat-block">
+      <span class="label">MULTI-KILL</span>
+      <span id="go-multikill" class="value">--</span>
+    </div>
+    <div class="stat-block">
+      <span class="label">THEME</span>
+      <span id="go-theme" class="value">--</span>
+    </div>
+  </div>
   <span id="go-replay" style="font-size: 1.2; color: #888888; font-style: italic;"></span>
   <span id="go-duel" style="font-size: 2; color: #ffd700; font-weight: bold;"></span>
   <div id="btn-rematch" class="btn" cursor="pointer">REMATCH</div>
