@@ -299,6 +299,10 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'accuracy_90_10',   name: 'Eagle Eye',           desc: 'Finish 10 games with 90%+ accuracy' },
   // Difficulty
   { id: 'hard_all_modes',   name: 'Hardened',            desc: 'Complete every mode on Hard' },
+  // Replay & arena
+  { id: 'replay_5',         name: 'Flashback',           desc: 'Trigger replay with 5+ slices in final 5s' },
+  { id: 'all_themes_play',  name: 'World Traveler',      desc: 'Play a game in every arena theme' },
+  { id: 'slice_10k',        name: 'Ten Thousand Cuts',   desc: 'Slice 10,000 objects total' },
 ];
 
 // ============================================================
@@ -624,12 +628,25 @@ class AudioManager {
     notes.forEach((f, i) => setTimeout(() => this.playSfx(f, 'triangle', 0.2, 0.2, false), i * 120));
   }
 
-  startDrone() {
+  startDrone(themeIndex = 0) {
     if (!this.ctx || !this.musicGain) return;
     this.stopDrone();
     const t = this.ctx.currentTime;
 
     // --- Procedural Synthwave Music Engine ---
+    // Arena-specific tuning
+    const THEME_MUSIC: { bass: number; arpNotes: number[]; padNotes: number[]; bpm: number; filterQ: number }[] = [
+      { bass: 55, arpNotes: [110, 138.59, 164.81, 220, 164.81, 138.59, 110, 82.41, 130.81, 164.81, 196, 261.63, 196, 164.81, 130.81, 98], padNotes: [130.81, 164.81, 196, 261.63], bpm: 128, filterQ: 5 }, // Neon Holodeck — C major
+      { bass: 58.27, arpNotes: [116.54, 138.59, 174.61, 233.08, 174.61, 138.59, 116.54, 87.31, 146.83, 174.61, 220, 293.66, 220, 174.61, 146.83, 110], padNotes: [146.83, 174.61, 220, 293.66], bpm: 136, filterQ: 7 }, // Crimson Arena — D minor
+      { bass: 49, arpNotes: [98, 123.47, 146.83, 196, 146.83, 123.47, 98, 73.42, 123.47, 146.83, 196, 246.94, 196, 146.83, 123.47, 73.42], padNotes: [123.47, 146.83, 196, 246.94], bpm: 120, filterQ: 4 }, // Toxic Neon — G minor
+      { bass: 61.74, arpNotes: [123.47, 155.56, 185, 246.94, 185, 155.56, 123.47, 92.5, 146.83, 185, 220, 277.18, 220, 185, 146.83, 110], padNotes: [123.47, 155.56, 185, 246.94], bpm: 132, filterQ: 6 }, // Ultra Violet — Eb major
+      { bass: 65.41, arpNotes: [130.81, 164.81, 196, 261.63, 196, 164.81, 130.81, 98, 146.83, 196, 246.94, 329.63, 246.94, 196, 146.83, 98], padNotes: [130.81, 196, 261.63, 329.63], bpm: 140, filterQ: 8 }, // Solar Blaze — C power (fifths)
+      { bass: 51.91, arpNotes: [103.83, 130.81, 155.56, 207.65, 155.56, 130.81, 103.83, 77.78, 130.81, 155.56, 207.65, 261.63, 207.65, 155.56, 130.81, 77.78], padNotes: [103.83, 130.81, 155.56, 207.65], bpm: 116, filterQ: 3 }, // Frozen Grid — Ab major (slow, crystalline)
+      { bass: 61.74, arpNotes: [123.47, 146.83, 185, 246.94, 185, 146.83, 123.47, 92.5, 155.56, 185, 246.94, 311.13, 246.94, 185, 155.56, 92.5], padNotes: [123.47, 146.83, 185, 246.94], bpm: 144, filterQ: 9 }, // Blood Moon — Eb minor (aggressive)
+      { bass: 55, arpNotes: [110, 146.83, 164.81, 220, 164.81, 146.83, 110, 82.41, 146.83, 196, 220, 293.66, 220, 196, 146.83, 82.41], padNotes: [110, 146.83, 196, 261.63], bpm: 124, filterQ: 4 }, // Ghost Matrix — Am (ethereal)
+    ];
+    const tm = THEME_MUSIC[themeIndex % THEME_MUSIC.length];
+
     // Bass drone
     const makeOsc = (freq: number, type: OscillatorType, vol: number) => {
       const osc = this.ctx!.createOscillator();
@@ -647,18 +664,17 @@ class AudioManager {
       this.droneOscs.push(osc);
       return osc;
     };
-    makeOsc(55, 'sine', 0.06);
-    makeOsc(82.5, 'triangle', 0.04);
+    makeOsc(tm.bass, 'sine', 0.06);
+    makeOsc(tm.bass * 1.5, 'triangle', 0.04);
 
     // Arpeggiator - synthwave-style repeating pattern
-    const arpNotes = [110, 138.59, 164.81, 220, 164.81, 138.59, 110, 82.41,
-                      130.81, 164.81, 196, 261.63, 196, 164.81, 130.81, 98];
+    const arpNotes = tm.arpNotes;
     const arpOsc = this.ctx.createOscillator();
     arpOsc.type = 'sawtooth';
     const arpFilter = this.ctx.createBiquadFilter();
     arpFilter.type = 'lowpass';
     arpFilter.frequency.value = 800;
-    arpFilter.Q.value = 5;
+    arpFilter.Q.value = tm.filterQ;
     const arpGain = this.ctx.createGain();
     arpGain.gain.value = 0.04;
     arpOsc.connect(arpFilter);
@@ -666,7 +682,7 @@ class AudioManager {
     arpGain.connect(this.musicGain);
 
     // Schedule arpeggio pattern (loops every 4 bars)
-    const bpm = 128;
+    const bpm = tm.bpm;
     const stepDur = 60 / bpm / 4; // 16th notes
     const patternLen = arpNotes.length;
     const totalBars = 64; // pre-schedule 64 repetitions
@@ -681,8 +697,8 @@ class AudioManager {
     arpOsc.start(t);
     this.droneOscs.push(arpOsc);
 
-    // Pad chord - warm ambient pad
-    const padNotes = [130.81, 164.81, 196, 261.63]; // C3 chord
+    // Pad chord - warm ambient pad (arena-specific)
+    const padNotes = tm.padNotes;
     padNotes.forEach(freq => {
       const osc = this.ctx!.createOscillator();
       osc.type = 'sine';
@@ -927,6 +943,21 @@ async function main() {
   let historyPage = 0;
   let comboAnnounceLast = 0; // last announced combo threshold
   let lastComboAnnounceTime = 0;
+
+  // Instant replay — capture last 5 seconds of slice events
+  interface ReplayEvent {
+    time: number;
+    pos: Vector3;
+    type: ObjType;
+    comboAt: number;
+    score: number;
+  }
+  const replayBuffer: ReplayEvent[] = [];
+  const REPLAY_WINDOW = 5; // seconds to keep
+  let replayActive = false;
+  let replayStartTime = 0;
+  let replayEvents: ReplayEvent[] = [];
+  let replayMarkers: Mesh[] = [];
 
   const MODIFIER_DESCS: Record<Modifier, string> = {
     bigObjects: 'Objects are 2x larger',
@@ -2321,6 +2352,61 @@ async function main() {
     setText(doc, 'go-streak', sliceStreak.toString());
     // Type combo
     setText(doc, 'go-typecombo', bestTypeCombo >= 3 ? `x${bestTypeCombo}` : '--');
+    // Replay summary
+    setText(doc, 'go-replay', replayBuffer.length > 0 ? `Last ${REPLAY_WINDOW}s: ${replayBuffer.length} slices` : '');
+    // Start instant replay visualization
+    startReplay();
+  }
+
+  function startReplay() {
+    stopReplay();
+    if (replayBuffer.length === 0) return;
+    replayActive = true;
+    replayEvents = [...replayBuffer];
+    replayStartTime = totalTime;
+    // Create marker meshes for replay
+    replayEvents.forEach(ev => {
+      const geo = new SphereGeometry(0.05, 8, 8);
+      const mat = new MeshBasicMaterial({ color: OBJ_CONFIGS[ev.type]?.color || '#ffffff', transparent: true, opacity: 0, blending: AdditiveBlending });
+      const mesh = new Mesh(geo, mat);
+      mesh.position.copy(ev.pos);
+      mesh.visible = false;
+      world.scene.add(mesh);
+      replayMarkers.push(mesh);
+    });
+  }
+
+  function stopReplay() {
+    replayActive = false;
+    replayMarkers.forEach(m => { world.scene.remove(m); m.geometry.dispose(); (m.material as MeshBasicMaterial).dispose(); });
+    replayMarkers = [];
+    replayEvents = [];
+  }
+
+  function updateReplay(dt: number) {
+    if (!replayActive || replayEvents.length === 0) return;
+    const elapsed = totalTime - replayStartTime;
+    const replayDuration = REPLAY_WINDOW + 1; // replay over REPLAY_WINDOW + 1s
+    if (elapsed > replayDuration) {
+      // Loop replay
+      replayStartTime = totalTime;
+      replayMarkers.forEach(m => { m.visible = false; (m.material as MeshBasicMaterial).opacity = 0; });
+      return;
+    }
+    const timeBase = replayEvents[0].time;
+    const timeScale = REPLAY_WINDOW / replayDuration;
+    for (let i = 0; i < replayEvents.length; i++) {
+      const ev = replayEvents[i];
+      const eventTime = (ev.time - timeBase) / timeScale;
+      const marker = replayMarkers[i];
+      if (elapsed >= eventTime) {
+        marker.visible = true;
+        const age = elapsed - eventTime;
+        const fade = Math.max(0, 1 - age / 1.5);
+        (marker.material as MeshBasicMaterial).opacity = fade * 0.8;
+        marker.scale.setScalar(1 + age * 2);
+      }
+    }
   }
 
   // ---- State Management ----
@@ -2329,7 +2415,7 @@ async function main() {
     gameState = state;
     hideAllPanels();
     switch (state) {
-      case 'title': showPanel('title'); break;
+      case 'title': showPanel('title'); stopReplay(); break;
       case 'modeSelect': showPanel('modeSelect'); break;
       case 'difficulty': showPanel('difficulty'); break;
       case 'playing':
@@ -2381,6 +2467,8 @@ async function main() {
   }
 
   function startGame() {
+    stopReplay();
+    replayBuffer.length = 0;
     score = 0;
     lives = (gameMode === 'zen' || gameMode === 'timeAttack' || gameMode === 'frenzy') ? -1 :
             (activeModifiers.has('oneLife')) ? 1 : 3;
@@ -2446,7 +2534,7 @@ async function main() {
     slicedHalves.forEach(h => world.scene.remove(h.mesh));
     slicedHalves.length = 0;
 
-    audio.startDrone();
+    audio.startDrone(themeIdx);
     audio.gameStart();
     switchState('playing');
 
@@ -2603,6 +2691,17 @@ async function main() {
       inChallengeMode = false;
       activeChallenge = null;
     }
+
+    // Replay achievement
+    if (replayBuffer.length >= 5) checkAchievementSilent('replay_5');
+    // Arena theme tracking
+    const currentThemeName = THEMES[themeIdx].name;
+    if (!save.career.themesUsed.includes(currentThemeName)) {
+      save.career.themesUsed.push(currentThemeName);
+    }
+    if (save.career.themesUsed.length >= THEMES.length) checkAchievementSilent('all_themes_play');
+    // Total slices milestone
+    if (save.career.totalSlices >= 10000) checkAchievementSilent('slice_10k');
 
     // Check achievements
     checkAchievements();
@@ -2896,6 +2995,11 @@ async function main() {
       handleTypeCombo(obj.type);
     }
 
+    // Record replay event
+    replayBuffer.push({ time: gameTime, pos: obj.group.position.clone(), type: obj.type, comboAt: combo, score });
+    // Trim old events
+    while (replayBuffer.length > 0 && replayBuffer[0].time < gameTime - REPLAY_WINDOW) replayBuffer.shift();
+
     // Streak achievements
     if (sliceStreak >= 20) checkAchievementSilent('streak_20');
     if (sliceStreak >= 50) checkAchievementSilent('streak_50');
@@ -3122,7 +3226,11 @@ async function main() {
       return;
     }
 
-    if (gameState !== 'playing') return;
+    if (gameState !== 'playing') {
+      // Update replay visualization on game over screen
+      if (gameState === 'gameOver') updateReplay(dt);
+      return;
+    }
 
     // Game time
     const effectiveDt = freezeTimer > 0 ? dt * 0.3 : dt;

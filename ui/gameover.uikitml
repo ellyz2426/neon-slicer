@@ -116,6 +116,7 @@
       <span id="go-level" class="value">LV 1</span>
     </div>
   </div>
+  <span id="go-replay" style="font-size: 1.2; color: #888888; font-style: italic;"></span>
   <div id="btn-rematch" class="btn" cursor="pointer">REMATCH</div>
   <div id="btn-title" class="btn btn-magenta" cursor="pointer">MENU</div>
 </div>

@@ -407,6 +407,20 @@
         "dataUid": "uid-32"
       },
       {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [],
+        "properties": {
+          "id": "go-replay",
+          "style": {
+            "fontSize": "1.2",
+            "color": "#888888",
+            "fontStyle": "italic"
+          }
+        },
+        "dataUid": "uid-39"
+      },
+      {
         "type": "container",
         "sourceTag": "div",
         "children": [
@@ -417,7 +431,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-39"
+        "dataUid": "uid-40"
       },
       {
         "type": "container",
@@ -430,7 +444,7 @@
           "class": "btn btn-magenta",
           "cursor": "pointer"
         },
-        "dataUid": "uid-40"
+        "dataUid": "uid-41"
       }
     ],
     "properties": {
@@ -618,7 +632,7 @@
         "column": 0
       },
       "end": {
-        "line": 120,
+        "line": 121,
         "column": 6
       }
     },
@@ -999,7 +1013,7 @@
       },
       "end": {
         "line": 118,
-        "column": 66
+        "column": 90
       }
     },
     "uid-40": {
@@ -1009,6 +1023,16 @@
       },
       "end": {
         "line": 119,
+        "column": 66
+      }
+    },
+    "uid-41": {
+      "start": {
+        "line": 120,
+        "column": 2
+      },
+      "end": {
+        "line": 120,
         "column": 73
       }
     }
