@@ -47,47 +47,50 @@
 </style>
 <div class="panel">
   <span class="heading">HOW TO PLAY</span>
-  <span class="section">BROWSER</span>
+  <span class="section">BROWSER CONTROLS</span>
   <span class="text">Move mouse to aim blade, swing through objects</span>
   <span class="key">SPACE = Charge Attack | ESC = Pause | R = Rematch</span>
   <span class="section">VR CONTROLLERS</span>
   <span class="text">Swing controllers to slice with dual energy blades</span>
-  <span class="key">Squeeze = Charge | B = Pause | Trigger = Menu</span>
+  <span class="key">Squeeze = Charge | B = Pause | Laser = Menus</span>
   <span class="section">GAMEPLAY</span>
-  <span class="text">Slice neon objects as they fly up</span>
-  <span class="text">Avoid BOMBS (red) — build combos x1-x10</span>
-  <span class="text">Earn stars (1-3) by reaching score thresholds</span>
+  <span class="text">Slice neon objects as they fly up — build combos x1-x10</span>
+  <span class="text">Earn stars (1-3) per mode/difficulty by score thresholds</span>
+  <span class="section">OBJECTS (12 TYPES)</span>
+  <span class="text">Cube: 100 | Sphere: 150 | Diamond: 200 | Star: 300</span>
+  <span class="text">Crystal (blue): 500pts, 3 hits to shatter</span>
+  <span class="text">Ghost (purple): 400pts, phases in/out — slice when visible</span>
+  <span class="text">Time Bomb (orange): 350pts, 3s fuse — slice before detonation!</span>
+  <span class="text">Bomb (red): -500pts, costs a life (shield absorbs)</span>
+  <span class="section">POWER-UPS</span>
+  <span class="text">Freeze: 5s slow motion | Shield: block next bomb (15s)</span>
+  <span class="text">Magnet: pull objects toward blade (8s)</span>
+  <span class="text">Double Points: 2x scoring for 8s</span>
+  <span class="section">12 GAME MODES</span>
+  <span class="text">Classic: Waves + bosses, 3 lives</span>
+  <span class="text">Zen: No bombs, relax | Time Attack: 60s max score</span>
+  <span class="text">Survival: Rising speed, 3 lives</span>
+  <span class="text">Frenzy: 30s rapid fire | Blitz: 45s speed ramp</span>
+  <span class="text">Daily: Seeded puzzle + streak | Precision: Targets only</span>
+  <span class="text">Endless: Infinite waves with bosses every 10</span>
+  <span class="text">Duel: 60s vs AI — outscore to win!</span>
+  <span class="text">Season: 8 AI opponents, bracket progression</span>
+  <span class="text">Custom: Create/share challenges with codes</span>
   <span class="section">CHARGE ATTACK</span>
   <span class="text">Hold Space/Squeeze to charge, release for AOE burst</span>
-  <span class="text">Slices all objects within range — needs 50% charge</span>
-  <span class="section">TYPE COMBOS</span>
-  <span class="text">Slice 3+ of the same type in a row for bonus points</span>
-  <span class="text">Cube-Cube-Cube = x3 Type Combo (+300 bonus)</span>
-  <span class="section">OBJECTS</span>
-  <span class="text">Cube: 100 | Sphere: 150 | Diamond: 200 | Star: 300</span>
-  <span class="text">Crystal (light blue): 500, requires 3 hits</span>
-  <span class="section">MODES</span>
-  <span class="text">Classic: Waves + boss, 3 lives</span>
-  <span class="text">Zen: No bombs, relax</span>
-  <span class="text">Time Attack: 60s, max score</span>
-  <span class="text">Survival: Rising difficulty, 3 lives</span>
-  <span class="text">Frenzy: 30s rapid fire</span>
-  <span class="text">Daily: Same puzzle for everyone today</span>
-  <span class="text">Precision: Slice only targets, 3 lives</span>
-  <span class="text">Endless: Infinite waves, how far can you go?</span>
-  <span class="text">Blitz: 45s rapid-fire, speed escalates fast</span>
-  <span class="text">Quick Play: Random mode + difficulty</span>
-  <span class="section">POWER-UPS</span>
-  <span class="text">Freeze: Slow time 5s | Shield: Block 1 bomb</span>
-  <span class="text">Magnet: Pull objects | Double: 2x points 8s</span>
-  <span class="section">BOSSES</span>
-  <span class="text">Classic: every 5 waves | Endless: every 10 waves</span>
-  <span class="text">Large golden objects, multiple hits to defeat</span>
-  <span class="section">MODIFIERS</span>
-  <span class="text">Toggle challenge mutators from mode select</span>
-  <span class="text">Big/Tiny objects, Speed Demon, Mirror, One Life, Chaos</span>
-  <span class="section">MUSIC</span>
-  <span class="text">Procedural synthwave plays during gameplay</span>
-  <span class="text">Adjust volume in Settings</span>
+  <span class="text">Slices all nearby objects — needs 50% charge minimum</span>
+  <span class="section">COMBOS &amp; MULTI-KILLS</span>
+  <span class="text">Type Combos: 3+ same type in a row for bonus points</span>
+  <span class="text">Multi-Kill: TRIPLE→HEXA for rapid slices within 0.5s</span>
+  <span class="text">Announcements: NICE! AWESOME! INCREDIBLE! GODLIKE!</span>
+  <span class="section">BOSSES (3 TYPES)</span>
+  <span class="text">Orbiter: circular path | Charger: lunges toward you</span>
+  <span class="text">Splitter: wide orbit | All require multiple hits</span>
+  <span class="section">MODIFIERS (7)</span>
+  <span class="text">Big/Tiny Objects, Speed Demon, Mirror, No Bombs</span>
+  <span class="text">One Life, Chaos (all modifiers at once)</span>
+  <span class="section">PROGRESSION</span>
+  <span class="text">50 levels with XP | Prestige at Lv50 (+10% score)</span>
+  <span class="text">24 blade skins | 12 arena themes | 140+ achievements</span>
   <div id="btn-back-help" class="btn" cursor="pointer">BACK</div>
 </div>

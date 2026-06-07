@@ -18,7 +18,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "BROWSER"
+          "BROWSER CONTROLS"
         ],
         "properties": {
           "class": "section"
@@ -73,7 +73,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Squeeze = Charge | B = Pause | Trigger = Menu"
+          "Squeeze = Charge | B = Pause | Laser = Menus"
         ],
         "properties": {
           "class": "key"
@@ -95,7 +95,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Slice neon objects as they fly up"
+          "Slice neon objects as they fly up — build combos x1-x10"
         ],
         "properties": {
           "class": "text"
@@ -106,7 +106,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Avoid BOMBS (red) — build combos x1-x10"
+          "Earn stars (1-3) per mode/difficulty by score thresholds"
         ],
         "properties": {
           "class": "text"
@@ -117,89 +117,12 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Earn stars (1-3) by reaching score thresholds"
+          "OBJECTS (12 TYPES)"
         ],
         "properties": {
-          "class": "text"
+          "class": "section"
         },
         "dataUid": "uid-12"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "CHARGE ATTACK"
-        ],
-        "properties": {
-          "class": "section"
-        },
-        "dataUid": "uid-13"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Hold Space/Squeeze to charge, release for AOE burst"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-14"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Slices all objects within range — needs 50% charge"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-15"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "TYPE COMBOS"
-        ],
-        "properties": {
-          "class": "section"
-        },
-        "dataUid": "uid-16"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Slice 3+ of the same type in a row for bonus points"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-17"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Cube-Cube-Cube = x3 Type Combo (+300 bonus)"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-18"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "OBJECTS"
-        ],
-        "properties": {
-          "class": "section"
-        },
-        "dataUid": "uid-19"
       },
       {
         "sourceTag": "span",
@@ -210,139 +133,51 @@
         "properties": {
           "class": "text"
         },
-        "dataUid": "uid-20"
+        "dataUid": "uid-13"
       },
       {
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Crystal (light blue): 500, requires 3 hits"
+          "Crystal (blue): 500pts, 3 hits to shatter"
         ],
         "properties": {
           "class": "text"
         },
-        "dataUid": "uid-21"
+        "dataUid": "uid-14"
       },
       {
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "MODES"
-        ],
-        "properties": {
-          "class": "section"
-        },
-        "dataUid": "uid-22"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Classic: Waves + boss, 3 lives"
+          "Ghost (purple): 400pts, phases in/out — slice when visible"
         ],
         "properties": {
           "class": "text"
         },
-        "dataUid": "uid-23"
+        "dataUid": "uid-15"
       },
       {
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Zen: No bombs, relax"
+          "Time Bomb (orange): 350pts, 3s fuse — slice before detonation!"
         ],
         "properties": {
           "class": "text"
         },
-        "dataUid": "uid-24"
+        "dataUid": "uid-16"
       },
       {
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Time Attack: 60s, max score"
+          "Bomb (red): -500pts, costs a life (shield absorbs)"
         ],
         "properties": {
           "class": "text"
         },
-        "dataUid": "uid-25"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Survival: Rising difficulty, 3 lives"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-26"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Frenzy: 30s rapid fire"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-27"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Daily: Same puzzle for everyone today"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-28"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Precision: Slice only targets, 3 lives"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-29"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Endless: Infinite waves, how far can you go?"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-30"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Blitz: 45s rapid-fire, speed escalates fast"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-31"
-      },
-      {
-        "sourceTag": "span",
-        "type": "custom",
-        "children": [
-          "Quick Play: Random mode + difficulty"
-        ],
-        "properties": {
-          "class": "text"
-        },
-        "dataUid": "uid-32"
+        "dataUid": "uid-17"
       },
       {
         "sourceTag": "span",
@@ -353,13 +188,178 @@
         "properties": {
           "class": "section"
         },
+        "dataUid": "uid-18"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Freeze: 5s slow motion | Shield: block next bomb (15s)"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-19"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Magnet: pull objects toward blade (8s)"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-20"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Double Points: 2x scoring for 8s"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-21"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "12 GAME MODES"
+        ],
+        "properties": {
+          "class": "section"
+        },
+        "dataUid": "uid-22"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Classic: Waves + bosses, 3 lives"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-23"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Zen: No bombs, relax | Time Attack: 60s max score"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-24"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Survival: Rising speed, 3 lives"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-25"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Frenzy: 30s rapid fire | Blitz: 45s speed ramp"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-26"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Daily: Seeded puzzle + streak | Precision: Targets only"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-27"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Endless: Infinite waves with bosses every 10"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-28"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Duel: 60s vs AI — outscore to win!"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-29"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Season: 8 AI opponents, bracket progression"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-30"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Custom: Create/share challenges with codes"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-31"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "CHARGE ATTACK"
+        ],
+        "properties": {
+          "class": "section"
+        },
+        "dataUid": "uid-32"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "Hold Space/Squeeze to charge, release for AOE burst"
+        ],
+        "properties": {
+          "class": "text"
+        },
         "dataUid": "uid-33"
       },
       {
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Freeze: Slow time 5s | Shield: Block 1 bomb"
+          "Slices all nearby objects — needs 50% charge minimum"
         ],
         "properties": {
           "class": "text"
@@ -370,10 +370,10 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Magnet: Pull objects | Double: 2x points 8s"
+          "COMBOS & MULTI-KILLS"
         ],
         "properties": {
-          "class": "text"
+          "class": "section"
         },
         "dataUid": "uid-35"
       },
@@ -381,10 +381,10 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "BOSSES"
+          "Type Combos: 3+ same type in a row for bonus points"
         ],
         "properties": {
-          "class": "section"
+          "class": "text"
         },
         "dataUid": "uid-36"
       },
@@ -392,7 +392,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Classic: every 5 waves | Endless: every 10 waves"
+          "Multi-Kill: TRIPLE→HEXA for rapid slices within 0.5s"
         ],
         "properties": {
           "class": "text"
@@ -403,7 +403,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Large golden objects, multiple hits to defeat"
+          "Announcements: NICE! AWESOME! INCREDIBLE! GODLIKE!"
         ],
         "properties": {
           "class": "text"
@@ -414,7 +414,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "MODIFIERS"
+          "BOSSES (3 TYPES)"
         ],
         "properties": {
           "class": "section"
@@ -425,7 +425,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Toggle challenge mutators from mode select"
+          "Orbiter: circular path | Charger: lunges toward you"
         ],
         "properties": {
           "class": "text"
@@ -436,7 +436,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Big/Tiny objects, Speed Demon, Mirror, One Life, Chaos"
+          "Splitter: wide orbit | All require multiple hits"
         ],
         "properties": {
           "class": "text"
@@ -447,7 +447,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "MUSIC"
+          "MODIFIERS (7)"
         ],
         "properties": {
           "class": "section"
@@ -458,7 +458,7 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Procedural synthwave plays during gameplay"
+          "Big/Tiny Objects, Speed Demon, Mirror, No Bombs"
         ],
         "properties": {
           "class": "text"
@@ -469,12 +469,45 @@
         "sourceTag": "span",
         "type": "custom",
         "children": [
-          "Adjust volume in Settings"
+          "One Life, Chaos (all modifiers at once)"
         ],
         "properties": {
           "class": "text"
         },
         "dataUid": "uid-44"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "PROGRESSION"
+        ],
+        "properties": {
+          "class": "section"
+        },
+        "dataUid": "uid-45"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "50 levels with XP | Prestige at Lv50 (+10% score)"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-46"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "24 blade skins | 12 arena themes | 140+ achievements"
+        ],
+        "properties": {
+          "class": "text"
+        },
+        "dataUid": "uid-47"
       },
       {
         "type": "container",
@@ -487,7 +520,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-45"
+        "dataUid": "uid-48"
       }
     ],
     "properties": {
@@ -621,7 +654,7 @@
         "column": 0
       },
       "end": {
-        "line": 92,
+        "line": 95,
         "column": 6
       }
     },
@@ -642,7 +675,7 @@
       },
       "end": {
         "line": 49,
-        "column": 38
+        "column": 47
       }
     },
     "uid-4": {
@@ -692,7 +725,7 @@
       },
       "end": {
         "line": 54,
-        "column": 72
+        "column": 71
       }
     },
     "uid-9": {
@@ -712,7 +745,7 @@
       },
       "end": {
         "line": 56,
-        "column": 61
+        "column": 83
       }
     },
     "uid-11": {
@@ -722,7 +755,7 @@
       },
       "end": {
         "line": 57,
-        "column": 67
+        "column": 84
       }
     },
     "uid-12": {
@@ -732,7 +765,7 @@
       },
       "end": {
         "line": 58,
-        "column": 73
+        "column": 49
       }
     },
     "uid-13": {
@@ -742,7 +775,7 @@
       },
       "end": {
         "line": 59,
-        "column": 44
+        "column": 78
       }
     },
     "uid-14": {
@@ -752,7 +785,7 @@
       },
       "end": {
         "line": 60,
-        "column": 79
+        "column": 69
       }
     },
     "uid-15": {
@@ -762,7 +795,7 @@
       },
       "end": {
         "line": 61,
-        "column": 78
+        "column": 86
       }
     },
     "uid-16": {
@@ -772,7 +805,7 @@
       },
       "end": {
         "line": 62,
-        "column": 42
+        "column": 90
       }
     },
     "uid-17": {
@@ -782,7 +815,7 @@
       },
       "end": {
         "line": 63,
-        "column": 79
+        "column": 78
       }
     },
     "uid-18": {
@@ -792,7 +825,7 @@
       },
       "end": {
         "line": 64,
-        "column": 71
+        "column": 40
       }
     },
     "uid-19": {
@@ -802,7 +835,7 @@
       },
       "end": {
         "line": 65,
-        "column": 38
+        "column": 82
       }
     },
     "uid-20": {
@@ -812,7 +845,7 @@
       },
       "end": {
         "line": 66,
-        "column": 78
+        "column": 66
       }
     },
     "uid-21": {
@@ -822,7 +855,7 @@
       },
       "end": {
         "line": 67,
-        "column": 70
+        "column": 60
       }
     },
     "uid-22": {
@@ -832,7 +865,7 @@
       },
       "end": {
         "line": 68,
-        "column": 36
+        "column": 44
       }
     },
     "uid-23": {
@@ -842,7 +875,7 @@
       },
       "end": {
         "line": 69,
-        "column": 58
+        "column": 60
       }
     },
     "uid-24": {
@@ -852,7 +885,7 @@
       },
       "end": {
         "line": 70,
-        "column": 48
+        "column": 77
       }
     },
     "uid-25": {
@@ -862,7 +895,7 @@
       },
       "end": {
         "line": 71,
-        "column": 55
+        "column": 59
       }
     },
     "uid-26": {
@@ -872,7 +905,7 @@
       },
       "end": {
         "line": 72,
-        "column": 64
+        "column": 74
       }
     },
     "uid-27": {
@@ -882,7 +915,7 @@
       },
       "end": {
         "line": 73,
-        "column": 50
+        "column": 83
       }
     },
     "uid-28": {
@@ -892,7 +925,7 @@
       },
       "end": {
         "line": 74,
-        "column": 65
+        "column": 72
       }
     },
     "uid-29": {
@@ -902,7 +935,7 @@
       },
       "end": {
         "line": 75,
-        "column": 66
+        "column": 62
       }
     },
     "uid-30": {
@@ -912,7 +945,7 @@
       },
       "end": {
         "line": 76,
-        "column": 72
+        "column": 71
       }
     },
     "uid-31": {
@@ -922,7 +955,7 @@
       },
       "end": {
         "line": 77,
-        "column": 71
+        "column": 70
       }
     },
     "uid-32": {
@@ -932,7 +965,7 @@
       },
       "end": {
         "line": 78,
-        "column": 64
+        "column": 44
       }
     },
     "uid-33": {
@@ -942,7 +975,7 @@
       },
       "end": {
         "line": 79,
-        "column": 40
+        "column": 79
       }
     },
     "uid-34": {
@@ -952,7 +985,7 @@
       },
       "end": {
         "line": 80,
-        "column": 71
+        "column": 80
       }
     },
     "uid-35": {
@@ -962,7 +995,7 @@
       },
       "end": {
         "line": 81,
-        "column": 71
+        "column": 55
       }
     },
     "uid-36": {
@@ -972,7 +1005,7 @@
       },
       "end": {
         "line": 82,
-        "column": 37
+        "column": 79
       }
     },
     "uid-37": {
@@ -982,7 +1015,7 @@
       },
       "end": {
         "line": 83,
-        "column": 76
+        "column": 80
       }
     },
     "uid-38": {
@@ -992,7 +1025,7 @@
       },
       "end": {
         "line": 84,
-        "column": 73
+        "column": 78
       }
     },
     "uid-39": {
@@ -1002,7 +1035,7 @@
       },
       "end": {
         "line": 85,
-        "column": 40
+        "column": 47
       }
     },
     "uid-40": {
@@ -1012,7 +1045,7 @@
       },
       "end": {
         "line": 86,
-        "column": 70
+        "column": 79
       }
     },
     "uid-41": {
@@ -1022,7 +1055,7 @@
       },
       "end": {
         "line": 87,
-        "column": 82
+        "column": 76
       }
     },
     "uid-42": {
@@ -1032,7 +1065,7 @@
       },
       "end": {
         "line": 88,
-        "column": 36
+        "column": 44
       }
     },
     "uid-43": {
@@ -1042,7 +1075,7 @@
       },
       "end": {
         "line": 89,
-        "column": 70
+        "column": 75
       }
     },
     "uid-44": {
@@ -1052,7 +1085,7 @@
       },
       "end": {
         "line": 90,
-        "column": 53
+        "column": 67
       }
     },
     "uid-45": {
@@ -1062,6 +1095,36 @@
       },
       "end": {
         "line": 91,
+        "column": 42
+      }
+    },
+    "uid-46": {
+      "start": {
+        "line": 92,
+        "column": 2
+      },
+      "end": {
+        "line": 92,
+        "column": 77
+      }
+    },
+    "uid-47": {
+      "start": {
+        "line": 93,
+        "column": 2
+      },
+      "end": {
+        "line": 93,
+        "column": 80
+      }
+    },
+    "uid-48": {
+      "start": {
+        "line": 94,
+        "column": 2
+      },
+      "end": {
+        "line": 94,
         "column": 65
       }
     }

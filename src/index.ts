@@ -1167,6 +1167,33 @@ async function main() {
     ambientParticles.push(m);
   }
 
+  // Holographic orbiting rings — floating ring decorations at arena edges
+  const holoRings: Group[] = [];
+  for (let i = 0; i < 6; i++) {
+    const g = new Group();
+    const ringGeo = new TorusGeometry(0.2 + Math.random() * 0.15, 0.01, 8, 24);
+    const ringMat = new MeshBasicMaterial({ color: i % 2 === 0 ? theme().grid : theme().accent, transparent: true, opacity: 0.25, blending: AdditiveBlending });
+    const ring = new Mesh(ringGeo, ringMat);
+    g.add(ring);
+    // Inner ring
+    const innerGeo = new TorusGeometry(0.1 + Math.random() * 0.05, 0.008, 6, 16);
+    const innerMat = new MeshBasicMaterial({ color: theme().accent, transparent: true, opacity: 0.15, blending: AdditiveBlending });
+    const inner = new Mesh(innerGeo, innerMat);
+    inner.rotation.x = Math.PI / 4;
+    g.add(inner);
+    // Position around the arena perimeter
+    const angle = (i / 6) * Math.PI * 2;
+    const orbitR = 5 + Math.random() * 2;
+    g.position.set(Math.cos(angle) * orbitR, 1 + Math.random() * 2, Math.sin(angle) * orbitR - 2);
+    g.userData.orbitAngle = angle;
+    g.userData.orbitR = orbitR;
+    g.userData.orbitSpeed = 0.05 + Math.random() * 0.05;
+    g.userData.spinSpeed = 0.5 + Math.random() * 0.8;
+    g.userData.bobPhase = Math.random() * Math.PI * 2;
+    world.scene.add(g);
+    holoRings.push(g);
+  }
+
   // ---- Particle System ----
   const particlePool: Particle[] = [];
   const particleGeo = new SphereGeometry(0.015, 4, 3);
@@ -1933,7 +1960,14 @@ async function main() {
     if (duelActive) {
       setText(doc, 'hud-ai-score', `AI: ${aiScore}`);
     } else {
-      setText(doc, 'hud-ai-score', '');
+      // Show accuracy multiplier if active
+      const currentAcc = totalSpawned > 0 ? sliceCount / totalSpawned : 0;
+      if (currentAcc > 0.5 && totalSpawned >= 5) {
+        const accBonus = 1 + Math.floor((currentAcc - 0.5) * 10) * 0.1;
+        setText(doc, 'hud-ai-score', accBonus > 1 ? `${Math.round(accBonus * 100)}% ACC` : '');
+      } else {
+        setText(doc, 'hud-ai-score', '');
+      }
     }
   }
 
@@ -3229,6 +3263,15 @@ async function main() {
 
     let points = obj.points * (combo + 1);
     if (doublePointsActive && obj.type !== 'doublePoints') points *= 2;
+    // Accuracy bonus multiplier: +10% per 10% accuracy above 50%
+    const currentAcc = totalSpawned > 0 ? sliceCount / totalSpawned : 0;
+    if (currentAcc > 0.5 && totalSpawned >= 5) {
+      const accBonus = 1 + Math.floor((currentAcc - 0.5) * 10) * 0.1;
+      points = Math.floor(points * accBonus);
+    }
+    // Prestige multiplier
+    const pMult = save.career.prestigeMultiplier || 1;
+    if (pMult > 1) points = Math.floor(points * pMult);
     score += points;
     sliceCount++;
     sliceStreak++;
@@ -3557,6 +3600,17 @@ async function main() {
       (p.material as MeshBasicMaterial).opacity = 0.2 + Math.sin(totalTime * 1.5 + (p.userData.phase as number)) * 0.15;
       if (Math.abs(p.position.x) > 8) p.position.x *= -0.9;
       if (p.position.y > 4 || p.position.y < 0) p.userData.driftY = -(p.userData.driftY as number);
+    });
+
+    // Update holographic rings
+    holoRings.forEach(g => {
+      const angle = (g.userData.orbitAngle as number) + totalTime * (g.userData.orbitSpeed as number);
+      const orbitR = g.userData.orbitR as number;
+      g.position.x = Math.cos(angle) * orbitR;
+      g.position.z = Math.sin(angle) * orbitR - 2;
+      g.position.y += Math.sin(totalTime * 0.4 + (g.userData.bobPhase as number)) * 0.001;
+      g.rotation.x += (g.userData.spinSpeed as number) * dt;
+      g.rotation.z += (g.userData.spinSpeed as number) * 0.7 * dt;
     });
 
     // Update particles
