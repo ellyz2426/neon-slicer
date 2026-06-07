@@ -1,0 +1,60 @@
+<panel background-color="#000000cc" padding="20">
+  <text value="CUSTOM CHALLENGE" font-size="28" font-weight="bold" color="#ffd700" text-align="center" />
+  <text value="Create or play custom challenges" font-size="14" color="#888888" text-align="center" margin-top="4" />
+
+  <panel margin-top="12" padding="8" background-color="#111122" border-radius="6">
+    <text value="SAVED CHALLENGES" font-size="16" font-weight="bold" color="#00ffff" />
+
+    <panel margin-top="6" padding="4" background-color="#0a0a1a" border-radius="4" flex-direction="row" justify-content="space-between" align-items="center">
+      <panel>
+        <text id="ch-1-name" value="---" font-size="14" color="#ffffff" />
+        <text id="ch-1-info" value="" font-size="10" color="#888888" />
+      </panel>
+      <text id="btn-ch-play-1" value="PLAY" font-size="12" font-weight="bold" color="#00ff80" cursor="pointer" />
+    </panel>
+
+    <panel margin-top="4" padding="4" background-color="#0a0a1a" border-radius="4" flex-direction="row" justify-content="space-between" align-items="center">
+      <panel>
+        <text id="ch-2-name" value="---" font-size="14" color="#ffffff" />
+        <text id="ch-2-info" value="" font-size="10" color="#888888" />
+      </panel>
+      <text id="btn-ch-play-2" value="PLAY" font-size="12" font-weight="bold" color="#00ff80" cursor="pointer" />
+    </panel>
+
+    <panel margin-top="4" padding="4" background-color="#0a0a1a" border-radius="4" flex-direction="row" justify-content="space-between" align-items="center">
+      <panel>
+        <text id="ch-3-name" value="---" font-size="14" color="#ffffff" />
+        <text id="ch-3-info" value="" font-size="10" color="#888888" />
+      </panel>
+      <text id="btn-ch-play-3" value="PLAY" font-size="12" font-weight="bold" color="#00ff80" cursor="pointer" />
+    </panel>
+
+    <panel margin-top="4" padding="4" background-color="#0a0a1a" border-radius="4" flex-direction="row" justify-content="space-between" align-items="center">
+      <panel>
+        <text id="ch-4-name" value="---" font-size="14" color="#ffffff" />
+        <text id="ch-4-info" value="" font-size="10" color="#888888" />
+      </panel>
+      <text id="btn-ch-play-4" value="PLAY" font-size="12" font-weight="bold" color="#00ff80" cursor="pointer" />
+    </panel>
+
+    <panel margin-top="4" padding="4" background-color="#0a0a1a" border-radius="4" flex-direction="row" justify-content="space-between" align-items="center">
+      <panel>
+        <text id="ch-5-name" value="---" font-size="14" color="#ffffff" />
+        <text id="ch-5-info" value="" font-size="10" color="#888888" />
+      </panel>
+      <text id="btn-ch-play-5" value="PLAY" font-size="12" font-weight="bold" color="#00ff80" cursor="pointer" />
+    </panel>
+  </panel>
+
+  <panel margin-top="12" flex-direction="row" justify-content="center" gap="12">
+    <text id="btn-ch-create" value="[ SAVE CURRENT ]" font-size="14" font-weight="bold" color="#ffd700" cursor="pointer" />
+    <text id="btn-ch-random" value="[ RANDOM ]" font-size="14" font-weight="bold" color="#ff00ff" cursor="pointer" />
+  </panel>
+
+  <panel margin-top="8" padding="6" background-color="#111122" border-radius="4">
+    <text value="CHALLENGE CODE" font-size="12" color="#888888" text-align="center" />
+    <text id="ch-code" value="" font-size="14" color="#00ffff" text-align="center" margin-top="2" />
+  </panel>
+
+  <text id="btn-back-challenge" value="← BACK" font-size="16" color="#888888" cursor="pointer" margin-top="12" text-align="center" />
+</panel>

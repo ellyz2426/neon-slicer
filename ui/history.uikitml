@@ -1,0 +1,95 @@
+<panel background-color="#000000cc" padding="20">
+  <text value="GAME HISTORY" font-size="28" font-weight="bold" color="#ffd700" text-align="center" />
+  <text id="hist-total" value="0 games" font-size="14" color="#888888" text-align="center" margin-top="4" />
+
+  <panel margin-top="10" padding="6" background-color="#111122" border-radius="6">
+    <panel flex-direction="row" justify-content="space-between" padding-bottom="4" border-bottom-width="1" border-color="#333333">
+      <text value="MODE" font-size="10" color="#888888" width="18%" />
+      <text value="SCORE" font-size="10" color="#888888" width="20%" text-align="right" />
+      <text value="ACC" font-size="10" color="#888888" width="12%" text-align="right" />
+      <text value="COMBO" font-size="10" color="#888888" width="14%" text-align="right" />
+      <text value="STARS" font-size="10" color="#888888" width="20%" text-align="center" />
+      <text value="DATE" font-size="10" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="4">
+      <text id="hist-1-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-1-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-1-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-1-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-1-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-1-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-2-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-2-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-2-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-2-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-2-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-2-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-3-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-3-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-3-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-3-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-3-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-3-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-4-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-4-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-4-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-4-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-4-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-4-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-5-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-5-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-5-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-5-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-5-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-5-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-6-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-6-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-6-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-6-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-6-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-6-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-7-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-7-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-7-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-7-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-7-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-7-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+
+    <panel flex-direction="row" justify-content="space-between" margin-top="2">
+      <text id="hist-8-mode" value="" font-size="11" color="#ffffff" width="18%" />
+      <text id="hist-8-score" value="" font-size="11" color="#00ffff" width="20%" text-align="right" />
+      <text id="hist-8-acc" value="" font-size="11" color="#00ff80" width="12%" text-align="right" />
+      <text id="hist-8-combo" value="" font-size="11" color="#ff00ff" width="14%" text-align="right" />
+      <text id="hist-8-stars" value="" font-size="11" color="#ffd700" width="20%" text-align="center" />
+      <text id="hist-8-date" value="" font-size="11" color="#888888" width="16%" text-align="right" />
+    </panel>
+  </panel>
+
+  <panel margin-top="8" flex-direction="row" justify-content="center" align-items="center" gap="16">
+    <text id="btn-hist-prev" value="← PREV" font-size="14" color="#888888" cursor="pointer" />
+    <text id="hist-page" value="1/1" font-size="14" color="#ffffff" />
+    <text id="btn-hist-next" value="NEXT →" font-size="14" color="#888888" cursor="pointer" />
+  </panel>
+
+  <text id="btn-back-history" value="← BACK" font-size="16" color="#888888" cursor="pointer" margin-top="10" text-align="center" />
+</panel>

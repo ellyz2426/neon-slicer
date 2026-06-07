@@ -65,5 +65,7 @@
   <div id="btn-stats" class="btn btn-orange" cursor="pointer">STATS</div>
   <div id="btn-skins" class="btn btn-gold" cursor="pointer">BLADE SKINS</div>
   <div id="btn-settings" class="btn" cursor="pointer">SETTINGS</div>
+  <div id="btn-challenge" class="btn btn-gold" cursor="pointer">CHALLENGE</div>
+  <div id="btn-history" class="btn btn-green" cursor="pointer">HISTORY</div>
   <div id="btn-help" class="btn btn-magenta" cursor="pointer">HELP</div>
 </div>

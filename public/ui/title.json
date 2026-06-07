@@ -120,6 +120,32 @@
         "type": "container",
         "sourceTag": "div",
         "children": [
+          "CHALLENGE"
+        ],
+        "properties": {
+          "id": "btn-challenge",
+          "class": "btn btn-gold",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-11"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          "HISTORY"
+        ],
+        "properties": {
+          "id": "btn-history",
+          "class": "btn btn-green",
+          "cursor": "pointer"
+        },
+        "dataUid": "uid-12"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
           "HELP"
         ],
         "properties": {
@@ -127,7 +153,7 @@
           "class": "btn btn-magenta",
           "cursor": "pointer"
         },
-        "dataUid": "uid-11"
+        "dataUid": "uid-13"
       }
     ],
     "properties": {
@@ -295,7 +321,7 @@
         "column": 0
       },
       "end": {
-        "line": 68,
+        "line": 70,
         "column": 6
       }
     },
@@ -396,6 +422,26 @@
       },
       "end": {
         "line": 67,
+        "column": 79
+      }
+    },
+    "uid-12": {
+      "start": {
+        "line": 68,
+        "column": 2
+      },
+      "end": {
+        "line": 68,
+        "column": 76
+      }
+    },
+    "uid-13": {
+      "start": {
+        "line": 69,
+        "column": 2
+      },
+      "end": {
+        "line": 69,
         "column": 72
       }
     }

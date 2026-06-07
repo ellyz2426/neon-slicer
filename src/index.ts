@@ -20,7 +20,7 @@ import {
 // ============================================================
 // TYPES
 // ============================================================
-type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season' | 'tutorial';
+type GameState = 'title' | 'modeSelect' | 'difficulty' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'achievements' | 'settings' | 'help' | 'skins' | 'stats' | 'countdown' | 'modifiers' | 'season' | 'tutorial' | 'challenge' | 'history';
 type ObjType = 'cube' | 'sphere' | 'diamond' | 'star' | 'bomb' | 'freeze' | 'shield' | 'magnet' | 'doublePoints' | 'crystal';
 type GameMode = 'classic' | 'zen' | 'timeAttack' | 'survival' | 'frenzy' | 'daily' | 'precision' | 'endless';
 type Modifier = 'bigObjects' | 'speedDemon' | 'noBombs' | 'mirror' | 'oneLife' | 'tinyObjects' | 'chaos';
@@ -39,6 +39,7 @@ interface FlyingObj {
   active: boolean;
   age: number;
   hitsLeft: number; // for multi-hit objects like crystal
+  spawnAge: number; // spawn animation timer
 }
 
 interface SlicedHalf {
@@ -75,6 +76,28 @@ interface LeaderboardEntry {
   slices: number;
   combo: number;
   date: string;
+}
+
+interface GameHistoryEntry {
+  mode: string;
+  difficulty: string;
+  score: number;
+  slices: number;
+  accuracy: number;
+  bestCombo: number;
+  stars: number;
+  duration: number; // seconds
+  modifiers: string[];
+  date: string;
+}
+
+interface ChallengeConfig {
+  mode: GameMode;
+  difficulty: Difficulty;
+  modifiers: Modifier[];
+  themeIdx: number;
+  skinIdx: number;
+  name: string;
 }
 
 // ============================================================
@@ -263,6 +286,19 @@ const ACHIEVEMENTS: Achievement[] = [
   // Special
   { id: 'no_damage',      name: 'Untouchable Run',     desc: 'Complete Classic Hard without losing a life' },
   { id: 'speed_master',   name: 'Speed Master',        desc: 'Slice 10 objects in 3 seconds' },
+  // Custom Challenge
+  { id: 'challenge_create', name: 'Challenge Maker',    desc: 'Create a custom challenge' },
+  { id: 'challenge_play',   name: 'Challenger',         desc: 'Play a custom challenge' },
+  { id: 'challenge_3',      name: 'Challenge Addict',   desc: 'Play 3 different challenges' },
+  // History
+  { id: 'history_10',       name: 'Historian',           desc: 'Complete 10 games (tracked in history)' },
+  { id: 'history_50',       name: 'Chronicler',          desc: 'Complete 50 games (tracked in history)' },
+  // Combo announcements
+  { id: 'combo_godlike',    name: 'GODLIKE',             desc: 'Trigger a GODLIKE combo announcement' },
+  // Accuracy
+  { id: 'accuracy_90_10',   name: 'Eagle Eye',           desc: 'Finish 10 games with 90%+ accuracy' },
+  // Difficulty
+  { id: 'hard_all_modes',   name: 'Hardened',            desc: 'Complete every mode on Hard' },
 ];
 
 // ============================================================
@@ -287,6 +323,8 @@ interface SaveData {
   leaderboard: LeaderboardEntry[];
   settings: { masterVol: number; sfxVol: number; musicVol: number; themeIdx: number; skinIdx: number; screenShake: boolean };
   stars: Record<string, number>; // "mode_difficulty" -> 1|2|3
+  history: GameHistoryEntry[];
+  savedChallenges: ChallengeConfig[];
 }
 
 function loadSave(): SaveData {
@@ -300,12 +338,48 @@ function loadSave(): SaveData {
     leaderboard: [],
     settings: { masterVol: 100, sfxVol: 100, musicVol: 100, themeIdx: 0, skinIdx: 0, screenShake: true },
     stars: {},
+    history: [],
+    savedChallenges: [],
   };
 }
 
 function saveSave(data: SaveData): void {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
 }
+
+// Challenge code encoding/decoding
+function encodeChallenge(cfg: ChallengeConfig): string {
+  const modeIdx = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless'].indexOf(cfg.mode);
+  const diffIdx = ['easy','medium','hard'].indexOf(cfg.difficulty);
+  const modBits = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'].reduce(
+    (bits: number, mod: string, i: number) => bits | ((cfg.modifiers.includes(mod as Modifier) ? 1 : 0) << i), 0
+  );
+  const data = [modeIdx, diffIdx, modBits, cfg.themeIdx, cfg.skinIdx, ...cfg.name.split('').map(c => c.charCodeAt(0))];
+  return btoa(String.fromCharCode(...data)).replace(/=+$/, '');
+}
+
+function decodeChallenge(code: string): ChallengeConfig | null {
+  try {
+    const padded = code + '='.repeat((4 - code.length % 4) % 4);
+    const bytes = atob(padded).split('').map(c => c.charCodeAt(0));
+    if (bytes.length < 5) return null;
+    const modes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','daily','precision','endless'];
+    const diffs: Difficulty[] = ['easy','medium','hard'];
+    const allMods: Modifier[] = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'];
+    const modeIdx = bytes[0]; const diffIdx = bytes[1]; const modBits = bytes[2];
+    if (modeIdx >= modes.length || diffIdx >= diffs.length) return null;
+    const mods = allMods.filter((_m, i) => (modBits >> i) & 1);
+    const name = bytes.slice(5).map(b => String.fromCharCode(b)).join('') || 'Custom';
+    return { mode: modes[modeIdx], difficulty: diffs[diffIdx], modifiers: mods, themeIdx: Math.min(bytes[3], 7), skinIdx: Math.min(bytes[4], 15), name };
+  } catch { return null; }
+}
+
+const COMBO_ANNOUNCEMENTS: { threshold: number; text: string; color: string }[] = [
+  { threshold: 3, text: 'NICE!', color: '#00ffff' },
+  { threshold: 5, text: 'AWESOME!', color: '#00ff80' },
+  { threshold: 8, text: 'INCREDIBLE!', color: '#ff00ff' },
+  { threshold: 10, text: 'GODLIKE!', color: '#ffd700' },
+];
 
 // ============================================================
 // SEEDED RNG (for daily challenge)
@@ -499,6 +573,15 @@ class AudioManager {
     if (!this.ctx) return;
     const notes = [660, 880, 1100, 1320, 1540];
     notes.forEach((f, i) => setTimeout(() => this.playSfx(f, 'sine', 0.2, 0.2, false), i * 60));
+  }
+
+  comboAnnounce(threshold: number) {
+    if (!this.ctx) return;
+    // Rising pitch based on combo level
+    const baseFreq = 400 + threshold * 80;
+    this.playSfx(baseFreq, 'sawtooth', 0.15, 0.25, false);
+    setTimeout(() => this.playSfx(baseFreq * 1.5, 'square', 0.1, 0.2, false), 80);
+    if (threshold >= 8) setTimeout(() => this.playSfx(baseFreq * 2, 'sine', 0.2, 0.15, false), 160);
   }
 
   countdownTick() {
@@ -838,6 +921,12 @@ async function main() {
   ];
   let seasonStage = 0;
   let inSeasonMode = false;
+  let inChallengeMode = false;
+  let activeChallenge: ChallengeConfig | null = null;
+  let challengesPlayed = 0;
+  let historyPage = 0;
+  let comboAnnounceLast = 0; // last announced combo threshold
+  let lastComboAnnounceTime = 0;
 
   const MODIFIER_DESCS: Record<Modifier, string> = {
     bigObjects: 'Objects are 2x larger',
@@ -1015,7 +1104,7 @@ async function main() {
       radius: OBJ_CONFIGS[type].radius,
       points: OBJ_CONFIGS[type].points,
       velocity: new Vector3(), angVel: new Vector3(),
-      active: false, age: 0, hitsLeft: 1,
+      active: false, age: 0, hitsLeft: 1, spawnAge: 0,
     });
   }
 
@@ -1072,6 +1161,8 @@ async function main() {
     }
     obj.angVel.set((r() - 0.5) * 4, (r() - 0.5) * 4, (r() - 0.5) * 4);
     obj.group.visible = true;
+    // Spawn animation — start at scale 0 and pop up
+    obj.spawnAge = 0;
     // Size modifiers
     const sizeMod = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
                     (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
@@ -1349,6 +1440,8 @@ async function main() {
   panels.modifiers     = createWorldPanel('/ui/modifiers.json', 0.8, 1.2, [0, 1.5, -2.5]);
   panels.season        = createWorldPanel('/ui/season.json', 0.8, 1.4, [0, 1.5, -2.5]);
   panels.tutorial      = createWorldPanel('/ui/tutorial.json', 0.7, 1.0, [0, 1.5, -2.5]);
+  panels.challenge     = createWorldPanel('/ui/challenge.json', 0.8, 1.3, [0, 1.5, -2.5]);
+  panels.history       = createWorldPanel('/ui/history.json', 0.9, 1.4, [0, 1.5, -2.5]);
   panels.hud           = createFollowerPanel('/ui/hud.json', 0.35, 0.2, [0.3, -0.15, -0.5]);
   panels.combo         = createFollowerPanel('/ui/combo.json', 0.15, 0.08, [-0.25, 0, -0.5]);
   panels.toast         = createFollowerPanel('/ui/toast.json', 0.3, 0.06, [0, 0.15, -0.5]);
@@ -1421,6 +1514,8 @@ async function main() {
     bindClick(titleDoc, 'btn-skins', () => { audio.buttonClick(); updateSkins(); switchState('skins'); });
     bindClick(titleDoc, 'btn-settings', () => { audio.buttonClick(); updateSettingsUI(); switchState('settings'); });
     bindClick(titleDoc, 'btn-help', () => { audio.buttonClick(); switchState('help'); });
+    bindClick(titleDoc, 'btn-challenge', () => { audio.buttonClick(); updateChallengeUI(); switchState('challenge'); });
+    bindClick(titleDoc, 'btn-history', () => { audio.buttonClick(); historyPage = 0; updateHistoryUI(); switchState('history'); });
 
     // Mode select
     const modeDoc = getDoc('modeSelect');
@@ -1512,6 +1607,60 @@ async function main() {
 
     // Help
     bindClick(getDoc('help'), 'btn-back-help', () => { audio.buttonClick(); switchState('title'); });
+
+    // Challenge
+    const chDoc = getDoc('challenge');
+    bindClick(chDoc, 'btn-back-challenge', () => { audio.buttonClick(); switchState('title'); });
+    bindClick(chDoc, 'btn-ch-create', () => {
+      audio.buttonClick();
+      const cfg = createCurrentChallenge();
+      if (!save.savedChallenges) save.savedChallenges = [];
+      save.savedChallenges.push(cfg);
+      save.savedChallenges = save.savedChallenges.slice(-5); // keep last 5
+      checkAchievementSilent('challenge_create');
+      saveSave(save);
+      updateChallengeUI();
+      showToast('Challenge Saved!');
+      const code = encodeChallenge(cfg);
+      setText(chDoc, 'ch-code', code);
+    });
+    // Bind challenge slot play buttons
+    for (let ci = 1; ci <= 5; ci++) {
+      const idx = ci - 1;
+      bindClick(chDoc, `btn-ch-play-${ci}`, () => {
+        audio.buttonClick();
+        const challenges = save.savedChallenges || [];
+        if (idx < challenges.length) {
+          applyChallengeConfig(challenges[idx]);
+        }
+      });
+    }
+    bindClick(chDoc, 'btn-ch-random', () => {
+      audio.buttonClick();
+      const modes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','precision','endless'];
+      const diffs: Difficulty[] = ['easy','medium','hard'];
+      const allMods: Modifier[] = ['bigObjects','speedDemon','noBombs','mirror','oneLife','tinyObjects','chaos'];
+      const randMods = allMods.filter(() => Math.random() < 0.3);
+      const cfg: ChallengeConfig = {
+        mode: modes[Math.floor(Math.random() * modes.length)],
+        difficulty: diffs[Math.floor(Math.random() * diffs.length)],
+        modifiers: randMods,
+        themeIdx: Math.floor(Math.random() * THEMES.length),
+        skinIdx: Math.floor(Math.random() * BLADE_SKINS.length),
+        name: 'Random Challenge',
+      };
+      applyChallengeConfig(cfg);
+    });
+
+    // History
+    const histDoc = getDoc('history');
+    bindClick(histDoc, 'btn-back-history', () => { audio.buttonClick(); switchState('title'); });
+    bindClick(histDoc, 'btn-hist-prev', () => { audio.buttonClick(); if (historyPage > 0) { historyPage--; updateHistoryUI(); } });
+    bindClick(histDoc, 'btn-hist-next', () => {
+      audio.buttonClick();
+      const maxPage = Math.max(0, Math.ceil((save.history || []).length / 8) - 1);
+      if (historyPage < maxPage) { historyPage++; updateHistoryUI(); }
+    });
 
     // Skins
     const skinDoc = getDoc('skins');
@@ -2074,6 +2223,84 @@ async function main() {
     setText(doc, 'season-subtitle', seasonStage >= 8 ? 'SEASON COMPLETE!' : `STAGE ${seasonStage + 1}/8`);
   }
 
+  // ---- Challenge UI ----
+  function updateChallengeUI() {
+    const doc = getDoc('challenge');
+    if (!doc) return;
+    // Show saved challenges
+    const challenges = save.savedChallenges || [];
+    for (let i = 0; i < 5; i++) {
+      if (i < challenges.length) {
+        const c = challenges[i];
+        const modStr = c.modifiers.length > 0 ? c.modifiers.join('+') : 'none';
+        setText(doc, `ch-${i + 1}-name`, c.name);
+        setText(doc, `ch-${i + 1}-info`, `${c.mode} / ${c.difficulty} / ${modStr}`);
+      } else {
+        setText(doc, `ch-${i + 1}-name`, '---');
+        setText(doc, `ch-${i + 1}-info`, '');
+      }
+    }
+    setText(doc, 'ch-code', '');
+  }
+
+  function applyChallengeConfig(cfg: ChallengeConfig) {
+    gameMode = cfg.mode;
+    difficulty = cfg.difficulty;
+    activeModifiers.clear();
+    cfg.modifiers.forEach(m => activeModifiers.add(m));
+    themeIdx = cfg.themeIdx;
+    skinIdx = cfg.skinIdx;
+    applyTheme();
+    inChallengeMode = true;
+    activeChallenge = cfg;
+    startCountdown();
+  }
+
+  function createCurrentChallenge(): ChallengeConfig {
+    return {
+      mode: gameMode || 'classic',
+      difficulty: difficulty || 'medium',
+      modifiers: Array.from(activeModifiers) as Modifier[],
+      themeIdx,
+      skinIdx,
+      name: `Challenge ${(save.savedChallenges || []).length + 1}`,
+    };
+  }
+
+  // ---- History UI ----
+  function updateHistoryUI() {
+    const doc = getDoc('history');
+    if (!doc) return;
+    const history = save.history || [];
+    const pageSize = 8;
+    const maxPage = Math.max(0, Math.ceil(history.length / pageSize) - 1);
+    historyPage = Math.min(historyPage, maxPage);
+    const start = historyPage * pageSize;
+    const page = history.slice(start, start + pageSize);
+    for (let i = 0; i < pageSize; i++) {
+      if (i < page.length) {
+        const h = page[i];
+        const d = new Date(h.date);
+        const dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
+        setText(doc, `hist-${i + 1}-mode`, h.mode);
+        setText(doc, `hist-${i + 1}-score`, h.score.toLocaleString());
+        setText(doc, `hist-${i + 1}-acc`, `${h.accuracy}%`);
+        setText(doc, `hist-${i + 1}-combo`, `x${h.bestCombo + 1}`);
+        setText(doc, `hist-${i + 1}-stars`, '★'.repeat(h.stars) + '☆'.repeat(3 - h.stars));
+        setText(doc, `hist-${i + 1}-date`, dateStr);
+      } else {
+        setText(doc, `hist-${i + 1}-mode`, '');
+        setText(doc, `hist-${i + 1}-score`, '');
+        setText(doc, `hist-${i + 1}-acc`, '');
+        setText(doc, `hist-${i + 1}-combo`, '');
+        setText(doc, `hist-${i + 1}-stars`, '');
+        setText(doc, `hist-${i + 1}-date`, '');
+      }
+    }
+    setText(doc, 'hist-page', `${historyPage + 1}/${maxPage + 1}`);
+    setText(doc, 'hist-total', `${history.length} games`);
+  }
+
   function updateGameOverUI() {
     const doc = getDoc('gameOver');
     if (!doc) return;
@@ -2129,6 +2356,8 @@ async function main() {
       case 'modifiers': showPanel('modifiers'); break;
       case 'season': showPanel('season'); break;
       case 'tutorial': showPanel('tutorial'); break;
+      case 'challenge': showPanel('challenge'); break;
+      case 'history': updateHistoryUI(); showPanel('history'); break;
       case 'countdown': showPanel('countdown'); break;
     }
   }
@@ -2175,6 +2404,7 @@ async function main() {
     survivalSpeedMult = 1;
     sessionStart = Date.now();
     sessionXP = 0;
+    comboAnnounceLast = 0;
 
     // Reset power-ups
     shieldActive = false; shieldTimer = 0;
@@ -2337,6 +2567,41 @@ async function main() {
       const bonus = Math.floor(score * (prestigeMult - 1));
       save.career.totalScore += bonus;
       // Already added regular score above
+    }
+
+    // Record game history
+    const histEntry: GameHistoryEntry = {
+      mode: inSeasonMode ? `season-${seasonStage}` : gameMode,
+      difficulty,
+      score,
+      slices: sliceCount,
+      accuracy: totalSpawned > 0 ? Math.round((sliceCount / totalSpawned) * 100) : 0,
+      bestCombo,
+      stars: calculateStars(gameMode, difficulty, score),
+      duration: Math.round(gameTime),
+      modifiers: Array.from(activeModifiers),
+      date: new Date().toISOString(),
+    };
+    if (!save.history) save.history = [];
+    save.history.unshift(histEntry);
+    save.history = save.history.slice(0, 50); // keep last 50
+    // History achievements
+    if (save.history.length >= 10) checkAchievementSilent('history_10');
+    if (save.history.length >= 50) checkAchievementSilent('history_50');
+    // Accuracy achievement: 10 games with 90%+ accuracy
+    const highAccGames = save.history.filter(h => h.accuracy >= 90).length;
+    if (highAccGames >= 10) checkAchievementSilent('accuracy_90_10');
+    // Hard all modes achievement
+    const hardModes = new Set(save.history.filter(h => h.difficulty === 'hard' && h.stars > 0).map(h => h.mode));
+    const allBaseModes: GameMode[] = ['classic','zen','timeAttack','survival','frenzy','precision','endless'];
+    if (allBaseModes.every(m => hardModes.has(m))) checkAchievementSilent('hard_all_modes');
+    // Challenge tracking
+    if (inChallengeMode) {
+      challengesPlayed++;
+      checkAchievementSilent('challenge_play');
+      if (challengesPlayed >= 3) checkAchievementSilent('challenge_3');
+      inChallengeMode = false;
+      activeChallenge = null;
     }
 
     // Check achievements
@@ -2612,6 +2877,16 @@ async function main() {
     combo = Math.min(combo + 1, MAX_COMBO - 1);
     if (combo > bestCombo) bestCombo = combo;
 
+    // Combo announcements
+    for (const ann of COMBO_ANNOUNCEMENTS) {
+      if (combo >= ann.threshold && comboAnnounceLast < ann.threshold) {
+        showToast(ann.text, 1.5);
+        audio.comboAnnounce(ann.threshold);
+        comboAnnounceLast = ann.threshold;
+        if (ann.threshold === 10) checkAchievementSilent('combo_godlike');
+      }
+    }
+
     // XP
     const xpGain = Math.floor(obj.points / 10) + combo;
     addXP(xpGain);
@@ -2740,10 +3015,22 @@ async function main() {
   // ---- Object update ----
   function updateObjects(dt: number) {
     const effectiveDt = freezeTimer > 0 ? dt * 0.3 : dt; // slow-mo
+    const SPAWN_ANIM_DUR = 0.15; // seconds for pop-in animation
 
     for (const obj of objPool) {
       if (!obj.active) continue;
       obj.age += effectiveDt;
+      obj.spawnAge += effectiveDt;
+
+      // Spawn pop-in animation
+      if (obj.spawnAge < SPAWN_ANIM_DUR) {
+        const t = obj.spawnAge / SPAWN_ANIM_DUR;
+        // Elastic ease-out: overshoot then settle
+        const elastic = 1 + Math.sin(t * Math.PI) * 0.3;
+        const baseScale = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
+                          (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
+        obj.group.scale.setScalar(baseScale * t * elastic);
+      }
 
       // Apply gravity
       obj.velocity.y += GRAVITY * effectiveDt;
@@ -2916,6 +3203,7 @@ async function main() {
     // Combo decay
     if (combo > 0 && gameTime - lastSliceTime > COMBO_DECAY_TIME) {
       combo = 0;
+      comboAnnounceLast = 0;
       updateComboDisplay();
     }
 
