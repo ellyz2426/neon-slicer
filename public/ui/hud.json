@@ -240,6 +240,20 @@
           "class": "charge-bar"
         },
         "dataUid": "uid-24"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [],
+        "properties": {
+          "id": "hud-ai-score",
+          "style": {
+            "fontSize": "1.4",
+            "color": "#ff4444",
+            "fontWeight": "bold"
+          }
+        },
+        "dataUid": "uid-25"
       }
     ],
     "properties": {
@@ -396,7 +410,7 @@
         "column": 0
       },
       "end": {
-        "line": 79,
+        "line": 80,
         "column": 6
       }
     },
@@ -628,6 +642,16 @@
       "end": {
         "line": 78,
         "column": 50
+      }
+    },
+    "uid-25": {
+      "start": {
+        "line": 79,
+        "column": 2
+      },
+      "end": {
+        "line": 79,
+        "column": 92
       }
     }
   }

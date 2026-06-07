@@ -298,6 +298,7 @@ const ACHIEVEMENTS: Achievement[] = [
   // Formation
   { id: 'form_circle',    name: 'Circle Slayer',       desc: 'Perfect a circle formation wave' },
   { id: 'form_line',      name: 'Blade Wall',          desc: 'Perfect a line formation wave' },
+  { id: 'form_spiral',    name: 'Spiral Slicer',       desc: 'Perfect a spiral formation wave' },
   // Score milestones
   { id: 'total_1m',       name: 'Millionaire',         desc: 'Earn 1,000,000 total score' },
   { id: 'slices_5k',      name: 'Blade Addict',        desc: 'Slice 5,000 objects total' },
@@ -603,6 +604,27 @@ class AudioManager {
     if (!this.ctx) return;
     this.playSfx(200, 'triangle', 0.1, 0.2);
     this.playSfx(300, 'sine', 0.15, 0.15);
+  }
+
+  ghostSlice() {
+    if (!this.ctx) return;
+    // Ethereal ascending tone
+    this.playSfx(600, 'sine', 0.3, 0.2);
+    this.playSfx(900, 'triangle', 0.2, 0.15);
+    this.playSfx(1200, 'sine', 0.15, 0.1);
+  }
+
+  timeBombDefuse() {
+    if (!this.ctx) return;
+    // Relieving descending tone
+    this.playSfx(800, 'square', 0.1, 0.25, false);
+    this.playSfx(600, 'sine', 0.2, 0.2);
+    this.playSfx(400, 'triangle', 0.3, 0.15);
+  }
+
+  timeBombTick() {
+    if (!this.ctx) return;
+    this.playSfx(660, 'square', 0.05, 0.15, false);
   }
 
   bossDefeat() {
@@ -1907,6 +1929,12 @@ async function main() {
     } else {
       setText(doc, 'hud-charge', '');
     }
+    // Duel AI score
+    if (duelActive) {
+      setText(doc, 'hud-ai-score', `AI: ${aiScore}`);
+    } else {
+      setText(doc, 'hud-ai-score', '');
+    }
   }
 
   function updateComboDisplay() {
@@ -2215,8 +2243,8 @@ async function main() {
   let currentBossType: BossType = 'orbiter';
 
   // Spawn formations — objects launch in patterns
-  type Formation = 'random' | 'line' | 'vShape' | 'circle' | 'cross' | 'shower';
-  const FORMATIONS: Formation[] = ['random', 'line', 'vShape', 'circle', 'cross', 'shower'];
+  type Formation = 'random' | 'line' | 'vShape' | 'circle' | 'cross' | 'shower' | 'spiral';
+  const FORMATIONS: Formation[] = ['random', 'line', 'vShape', 'circle', 'cross', 'shower', 'spiral'];
 
   function spawnFormation(formation: Formation, count: number, rng?: () => number) {
     const r = rng || Math.random;
@@ -2302,6 +2330,39 @@ async function main() {
         // All at once from wide spread
         for (let i = 0; i < count; i++) {
           setTimeout(() => { if (gameState === 'playing') launchObj(getObjTypeForWave(r), r); }, r() * 200);
+        }
+        break;
+      }
+      case 'spiral': {
+        // Spiral pattern — objects launch in a helix
+        for (let i = 0; i < count; i++) {
+          const angle = (i / count) * Math.PI * 4; // 2 full rotations
+          const delay = i * 150;
+          setTimeout(() => {
+            if (gameState !== 'playing') return;
+            const type = getObjTypeForWave(r);
+            const obj = getPoolObj(type);
+            if (!obj) return;
+            obj.active = true; obj.age = 0; obj.spawnAge = 0;
+            const spiralR = 0.5 + (i / count) * 1.0;
+            const x = Math.cos(angle) * spiralR;
+            const z = -1.8 + Math.sin(angle) * 0.3;
+            obj.group.position.set(x, -0.5, z);
+            const diffMult = difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.3 : 1.0;
+            obj.velocity.set(Math.cos(angle) * 0.8, (5 + r()) * diffMult, Math.sin(angle) * 0.3);
+            obj.angVel.set((r()-0.5)*4, (r()-0.5)*4, (r()-0.5)*4);
+            obj.group.visible = true;
+            const sizeMod = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
+                            (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
+            obj.group.scale.setScalar(sizeMod);
+            obj.radius = OBJ_CONFIGS[type].radius * sizeMod;
+            obj.hitsLeft = type === 'crystal' ? 3 : 1;
+            obj.ghostPhase = type === 'ghost' ? Math.random() * Math.PI * 2 : 0;
+            obj.timeBombTimer = type === 'timeBomb' ? 3.0 : 0;
+            obj.innerMesh.material = new MeshStandardMaterial({ color: OBJ_CONFIGS[type].color, emissive: OBJ_CONFIGS[type].emissive, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.3 });
+            totalSpawned++;
+            audio.launch();
+          }, delay);
         }
         break;
       }
@@ -2969,6 +3030,7 @@ async function main() {
     if (wavePerfect && waveTotal > 0 && waveSliced === waveTotal) {
       if (currentFormation === 'circle') tryUnlock('form_circle');
       if (currentFormation === 'line') tryUnlock('form_line');
+      if (currentFormation === 'spiral') tryUnlock('form_spiral');
     }
     // Speed slicing
     if (slicesInWindow.length >= 10) {
@@ -3065,6 +3127,7 @@ async function main() {
       if (save.career.ghostsSliced >= 50) checkAchievementSilent('ghost_50');
       addXP(40);
       showToast('GHOST BUSTED!');
+      audio.ghostSlice();
     }
 
     // TimeBomb defused — bonus for slicing before detonation
@@ -3079,6 +3142,7 @@ async function main() {
         score += closeBonus;
         showToast(`CLOSE DEFUSE! +${closeBonus}`);
       }
+      audio.timeBombDefuse();
       addXP(35);
     }
 
@@ -3414,6 +3478,12 @@ async function main() {
         const baseSz = (activeModifiers.has('bigObjects') || activeModifiers.has('chaos')) ? 2.0 :
                         (activeModifiers.has('tinyObjects')) ? 0.5 : 1.0;
         obj.group.scale.setScalar(baseSz * (1 + flash * urgency * 0.15));
+        // Tick sound at each second boundary
+        const prevSec = Math.ceil(obj.timeBombTimer + effectiveDt);
+        const currSec = Math.ceil(obj.timeBombTimer);
+        if (prevSec !== currSec && obj.timeBombTimer > 0) {
+          audio.timeBombTick();
+        }
         if (obj.timeBombTimer <= 0) {
           // DETONATION — acts like a bomb
           obj.active = false;

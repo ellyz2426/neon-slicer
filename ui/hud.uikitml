@@ -77,4 +77,5 @@
     </div>
   </div>
   <span id="hud-charge" class="charge-bar"></span>
+  <span id="hud-ai-score" style="font-size: 1.4; color: #ff4444; font-weight: bold;"></span>
 </div>
