@@ -2953,9 +2953,24 @@ async function main() {
       if (lives > 0) lives--;
       audio.bombHit();
       triggerShake(1.5, 0.4);
-      spawnParticles(obj.group.position.clone(), 20, OBJ_CONFIGS.bomb.color, 5);
+      // Explosion VFX — burst of particles in bomb colors
+      spawnParticles(obj.group.position.clone(), 30, '#ff3333', 6);
+      spawnParticles(obj.group.position.clone(), 15, '#ff8800', 4);
+      spawnParticles(obj.group.position.clone(), 10, '#ffff00', 3);
       createSliceHalves(obj, new Vector3(0, 1, 0));
       showToast('BOMB!');
+      // Flash accent lights red briefly
+      accentLight1.color.setHex(0xff0000);
+      accentLight2.color.setHex(0xff0000);
+      accentLight1.intensity = 8;
+      accentLight2.intensity = 6;
+      setTimeout(() => {
+        const t = theme();
+        accentLight1.color.set(t.accent);
+        accentLight2.color.set(t.accent);
+        accentLight1.intensity = 2;
+        accentLight2.intensity = 1.5;
+      }, 300);
       if (lives === 0 && (gameMode === 'classic' || gameMode === 'survival' || gameMode === 'precision')) {
         endGame();
       }
@@ -3559,11 +3574,13 @@ async function main() {
             if (wavePerfect && waveSliced === waveTotal && waveTotal > 0) {
               if (!save.achievements.includes('full_wave')) {
                 save.achievements.push('full_wave');
-                showToast('Perfect Wave!');
                 audio.achievement();
               }
               score += 500; // Perfect wave bonus
               showToast('PERFECT WAVE! +500');
+              // Celebration particle burst at center
+              spawnParticles(new Vector3(0, 1.5, -2), 40, '#ffd700', 5);
+              spawnParticles(new Vector3(0, 1.5, -2), 20, '#00ffff', 4);
             }
             waveActive = false;
             waveTimer = 0;

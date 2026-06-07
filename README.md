@@ -12,9 +12,16 @@ A holodeck VR slicing game built with [IWSDK](https://iwsdk.dev) 0.4.1. Slice fl
 - **Speed-based slice detection** — line-sphere intersection physics
 - **Object split effects** — sliced halves with physics drift, rotation, and fade
 - **150-particle pool** with burst effects on every slice
+- **Object trail particles** — color-matched particles trail flying objects
 - **Blade trail rendering** — additive-blended line trails following blade tips
+- **Blade charge attack** — hold to charge, release for AOE burst slicing all objects in radius
+- **Type combo system** — slice 3+ same object type in a row for escalating bonus
+- **Combo announcements** — NICE! / AWESOME! / INCREDIBLE! / GODLIKE! with SFX
+- **Spawn pop-in animation** — elastic ease-out scale effect on object spawn
+- **Explosion VFX** — multi-layered particle bursts and light flash on bomb hits
+- **Wave completion celebration** — gold/cyan particle bursts on perfect waves
 
-### Game Modes
+### Game Modes (11 total)
 | Mode | Description |
 |------|-------------|
 | **Classic** | Wave-based with boss fights, 3 lives |
@@ -25,97 +32,86 @@ A holodeck VR slicing game built with [IWSDK](https://iwsdk.dev) 0.4.1. Slice fl
 | **Daily Challenge** | Same seeded puzzle for everyone today |
 | **Precision** | Slice only marked targets, 3 lives |
 | **Endless** | Infinite waves, how far can you go? |
+| **Blitz** | 45s rapid-fire, speed builds aggressively |
 | **Season** | 8 AI opponents in bracket progression |
 | **Quick Play** | Random mode + difficulty |
 
-### Combat Systems
-- **Combo system** — x1 to x10 with 1.8s decay timer, escalating score multiplier
-- **Charge attack** — hold Space/Squeeze to charge, release for AOE burst slicing all objects in radius
-- **Type combos** — slice 3+ same object type in a row for bonus points
-- **Boss battles** — 3 boss types (Orbiter, Charger, Splitter) with multi-hit mechanics
-- **6 spawn formations** — Random, Line, V-Shape, Circle, Cross, Shower
-
-### Power-Ups
-- **Freeze** — slow time for 5 seconds
-- **Shield** — absorb one bomb hit
-- **Magnet** — pull nearby objects toward blade
-- **Double Points** — 2x score for 8 seconds
-
-### Progression
-- **XP/Level system** — 50 levels with persistent XP tracking
-- **Prestige** — at Level 50, reset for permanent +10% score multiplier
+### Progression & Meta
+- **XP/Level system** — 50 levels with persistent XP
+- **Prestige** — reset at Lv50 for permanent +10% score multiplier
 - **Star ratings** — 1-3 stars per mode/difficulty based on score thresholds
-- **95+ achievements** across slicing, combo, score, accuracy, mode mastery, and more
-- **16 blade skins** with various unlock criteria
-- **Daily Challenge streak** tracking
-- **Career stats** — 18+ tracked fields
-- **Top 20 leaderboard**
+- **119 achievements** across slicing, combos, modes, bosses, challenges, and more
+- **Season Mode** — 8 AI opponents (Rookie Bot → Omega Slicer) with bracket progression
+- **Daily Challenge streak** — track consecutive daily completions
+- **Career stats** — 20+ tracked metrics (games, slices, accuracy, play time, bosses, etc.)
+- **Game History** — paginated log of last 50 games with scores, accuracy, combos, stars
 
-### Season Mode
-Fight through 8 AI opponents with progressive difficulty:
-1. Rookie Bot → 2. Circuit Slasher → 3. Neon Phantom → 4. Blade Dancer
-5. Grid Reaper → 6. Void Hunter → 7. Quantum Edge → 8. Omega Slicer
+### Custom Challenges
+- **Challenge Creator** — save current game settings as a custom challenge (5 slots)
+- **Shareable codes** — base64-encoded challenge configs
+- **Random Challenge** — one-click randomized mode/difficulty/modifiers/theme/skin
 
-### Challenge Modifiers
-Toggle mutators from the mode select screen:
-- **Big Objects** — 2x size
-- **Speed Demon** — 50% faster
-- **No Bombs** — peace mode
-- **Mirror** — objects fall from above
-- **One Life** — single life, high stakes
-- **Tiny Objects** — 0.5x size
-- **Chaos** — all modifiers active simultaneously
+### Instant Replay
+- Captures last 5 seconds of slice events during gameplay
+- Visualized on game over screen with animated markers
+- Looping playback with fade and scale effects
 
-### Audio
-- **Procedural synthwave music engine** — 128 BPM arpeggiator, kick/hi-hat patterns, pad chords, filter sweep LFO
-- **30+ procedural SFX** — unique sounds for every interaction
-- **3-channel audio** — independent Master/SFX/Music volume controls
+### Visual & Audio
+- **10 arena themes**: Neon Holodeck, Crimson Arena, Toxic Neon, Ultra Violet, Solar Blaze, Frozen Grid, Blood Moon, Ghost Matrix, Deep Ocean, Neon Sunset
+- **20 blade skins** with level-gated, achievement-gated, and prestige-gated unlocks
+- **Arena-specific synthwave music** — each theme has unique bass/arp/pad notes, BPM, and filter Q
+- **Procedural SFX** — 30+ effects including slice, bomb, power-up, boss, combo announcements
+- **Holodeck environment** — grid floor/ceiling, floating decorations, ambient particles
+- **Screen shake** — toggleable camera shake on impacts and boss defeats
+- **Combo visual feedback** — blade glow and environment lighting scales with combo level
 
-### Visual
-- **8 arena themes** — Neon Holodeck, Crimson Arena, Toxic Neon, Ultra Violet, Solar Blaze, Frozen Grid, Blood Moon, Ghost Matrix
-- **Combo visual feedback** — blade glow intensity and environment lighting scale with combo level
-- **Screen shake** on bomb hits and boss defeats (toggleable)
-- **Holodeck environment** — wireframe grid floor/ceiling, 14 floating decorations, 40 ambient particles
+### Challenge Modifiers (7)
+| Modifier | Effect |
+|----------|--------|
+| Big Objects | 2x larger objects |
+| Speed Demon | 50% faster velocity |
+| No Bombs | Bombs don't spawn |
+| Mirror | Objects spawn from above |
+| One Life | Single life only |
+| Tiny Objects | 0.5x object size |
+| Chaos | All modifiers active |
 
-### UI
-- **22 PanelUI spatial templates** — zero HTML DOM, fully XR-compatible
-- **Follower HUDs** — score, combo, toast, countdown, power-up, XP bar, wave, level-up
-- **Tutorial system** for first-time players
+### Bosses
+- Appear every 5 waves (Classic) or 10 waves (Endless)
+- 3 types: **Orbiter** (circular), **Charger** (z-axis lunges), **Splitter** (wider orbit)
+- Multi-hit mechanics (5-12 hits) with visual feedback
 
-## Controls
+### Power-ups
+- **Freeze** — slow time for 5 seconds
+- **Shield** — blocks one bomb hit
+- **Magnet** — pulls nearby non-bomb objects toward blade
+- **Double Points** — 2x scoring for duration
 
-### Browser
-| Key | Action |
-|-----|--------|
-| Mouse | Aim blade |
-| Space | Charge attack (hold + release) |
-| Escape | Pause/Resume |
-| R | Rematch (game over screen) |
+### Spawn Formations (6)
+Random, Line, V-Shape, Circle, Cross, Shower — cycle through as waves progress
 
-### VR Controllers
-| Input | Action |
-|-------|--------|
-| Swing | Slice objects with dual blades |
-| Squeeze | Charge attack (hold + release) |
-| Trigger | Menu select (laser pointer) |
-| A/X Button (left) | Pause |
+### Controls
+| Platform | Control |
+|----------|---------|
+| **VR** | Swing controllers to slice, B to pause, Squeeze to charge |
+| **Browser** | Mouse aim + click to slice, WASD to move, Space to charge, P to pause |
 
-## Tech Stack
-- **IWSDK 0.4.1** — Meta's WebXR development framework
-- **Dual runtime** — VR headset + browser-first with `xr: { offer: 'once' }`
-- **PanelUI** — `.uikitml` spatial UI compiled by `@iwsdk/vite-plugin-uikitml`
-- **Follower + ScreenSpace** — head-tracked HUD panels
-- **Web Audio API** — procedural synthesis, no audio file dependencies
-- **localStorage** — persistent save data
+### Technical
+- **IWSDK 0.4.1** dual-runtime (VR + browser)
+- **24 PanelUI templates** (`.uikitml` → spatial panels, zero HTML DOM)
+- **Follower HUDs** for score, combo, toast, countdown, power-ups, XP bar, wave announcements
+- **localStorage** persistence for all career data, achievements, settings, history
+- **Procedural audio** — Web Audio API synthesis, no external audio files
+- **Tutorial system** — auto-triggers for first-time players
 
-## Development
+## Build
 
 ```bash
 npm install
-npm run dev    # Development server
-npm run build  # Production build
+npm run build   # compiles uikitml + vite build
+npm run dev     # dev server with hot reload
 ```
 
 ## License
 
-Built with IWSDK. Part of the [ellyz2426](https://github.com/ellyz2426) VR game portfolio.
+Built with [IWSDK](https://iwsdk.dev) — Meta's WebXR development framework.
