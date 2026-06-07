@@ -1,0 +1,22 @@
+<style>
+  .countdown-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1;
+  }
+  .countdown-text {
+    font-size: 8;
+    color: #00ffff;
+    font-weight: bold;
+  }
+</style>
+<div class="countdown-panel">
+  <span id="countdown-text" class="countdown-text">3</span>
+</div>

@@ -1,0 +1,70 @@
+<style>
+  .hud {
+    display: flex;
+    flex-direction: column;
+    padding: 1;
+    padding-left: 1.5;
+    padding-right: 1.5;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-color: #00ffff;
+    border-width: 0.08;
+    border-radius: 0.8;
+    gap: 0.3;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    gap: 2;
+  }
+  .label {
+    font-size: 1.2;
+    color: #888888;
+  }
+  .value {
+    font-size: 1.8;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .combo-value {
+    font-size: 1.8;
+    color: #ff00ff;
+    font-weight: bold;
+  }
+  .mode-label {
+    font-size: 1;
+    color: #ffd700;
+  }
+</style>
+<div class="hud">
+  <span id="hud-mode" class="mode-label">CLASSIC</span>
+  <div class="row">
+    <div>
+      <span class="label">SCORE</span>
+      <span id="hud-score" class="value">0</span>
+    </div>
+    <div>
+      <span class="label">COMBO</span>
+      <span id="hud-combo" class="combo-value">x1</span>
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <span class="label">LIVES</span>
+      <span id="hud-lives" class="value">3</span>
+    </div>
+    <div>
+      <span class="label">TIME</span>
+      <span id="hud-time" class="value">--</span>
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <span class="label">SLICES</span>
+      <span id="hud-slices" class="value">0</span>
+    </div>
+    <div>
+      <span class="label">BEST</span>
+      <span id="hud-best" class="value">x1</span>
+    </div>
+  </div>
+</div>

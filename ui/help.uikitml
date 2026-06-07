@@ -1,0 +1,75 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    padding: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 0.8;
+  }
+  .heading {
+    font-size: 2.5;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .section {
+    font-size: 1.5;
+    color: #ff00ff;
+    font-weight: bold;
+  }
+  .text {
+    font-size: 1.2;
+    color: #cccccc;
+  }
+  .key {
+    font-size: 1.2;
+    color: #00ffff;
+  }
+  .btn {
+    font-size: 1.8;
+    color: #ffffff;
+    background-color: rgba(0, 255, 255, 0.15);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+<div class="panel">
+  <span class="heading">HOW TO PLAY</span>
+  <span class="section">BROWSER</span>
+  <span class="text">Move mouse to aim blade</span>
+  <span class="text">Swing through objects to slice them</span>
+  <span class="key">ESC = Pause | R = Rematch</span>
+  <span class="section">VR CONTROLLERS</span>
+  <span class="text">Swing controllers to slice with blades</span>
+  <span class="text">Each hand has an energy blade</span>
+  <span class="key">B = Pause | Trigger = Menu select</span>
+  <span class="section">GAMEPLAY</span>
+  <span class="text">Slice neon objects as they fly up</span>
+  <span class="text">Avoid BOMBS (red, octahedron)</span>
+  <span class="text">Build combos with rapid slicing</span>
+  <span class="text">Freeze orbs slow time briefly</span>
+  <span class="section">SCORING</span>
+  <span class="text">Cube: 100 | Sphere: 150 | Diamond: 200</span>
+  <span class="text">Star: 300 | Freeze: 50</span>
+  <span class="text">Combo multiplier: x1 to x10</span>
+  <span class="section">MODES</span>
+  <span class="text">Classic: Waves, 3 lives</span>
+  <span class="text">Zen: No bombs, endless</span>
+  <span class="text">Time Attack: 60s, max score</span>
+  <span class="text">Survival: Rising difficulty, 3 lives</span>
+  <span class="text">Frenzy: 30s rapid fire</span>
+  <span class="text">Daily: Same puzzle for everyone</span>
+  <div id="btn-back-help" class="btn" cursor="pointer">BACK</div>
+</div>

@@ -1,0 +1,80 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-color: #00ff80;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 0.4;
+  }
+  .heading {
+    font-size: 2.5;
+    color: #00ff80;
+    font-weight: bold;
+  }
+  .entry {
+    display: flex;
+    flex-direction: row;
+    gap: 1;
+    width: 100%;
+    padding: 0.2;
+    padding-left: 0.5;
+    padding-right: 0.5;
+  }
+  .check { font-size: 1.2; color: #444444; width: 8%; }
+  .check-done { font-size: 1.2; color: #00ff80; width: 8%; }
+  .name { font-size: 1.2; color: #ffffff; width: 40%; }
+  .desc { font-size: 1; color: #888888; width: 52%; }
+  .page-info { font-size: 1.2; color: #888888; }
+  .btn {
+    font-size: 1.5;
+    color: #ffffff;
+    background-color: rgba(0, 255, 128, 0.15);
+    border-color: #00ff80;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.6;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-row {
+    display: flex;
+    flex-direction: row;
+    gap: 2;
+    width: 100%;
+    justify-content: center;
+  }
+</style>
+<div class="panel">
+  <span class="heading">ACHIEVEMENTS</span>
+  <div id="ach-1" class="entry"><span id="ach-1-check" class="check">[ ]</span><span id="ach-1-name" class="name">-</span><span id="ach-1-desc" class="desc">-</span></div>
+  <div id="ach-2" class="entry"><span id="ach-2-check" class="check">[ ]</span><span id="ach-2-name" class="name">-</span><span id="ach-2-desc" class="desc">-</span></div>
+  <div id="ach-3" class="entry"><span id="ach-3-check" class="check">[ ]</span><span id="ach-3-name" class="name">-</span><span id="ach-3-desc" class="desc">-</span></div>
+  <div id="ach-4" class="entry"><span id="ach-4-check" class="check">[ ]</span><span id="ach-4-name" class="name">-</span><span id="ach-4-desc" class="desc">-</span></div>
+  <div id="ach-5" class="entry"><span id="ach-5-check" class="check">[ ]</span><span id="ach-5-name" class="name">-</span><span id="ach-5-desc" class="desc">-</span></div>
+  <div id="ach-6" class="entry"><span id="ach-6-check" class="check">[ ]</span><span id="ach-6-name" class="name">-</span><span id="ach-6-desc" class="desc">-</span></div>
+  <div id="ach-7" class="entry"><span id="ach-7-check" class="check">[ ]</span><span id="ach-7-name" class="name">-</span><span id="ach-7-desc" class="desc">-</span></div>
+  <div id="ach-8" class="entry"><span id="ach-8-check" class="check">[ ]</span><span id="ach-8-name" class="name">-</span><span id="ach-8-desc" class="desc">-</span></div>
+  <div id="ach-9" class="entry"><span id="ach-9-check" class="check">[ ]</span><span id="ach-9-name" class="name">-</span><span id="ach-9-desc" class="desc">-</span></div>
+  <div id="ach-10" class="entry"><span id="ach-10-check" class="check">[ ]</span><span id="ach-10-name" class="name">-</span><span id="ach-10-desc" class="desc">-</span></div>
+  <div id="ach-11" class="entry"><span id="ach-11-check" class="check">[ ]</span><span id="ach-11-name" class="name">-</span><span id="ach-11-desc" class="desc">-</span></div>
+  <div id="ach-12" class="entry"><span id="ach-12-check" class="check">[ ]</span><span id="ach-12-name" class="name">-</span><span id="ach-12-desc" class="desc">-</span></div>
+  <div id="ach-13" class="entry"><span id="ach-13-check" class="check">[ ]</span><span id="ach-13-name" class="name">-</span><span id="ach-13-desc" class="desc">-</span></div>
+  <div id="ach-14" class="entry"><span id="ach-14-check" class="check">[ ]</span><span id="ach-14-name" class="name">-</span><span id="ach-14-desc" class="desc">-</span></div>
+  <div id="ach-15" class="entry"><span id="ach-15-check" class="check">[ ]</span><span id="ach-15-name" class="name">-</span><span id="ach-15-desc" class="desc">-</span></div>
+  <div class="nav-row">
+    <div id="ach-prev" class="btn" cursor="pointer">PREV</div>
+    <span id="ach-page" class="page-info">1/1</span>
+    <div id="ach-next" class="btn" cursor="pointer">NEXT</div>
+  </div>
+  <div id="btn-back-ach" class="btn" cursor="pointer">BACK</div>
+</div>

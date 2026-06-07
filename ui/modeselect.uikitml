@@ -1,0 +1,60 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1;
+  }
+  .heading {
+    font-size: 3;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .btn {
+    font-size: 1.8;
+    color: #ffffff;
+    background-color: rgba(0, 255, 255, 0.15);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .desc {
+    font-size: 1.2;
+    color: #888888;
+  }
+  .btn-back {
+    background-color: rgba(255, 0, 255, 0.15);
+    border-color: #ff00ff;
+  }
+</style>
+<div class="panel">
+  <span class="heading">SELECT MODE</span>
+  <div id="btn-classic" class="btn" cursor="pointer">CLASSIC</div>
+  <span class="desc">Waves of objects, 3 lives</span>
+  <div id="btn-zen" class="btn" cursor="pointer">ZEN</div>
+  <span class="desc">No bombs, no pressure</span>
+  <div id="btn-timeattack" class="btn" cursor="pointer">TIME ATTACK</div>
+  <span class="desc">60 seconds, max score</span>
+  <div id="btn-survival" class="btn" cursor="pointer">SURVIVAL</div>
+  <span class="desc">Rising difficulty, 3 lives</span>
+  <div id="btn-frenzy" class="btn" cursor="pointer">FRENZY</div>
+  <span class="desc">30s rapid fire, no bombs</span>
+  <div id="btn-daily" class="btn" cursor="pointer">DAILY CHALLENGE</div>
+  <span class="desc">Same puzzle for everyone today</span>
+  <div id="btn-back-mode" class="btn btn-back" cursor="pointer">BACK</div>
+</div>

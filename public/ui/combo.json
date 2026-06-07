@@ -1,0 +1,127 @@
+{
+  "element": {
+    "type": "container",
+    "sourceTag": "div",
+    "children": [
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "x1"
+        ],
+        "properties": {
+          "id": "combo-text",
+          "class": "combo-text"
+        },
+        "dataUid": "uid-2"
+      },
+      {
+        "sourceTag": "span",
+        "type": "custom",
+        "children": [
+          "COMBO"
+        ],
+        "properties": {
+          "id": "combo-label",
+          "class": "combo-label"
+        },
+        "dataUid": "uid-3"
+      }
+    ],
+    "properties": {
+      "class": "combo-display"
+    },
+    "dataUid": "uid-1"
+  },
+  "classes": {
+    "combo-display": {
+      "content": {
+        "display": "flex",
+        "flexDirection": "column",
+        "alignItems": "center",
+        "padding": "0.5",
+        "paddingLeft": "1",
+        "paddingRight": "1",
+        "backgroundColor": "rgba(255, 0, 255, 0.3)",
+        "borderColor": "#ff00ff",
+        "borderWidth": "0.1",
+        "borderRadius": 0.6
+      }
+    },
+    "combo-text": {
+      "content": {
+        "fontSize": "3",
+        "color": "#ff00ff",
+        "fontWeight": "bold"
+      }
+    },
+    "combo-label": {
+      "content": {
+        "fontSize": "1.2",
+        "color": "#ffffff"
+      }
+    }
+  },
+  "ranges": {
+    "combo-display": {
+      "start": {
+        "line": 1,
+        "column": 2
+      },
+      "end": {
+        "line": 1,
+        "column": 16
+      }
+    },
+    "combo-text": {
+      "start": {
+        "line": 13,
+        "column": 2
+      },
+      "end": {
+        "line": 13,
+        "column": 13
+      }
+    },
+    "combo-label": {
+      "start": {
+        "line": 18,
+        "column": 2
+      },
+      "end": {
+        "line": 18,
+        "column": 14
+      }
+    },
+    "uid-1": {
+      "start": {
+        "line": 23,
+        "column": 0
+      },
+      "end": {
+        "line": 26,
+        "column": 6
+      }
+    },
+    "uid-2": {
+      "start": {
+        "line": 24,
+        "column": 2
+      },
+      "end": {
+        "line": 24,
+        "column": 52
+      }
+    },
+    "uid-3": {
+      "start": {
+        "line": 25,
+        "column": 2
+      },
+      "end": {
+        "line": 25,
+        "column": 57
+      }
+    }
+  }
+}

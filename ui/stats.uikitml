@@ -1,0 +1,79 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-color: #ff8c00;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 0.8;
+  }
+  .heading {
+    font-size: 2.5;
+    color: #ff8c00;
+    font-weight: bold;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    gap: 3;
+    width: 100%;
+  }
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+  }
+  .label {
+    font-size: 1.2;
+    color: #888888;
+  }
+  .value {
+    font-size: 1.6;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .btn {
+    font-size: 1.8;
+    color: #ffffff;
+    background-color: rgba(255, 140, 0, 0.15);
+    border-color: #ff8c00;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+<div class="panel">
+  <span class="heading">CAREER STATS</span>
+  <div class="row">
+    <div class="stat-block"><span class="label">GAMES PLAYED</span><span id="stat-games" class="value">0</span></div>
+    <div class="stat-block"><span class="label">TOTAL SLICES</span><span id="stat-slices" class="value">0</span></div>
+  </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">BEST SCORE</span><span id="stat-best" class="value">0</span></div>
+    <div class="stat-block"><span class="label">TOTAL SCORE</span><span id="stat-total" class="value">0</span></div>
+  </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">BEST COMBO</span><span id="stat-combo" class="value">x1</span></div>
+    <div class="stat-block"><span class="label">ACCURACY</span><span id="stat-accuracy" class="value">0%</span></div>
+  </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">BOMBS HIT</span><span id="stat-bombs" class="value">0</span></div>
+    <div class="stat-block"><span class="label">ACHIEVEMENTS</span><span id="stat-achievements" class="value">0/30</span></div>
+  </div>
+  <div class="row">
+    <div class="stat-block"><span class="label">PLAY TIME</span><span id="stat-time" class="value">0m</span></div>
+    <div class="stat-block"><span class="label">OBJECTS MISSED</span><span id="stat-misses" class="value">0</span></div>
+  </div>
+  <div id="btn-back-stats" class="btn" cursor="pointer">BACK</div>
+</div>

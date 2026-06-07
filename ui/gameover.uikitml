@@ -1,0 +1,95 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3;
+    padding-left: 4;
+    padding-right: 4;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-color: #ff00ff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1;
+  }
+  .heading {
+    font-size: 3.5;
+    color: #ff00ff;
+    font-weight: bold;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    gap: 3;
+    width: 100%;
+  }
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .label {
+    font-size: 1.2;
+    color: #888888;
+  }
+  .value {
+    font-size: 2.2;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .btn {
+    font-size: 2;
+    color: #ffffff;
+    background-color: rgba(0, 255, 255, 0.15);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 1;
+    padding-left: 3;
+    padding-right: 3;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-magenta {
+    background-color: rgba(255, 0, 255, 0.15);
+    border-color: #ff00ff;
+  }
+</style>
+<div class="panel">
+  <span class="heading">GAME OVER</span>
+  <div class="row">
+    <div class="stat-block">
+      <span class="label">SCORE</span>
+      <span id="go-score" class="value">0</span>
+    </div>
+    <div class="stat-block">
+      <span class="label">SLICES</span>
+      <span id="go-slices" class="value">0</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="stat-block">
+      <span class="label">BEST COMBO</span>
+      <span id="go-combo" class="value">x1</span>
+    </div>
+    <div class="stat-block">
+      <span class="label">ACCURACY</span>
+      <span id="go-accuracy" class="value">0%</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="stat-block">
+      <span class="label">MISSES</span>
+      <span id="go-misses" class="value">0</span>
+    </div>
+    <div class="stat-block">
+      <span class="label">BOMBS</span>
+      <span id="go-bombs" class="value">0</span>
+    </div>
+  </div>
+  <div id="btn-rematch" class="btn" cursor="pointer">REMATCH</div>
+  <div id="btn-title" class="btn btn-magenta" cursor="pointer">MENU</div>
+</div>

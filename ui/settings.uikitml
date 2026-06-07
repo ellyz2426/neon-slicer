@@ -1,0 +1,85 @@
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2;
+    padding-left: 3;
+    padding-right: 3;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-color: #00ffff;
+    border-width: 0.15;
+    border-radius: 1.5;
+    gap: 1;
+  }
+  .heading {
+    font-size: 2.5;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    gap: 2;
+    width: 100%;
+  }
+  .label {
+    font-size: 1.2;
+    color: #888888;
+  }
+  .value {
+    font-size: 1.8;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .section {
+    font-size: 1.5;
+    color: #ff00ff;
+    font-weight: bold;
+  }
+  .btn {
+    font-size: 1.8;
+    color: #ffffff;
+    background-color: rgba(0, 255, 255, 0.15);
+    border-color: #00ffff;
+    border-width: 0.1;
+    border-radius: 0.8;
+    padding: 0.8;
+    padding-left: 2;
+    padding-right: 2;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+<div class="panel">
+  <span class="heading">SETTINGS</span>
+  <span class="section">AUDIO</span>
+  <div class="row">
+    <span class="label">MASTER</span>
+    <div id="vol-master-down" class="btn" cursor="pointer">-</div>
+    <span id="vol-master" class="value">100</span>
+    <div id="vol-master-up" class="btn" cursor="pointer">+</div>
+  </div>
+  <div class="row">
+    <span class="label">SFX</span>
+    <div id="vol-sfx-down" class="btn" cursor="pointer">-</div>
+    <span id="vol-sfx" class="value">100</span>
+    <div id="vol-sfx-up" class="btn" cursor="pointer">+</div>
+  </div>
+  <div class="row">
+    <span class="label">MUSIC</span>
+    <div id="vol-music-down" class="btn" cursor="pointer">-</div>
+    <span id="vol-music" class="value">100</span>
+    <div id="vol-music-up" class="btn" cursor="pointer">+</div>
+  </div>
+  <span class="section">THEME</span>
+  <div class="row">
+    <div id="theme-prev" class="btn" cursor="pointer">PREV</div>
+    <span id="theme-name" class="value">NEON HOLODECK</span>
+    <div id="theme-next" class="btn" cursor="pointer">NEXT</div>
+  </div>
+  <div id="btn-back-settings" class="btn" cursor="pointer">BACK</div>
+</div>
