@@ -91,6 +91,12 @@
   <span class="text">One Life, Chaos (all modifiers at once)</span>
   <span class="section">PROGRESSION</span>
   <span class="text">50 levels with XP | Prestige at Lv50 (+10% score)</span>
-  <span class="text">24 blade skins | 12 arena themes | 140+ achievements</span>
+  <span class="text">28 blade skins | 14 arena themes | 153 achievements</span>
+  <span class="text">Combo Finisher: x3+ combo awards bonus when it drops</span>
+  <span class="text">Accuracy Bonus: +10% per 10% acc above 50%</span>
+  <span class="section">ACCESSIBILITY</span>
+  <span class="text">Colorblind Mode: ring indicators per object type</span>
+  <span class="text">Weather FX: toggle theme weather particles</span>
+  <span class="text">Screen Shake: toggle camera shake on impacts</span>
   <div id="btn-back-help" class="btn" cursor="pointer">BACK</div>
 </div>

@@ -407,6 +407,158 @@
         "dataUid": "uid-32"
       },
       {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "ACC BONUS"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-41"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "--"
+                ],
+                "properties": {
+                  "id": "go-accbonus",
+                  "class": "value"
+                },
+                "dataUid": "uid-42"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-40"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "DURATION"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-44"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "0s"
+                ],
+                "properties": {
+                  "id": "go-duration",
+                  "class": "value"
+                },
+                "dataUid": "uid-45"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-43"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-39"
+      },
+      {
+        "type": "container",
+        "sourceTag": "div",
+        "children": [
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "MULTI-KILL"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-48"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "--"
+                ],
+                "properties": {
+                  "id": "go-multikill",
+                  "class": "value"
+                },
+                "dataUid": "uid-49"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-47"
+          },
+          {
+            "type": "container",
+            "sourceTag": "div",
+            "children": [
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "THEME"
+                ],
+                "properties": {
+                  "class": "label"
+                },
+                "dataUid": "uid-51"
+              },
+              {
+                "sourceTag": "span",
+                "type": "custom",
+                "children": [
+                  "--"
+                ],
+                "properties": {
+                  "id": "go-theme",
+                  "class": "value"
+                },
+                "dataUid": "uid-52"
+              }
+            ],
+            "properties": {
+              "class": "stat-block"
+            },
+            "dataUid": "uid-50"
+          }
+        ],
+        "properties": {
+          "class": "row"
+        },
+        "dataUid": "uid-46"
+      },
+      {
         "sourceTag": "span",
         "type": "custom",
         "children": [],
@@ -418,7 +570,7 @@
             "fontStyle": "italic"
           }
         },
-        "dataUid": "uid-39"
+        "dataUid": "uid-53"
       },
       {
         "sourceTag": "span",
@@ -432,7 +584,7 @@
             "fontWeight": "bold"
           }
         },
-        "dataUid": "uid-40"
+        "dataUid": "uid-54"
       },
       {
         "type": "container",
@@ -445,7 +597,7 @@
           "class": "btn",
           "cursor": "pointer"
         },
-        "dataUid": "uid-41"
+        "dataUid": "uid-55"
       },
       {
         "type": "container",
@@ -458,7 +610,7 @@
           "class": "btn btn-magenta",
           "cursor": "pointer"
         },
-        "dataUid": "uid-42"
+        "dataUid": "uid-56"
       }
     ],
     "properties": {
@@ -646,7 +798,7 @@
         "column": 0
       },
       "end": {
-        "line": 122,
+        "line": 142,
         "column": 6
       }
     },
@@ -1026,37 +1178,177 @@
         "column": 2
       },
       "end": {
-        "line": 118,
-        "column": 90
+        "line": 127,
+        "column": 8
       }
     },
     "uid-40": {
       "start": {
         "line": 119,
-        "column": 2
+        "column": 4
       },
       "end": {
-        "line": 119,
-        "column": 85
+        "line": 122,
+        "column": 10
       }
     },
     "uid-41": {
       "start": {
         "line": 120,
-        "column": 2
+        "column": 6
       },
       "end": {
         "line": 120,
-        "column": 66
+        "column": 42
       }
     },
     "uid-42": {
       "start": {
         "line": 121,
-        "column": 2
+        "column": 6
       },
       "end": {
         "line": 121,
+        "column": 52
+      }
+    },
+    "uid-43": {
+      "start": {
+        "line": 123,
+        "column": 4
+      },
+      "end": {
+        "line": 126,
+        "column": 10
+      }
+    },
+    "uid-44": {
+      "start": {
+        "line": 124,
+        "column": 6
+      },
+      "end": {
+        "line": 124,
+        "column": 41
+      }
+    },
+    "uid-45": {
+      "start": {
+        "line": 125,
+        "column": 6
+      },
+      "end": {
+        "line": 125,
+        "column": 52
+      }
+    },
+    "uid-46": {
+      "start": {
+        "line": 128,
+        "column": 2
+      },
+      "end": {
+        "line": 137,
+        "column": 8
+      }
+    },
+    "uid-47": {
+      "start": {
+        "line": 129,
+        "column": 4
+      },
+      "end": {
+        "line": 132,
+        "column": 10
+      }
+    },
+    "uid-48": {
+      "start": {
+        "line": 130,
+        "column": 6
+      },
+      "end": {
+        "line": 130,
+        "column": 43
+      }
+    },
+    "uid-49": {
+      "start": {
+        "line": 131,
+        "column": 6
+      },
+      "end": {
+        "line": 131,
+        "column": 53
+      }
+    },
+    "uid-50": {
+      "start": {
+        "line": 133,
+        "column": 4
+      },
+      "end": {
+        "line": 136,
+        "column": 10
+      }
+    },
+    "uid-51": {
+      "start": {
+        "line": 134,
+        "column": 6
+      },
+      "end": {
+        "line": 134,
+        "column": 38
+      }
+    },
+    "uid-52": {
+      "start": {
+        "line": 135,
+        "column": 6
+      },
+      "end": {
+        "line": 135,
+        "column": 49
+      }
+    },
+    "uid-53": {
+      "start": {
+        "line": 138,
+        "column": 2
+      },
+      "end": {
+        "line": 138,
+        "column": 90
+      }
+    },
+    "uid-54": {
+      "start": {
+        "line": 139,
+        "column": 2
+      },
+      "end": {
+        "line": 139,
+        "column": 85
+      }
+    },
+    "uid-55": {
+      "start": {
+        "line": 140,
+        "column": 2
+      },
+      "end": {
+        "line": 140,
+        "column": 66
+      }
+    },
+    "uid-56": {
+      "start": {
+        "line": 141,
+        "column": 2
+      },
+      "end": {
+        "line": 141,
         "column": 73
       }
     }
